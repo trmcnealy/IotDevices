@@ -78,14 +78,19 @@ namespace RaspberryPiDevices.Tests
 
 
             //SpiDevice spiDevice;
-
+            
             gpioController.OpenPin(24, PinMode.Output);
-            PinValue pinValue = gpioController.Read(24);
+            gpioController.OpenPin(26, PinMode.Output);
 
+            PinValue CE0 = gpioController.Read(24);
+            PinValue CE1 = gpioController.Read(26);
+            
 
-            Console.WriteLine($"pinValue={(byte)pinValue}");
-
-
+            while (keepRunning)
+            {                
+                Console.WriteLine($"pinValue={(byte)CE0} {(int)CE0}");
+                Console.WriteLine($"pinValue={(byte)CE0} {(int)CE1}");
+            }
 
 
 
