@@ -1,21 +1,40 @@
 clear
 
+
+cd ~/Tests
+
+rm --force --recursive IotDevices
+
+sudo git clone https://github.com/trmcnealy/IotDevices.git
+sudo chmod 777 --recursive *
+
+cd ~/Tests/IotDevices
+
+dotnet build RaspberryPiDevices.Tests/RaspberryPiDevices.Tests.csproj --configuration Debug --framework net8.0 --arch arm64 --os linux --self-contained false
+
+
+
+
+
+cd ~/Tests/IotDevices
+
+
 #sudo chmod 777 --recursive *
 #rm --force --recursive IotDevices
 
 #ls -1 -lah
 
 #sudo git clone https://github.com/trmcnealy/IotDevices.git
-sudo chmod 777 --recursive *
+#sudo chmod 777 --recursive *
 #sudo chmod 777 --recursive IotDevices
 
-sudo git status
+#sudo git status
 
-sudo git reset --hard
-sudo git clean -fd
-sudo git pull --rebase=true
-sudo git fetch
-sudo git rebase origin/main
+#sudo git reset --hard
+#sudo git clean -fd
+#sudo git pull --rebase=true
+#sudo git fetch
+#sudo git rebase origin/main
 
 #sudo git reset --hard && sudo git clean -fd && sudo git pull --rebase=true && sudo git fetch && sudo git rebase origin/main
 
@@ -25,15 +44,13 @@ sudo git rebase origin/main
 
 
 #cd ~/Tests/IotDevices/RaspberryPiDevices.Tests/bin/Debug/net8.0/linux-arm64/
-cd ~/Tests/IotDevices/
+#cd ~/Tests/IotDevices/
 
 #dotnet restore
 
 #dotnet build RaspberryPiDevices.Tests/RaspberryPiDevices.Tests.csproj --no-restore --configuration Debug --framework net8.0 --runtime linux-arm64 --self-contained false --use-current-runtime false
-dotnet build RaspberryPiDevices.Tests/RaspberryPiDevices.Tests.csproj --configuration Debug --framework net8.0 --arch arm64 --os linux --self-contained false
+#dotnet build RaspberryPiDevices.Tests/RaspberryPiDevices.Tests.csproj --configuration Debug --framework net8.0 --arch arm64 --os linux --self-contained false
 
-dotnet run --no-restore --project RaspberryPiDevices.Tests/RaspberryPiDevices.Tests.csproj --property:Configuration=Debug
+#dotnet run --no-restore --project RaspberryPiDevices.Tests/RaspberryPiDevices.Tests.csproj --property:Configuration=Debug
 
 #dotnet run RaspberryPiDevices.Tests.dll
-
-cd ~/Tests/IotDevices/
