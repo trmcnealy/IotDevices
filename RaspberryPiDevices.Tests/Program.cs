@@ -114,6 +114,7 @@ namespace RaspberryPiDevices.Tests
                 }
             }
 
+            busId = 0;
             chipSelectLine = 0;
             Console.WriteLine($"{nameof(chipSelectLine)}={chipSelectLine}");
 
@@ -147,6 +148,7 @@ namespace RaspberryPiDevices.Tests
                 }
             }
 
+            busId = 0;
             chipSelectLine = 1;
             Console.WriteLine($"{nameof(chipSelectLine)}={chipSelectLine}");
 
