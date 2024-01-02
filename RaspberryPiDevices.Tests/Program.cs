@@ -83,6 +83,9 @@ namespace RaspberryPiDevices.Tests
             Console.WriteLine($"{nameof(spiActivated)}={spiActivated}");
 
 
+            Console.WriteLine(raspberryPiBoard.QueryComponentInformation());
+
+
             gpioController.OpenPin(24, PinMode.Output);
             gpioController.OpenPin(26, PinMode.Output);
 
