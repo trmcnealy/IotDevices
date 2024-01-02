@@ -86,12 +86,14 @@ namespace RaspberryPiDevices.Tests
             Console.WriteLine(raspberryPiBoard.QueryComponentInformation());
 
             try
-            {
-                SoilMoistureSensor sms = new SoilMoistureSensor(raspberryPiBoard, gpioController);
+            {            
+               GpioPin gpioPin = gpioController.OpenPin(11, PinMode.Input);
+
+                //SoilMoistureSensor sms = new SoilMoistureSensor(raspberryPiBoard, gpioController);
 
                 while (keepRunning)
                 {
-                    Console.WriteLine(sms);
+                    Console.WriteLine(gpioPin.Read());
                 }
             }
             catch (Exception ex)
