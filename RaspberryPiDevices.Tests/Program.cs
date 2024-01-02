@@ -76,46 +76,73 @@ namespace RaspberryPiDevices.Tests
             Console.WriteLine($"{nameof(spiActivated)}={spiActivated}");
 
 
-            Console.CancelKeyPress += (object? sender, ConsoleCancelEventArgs args) =>
+            int[] pins;
+
+            for (int chipSelectLine = -1; chipSelectLine < 5; chipSelectLine++)
             {
-                args.Cancel = true;
-                keepRunning = false;
-            };
-
-            keepRunning = true;
-
-            GpioPin CE0 = gpioController.OpenPin(24, PinMode.Output);
-            GpioPin CE1 = gpioController.OpenPin(26, PinMode.Output);
-
-            CE0.ValueChanged += (s, e) =>
-            {
-                if (s is GpioPin pin)
+                for (int busid = 0; busid < 2; busid++)
                 {
-                    Console.WriteLine($"{pin.PinNumber}={pin.Read()}");
-                }
-                else
-                {
-                    Console.WriteLine($"{CE0.PinNumber}={CE0.Read()}");
-                }
-            };
+                    // If you want to check chip select, place the number of the chip select pin instead of -1.
+                    pins = raspberryPiBoard.GetOverlayPinAssignmentForSpi(new SpiConnectionSettings(busid, chipSelectLine));
 
-            CE1.ValueChanged += (s, e) =>
-            {
-                if (s is GpioPin pin)
-                {
-                    Console.WriteLine($"{pin.PinNumber}={pin.Read()}");
+                    if (pins != null)
+                    {
+                        Console.WriteLine($"SPI overlay pins on busID {busid}: MISO {pins[0]} MOSI {pins[1]} Clock {pins[2]}.");
+                    }
+                    else
+                    {
+                        Console.WriteLine($"No SPI pins defined in the overlay on busID {busid}");
+                    }
                 }
-                else
-                {
-                    Console.WriteLine($"{CE1.PinNumber}={CE1.Read()}");
-                }
-            };
-
-            while (keepRunning)
-            {
-                Console.WriteLine($"{CE0.PinNumber}={CE0.Read()}");
-                Console.WriteLine($"{CE1.PinNumber}={CE1.Read()}");
             }
+
+
+
+
+
+
+
+
+            //Console.CancelKeyPress += (object? sender, ConsoleCancelEventArgs args) =>
+            //{
+            //    args.Cancel = true;
+            //    keepRunning = false;
+            //};
+
+            //keepRunning = true;
+
+            //GpioPin CE0 = gpioController.OpenPin(24, PinMode.Output);
+            //GpioPin CE1 = gpioController.OpenPin(26, PinMode.Output);
+
+            //CE0.ValueChanged += (s, e) =>
+            //{
+            //    if (s is GpioPin pin)
+            //    {
+            //        Console.WriteLine($"{pin.PinNumber}={pin.Read()}");
+            //    }
+            //    else
+            //    {
+            //        Console.WriteLine($"{CE0.PinNumber}={CE0.Read()}");
+            //    }
+            //};
+
+            //CE1.ValueChanged += (s, e) =>
+            //{
+            //    if (s is GpioPin pin)
+            //    {
+            //        Console.WriteLine($"{pin.PinNumber}={pin.Read()}");
+            //    }
+            //    else
+            //    {
+            //        Console.WriteLine($"{CE1.PinNumber}={CE1.Read()}");
+            //    }
+            //};
+
+            //while (keepRunning)
+            //{
+            //    Console.WriteLine($"{CE0.PinNumber}={CE0.Read()}");
+            //    Console.WriteLine($"{CE1.PinNumber}={CE1.Read()}");
+            //}
         }
 
         private static void CE0_ValueChanged(object sender, PinValueChangedEventArgs pinValueChangedEventArgs)
