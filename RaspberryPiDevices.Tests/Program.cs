@@ -115,11 +115,6 @@ namespace RaspberryPiDevices.Tests
             {
                 Console.WriteLine($"{CE0.PinNumber}={CE0.Read()}");
                 Console.WriteLine($"{CE1.PinNumber}={CE1.Read()}");
-
-                if (cki.Key == ConsoleKey.C && cki.Modifiers == ConsoleModifiers.Control)
-                {
-                    break;
-                }
             }
         }
 
