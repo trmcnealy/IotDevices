@@ -1,0 +1,63 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+
+        <Platforms>AnyCPU;x64;ARM64</Platforms>
+
+        <!--<RuntimeIdentifier>any</RuntimeIdentifier>
+        <RuntimeIdentifier Condition="'$(Platform)'=='x64'">win-x64</RuntimeIdentifier>-->
+        <RuntimeIdentifier Condition="'$(Platform)'=='ARM64'">linux-arm64</RuntimeIdentifier>
+
+        <!--<RuntimeIdentifiers>any;win-x64;linux-arm64</RuntimeIdentifiers>-->
+
+        <!--<IsAotCompatible>true</IsAotCompatible>-->
+        <PublishAot>True</PublishAot>
+
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+
+        <!--<StripSymbols>false</StripSymbols>
+        <OptimizationPreference>Speed</OptimizationPreference>-->
+
+        <IsPackable>false</IsPackable>
+
+        <IsTestProject>true</IsTestProject>
+    </PropertyGroup>
+
+    <!--<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+        <Optimize>True</Optimize>
+    </PropertyGroup>
+
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+        <Optimize>True</Optimize>
+    </PropertyGroup>
+
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">
+        <Optimize>True</Optimize>
+    </PropertyGroup>
+
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+        <Optimize>False</Optimize>
+    </PropertyGroup>
+
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+        <Optimize>False</Optimize>
+    </PropertyGroup>
+
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">
+        <Optimize>False</Optimize>
+    </PropertyGroup>-->
+
+    <ItemGroup>
+        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.6.0" />
+        <PackageReference Include="MSTest.TestAdapter" Version="3.0.4" />
+        <PackageReference Include="MSTest.TestFramework" Version="3.0.4" />
+        <PackageReference Include="coverlet.collector" Version="6.0.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\RaspberryPiDevices\RaspberryPiDevices.csproj" />
+    </ItemGroup>
+
+</Project>

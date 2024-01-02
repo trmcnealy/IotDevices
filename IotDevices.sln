@@ -1,0 +1,56 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.8.34330.188
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Webcam", "Webcam\Webcam.csproj", "{969B6FE7-B0B0-483A-84E7-3D414AB0689F}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RaspberryPiDevices", "RaspberryPiDevices\RaspberryPiDevices.csproj", "{7F8FA902-282D-44F6-8FB5-639C64EAF154}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RaspberryPiDevices.UnitTests", "RaspberryPiDevices.UnitTests\RaspberryPiDevices.UnitTests.csproj", "{DFBA3645-FC93-4D93-ABA4-6D4ABC78A24B}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RaspberryPiDevices.Tests", "RaspberryPiDevices.Tests\RaspberryPiDevices.Tests.csproj", "{081B1DA3-0ECA-4C58-8966-15D7752B5A41}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Debug|ARM64 = Debug|ARM64
+		Release|Any CPU = Release|Any CPU
+		Release|ARM64 = Release|ARM64
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{969B6FE7-B0B0-483A-84E7-3D414AB0689F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{969B6FE7-B0B0-483A-84E7-3D414AB0689F}.Debug|ARM64.ActiveCfg = Debug|Any CPU
+		{969B6FE7-B0B0-483A-84E7-3D414AB0689F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{969B6FE7-B0B0-483A-84E7-3D414AB0689F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{969B6FE7-B0B0-483A-84E7-3D414AB0689F}.Release|ARM64.ActiveCfg = Release|Any CPU
+		{7F8FA902-282D-44F6-8FB5-639C64EAF154}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7F8FA902-282D-44F6-8FB5-639C64EAF154}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7F8FA902-282D-44F6-8FB5-639C64EAF154}.Debug|ARM64.ActiveCfg = Debug|ARM64
+		{7F8FA902-282D-44F6-8FB5-639C64EAF154}.Debug|ARM64.Build.0 = Debug|ARM64
+		{7F8FA902-282D-44F6-8FB5-639C64EAF154}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7F8FA902-282D-44F6-8FB5-639C64EAF154}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7F8FA902-282D-44F6-8FB5-639C64EAF154}.Release|ARM64.ActiveCfg = Release|ARM64
+		{7F8FA902-282D-44F6-8FB5-639C64EAF154}.Release|ARM64.Build.0 = Release|ARM64
+		{DFBA3645-FC93-4D93-ABA4-6D4ABC78A24B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DFBA3645-FC93-4D93-ABA4-6D4ABC78A24B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DFBA3645-FC93-4D93-ABA4-6D4ABC78A24B}.Debug|ARM64.ActiveCfg = Debug|Any CPU
+		{DFBA3645-FC93-4D93-ABA4-6D4ABC78A24B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DFBA3645-FC93-4D93-ABA4-6D4ABC78A24B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DFBA3645-FC93-4D93-ABA4-6D4ABC78A24B}.Release|ARM64.ActiveCfg = Release|Any CPU
+		{081B1DA3-0ECA-4C58-8966-15D7752B5A41}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{081B1DA3-0ECA-4C58-8966-15D7752B5A41}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{081B1DA3-0ECA-4C58-8966-15D7752B5A41}.Debug|ARM64.ActiveCfg = Debug|ARM64
+		{081B1DA3-0ECA-4C58-8966-15D7752B5A41}.Debug|ARM64.Build.0 = Debug|ARM64
+		{081B1DA3-0ECA-4C58-8966-15D7752B5A41}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{081B1DA3-0ECA-4C58-8966-15D7752B5A41}.Release|Any CPU.Build.0 = Release|Any CPU
+		{081B1DA3-0ECA-4C58-8966-15D7752B5A41}.Release|ARM64.ActiveCfg = Release|ARM64
+		{081B1DA3-0ECA-4C58-8966-15D7752B5A41}.Release|ARM64.Build.0 = Release|ARM64
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {CC980C83-7309-43D1-A6FF-727F6DEB8AF8}
+	EndGlobalSection
+EndGlobal
