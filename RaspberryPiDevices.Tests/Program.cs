@@ -24,9 +24,9 @@ public static class Try
         {
             action.Invoke();
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
-            Console.WriteLine($"{action.Method.Name}:"+ex.Message);
+            Console.WriteLine($"{action.Method.Name}:" + ex.Message);
         }
         finally
         {
@@ -63,39 +63,55 @@ namespace RaspberryPiDevices.Tests
             Console.WriteLine("Raspberry Pi Devices Tests");
 
             Console.WriteLine($"{nameof(IsRaspi4)}={IsRaspi4()}");
-           
+
 
             RaspberryPiBoard raspberryPiBoard = new RaspberryPiBoard();
             GpioController gpioController = raspberryPiBoard.CreateGpioController();
 
-
-
-            //PinUsage.AnalogOut
-
-            SpiConnectionSettings connectionSettings = new SpiConnectionSettings(24, 0);
-            SpiDevice spi = (raspberryPiBoard is RaspberryPiBoard) ? SpiDevice.Create(connectionSettings) : raspberryPiBoard.CreateSpiDevice(connectionSettings);
-
             bool spiActivated = raspberryPiBoard.IsSpiActivated();
             Console.WriteLine($"{nameof(spiActivated)}={spiActivated}");
 
-            int[] pinAssignmentSpi = raspberryPiBoard.GetDefaultPinAssignmentForSpi(connectionSettings);
-            foreach(int pinAssignment in pinAssignmentSpi)
-            {                
-                Console.WriteLine($"{nameof(pinAssignment)}={pinAssignment}");
+            //PinUsage.AnalogOut
+
+            int busId = 0;
+            int maxBusId = 0;
+            int chipSelectLine = -1;
+
+            SpiConnectionSettings connectionSettings;
+            SpiDevice spi;
+            int[] pinAssignmentSpi;
+            int[] overlayPinAssignmentForSpi;
+
+            while (busId < 40)
+            {
+                try
+                {
+                    connectionSettings = new SpiConnectionSettings(busId, chipSelectLine);
+                    spi = (raspberryPiBoard is RaspberryPiBoard) ? SpiDevice.Create(connectionSettings) : raspberryPiBoard.CreateSpiDevice(connectionSettings);
+                    pinAssignmentSpi = raspberryPiBoard.GetDefaultPinAssignmentForSpi(connectionSettings);
+                    overlayPinAssignmentForSpi = raspberryPiBoard.GetOverlayPinAssignmentForSpi(connectionSettings);
+
+                    foreach (int pinAssignment in pinAssignmentSpi)
+                    {
+                        Console.WriteLine($"{nameof(pinAssignment)}={pinAssignment}");
+                    }
+                    foreach (int overlayPinAssignment in overlayPinAssignmentForSpi)
+                    {
+                        Console.WriteLine($"{nameof(overlayPinAssignment)}={overlayPinAssignment}");
+                    }
+                }
+                catch
+                {
+                    break;
+                }
+                finally
+                {
+                    maxBusId = busId;
+                    ++busId;
+                }
             }
 
-            int[] overlayPinAssignmentForSpi = raspberryPiBoard.GetOverlayPinAssignmentForSpi(connectionSettings);
-            foreach(int overlayPinAssignment in overlayPinAssignmentForSpi)
-            {                
-                Console.WriteLine($"{nameof(overlayPinAssignment)}={overlayPinAssignment}");
-            }
-
-
-
-
-
-
-            Console.ReadKey();
+            //Console.ReadKey();
         }
 
         static bool IsRaspi4()

@@ -11,6 +11,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RaspberryPiDevices.UnitTest
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RaspberryPiDevices.Tests", "RaspberryPiDevices.Tests\RaspberryPiDevices.Tests.csproj", "{081B1DA3-0ECA-4C58-8966-15D7752B5A41}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Misc", "Misc", "{08C5FDCB-2C77-4DD7-800F-98AB2451B70E}"
+	ProjectSection(SolutionItems) = preProject
+		build.sh = build.sh
+		publish.sh = publish.sh
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
