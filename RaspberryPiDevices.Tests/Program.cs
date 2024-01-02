@@ -73,6 +73,8 @@ namespace RaspberryPiDevices.Tests
             Console.WriteLine($"{nameof(spiActivated)}={spiActivated}");
 
             GpioPin CE0 = gpioController.OpenPin(24, PinMode.Output);
+            
+            Console.WriteLine($"{CE0.PinNumber}={CE0.Read()}");
 
             CE0.ValueChanged += (s, e) =>
             {
@@ -82,12 +84,14 @@ namespace RaspberryPiDevices.Tests
                 }
                 else
                 {
-                    Console.WriteLine($"{e.PinNumber}={CE0.Read()}");
+                    Console.WriteLine($"{CE0.PinNumber}={CE0.Read()}");
                 }
             };
 
 
             GpioPin CE1 = gpioController.OpenPin(26, PinMode.Output);
+
+            Console.WriteLine($"{CE1.PinNumber}={CE1.Read()}");
 
             CE1.ValueChanged += (s, e) =>
             {
@@ -97,7 +101,7 @@ namespace RaspberryPiDevices.Tests
                 }
                 else
                 {
-                    Console.WriteLine($"{e.PinNumber}={CE1.Read()}");
+                    Console.WriteLine($"{CE1.PinNumber}={CE1.Read()}");
                 }
             };
 
