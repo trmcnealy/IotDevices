@@ -78,7 +78,42 @@ namespace RaspberryPiDevices.Tests
 
             int[] pins;
 
-            for (int chipSelectLine = -1; chipSelectLine < 10; chipSelectLine++)
+            int chipSelectLine = -1;
+            Console.WriteLine($"chipSelectLine {chipSelectLine}");
+            {
+                for (int busid = 0; busid < 10; busid++)
+                {
+                    pins = raspberryPiBoard.GetOverlayPinAssignmentForSpi(new SpiConnectionSettings(busid, chipSelectLine));
+
+                    if (pins != null)
+                    {
+                        Console.WriteLine($"SPI overlay pins on busID {busid}: MISO {pins[0]} MOSI {pins[1]} Clock {pins[2]}.");
+                    }
+                    else
+                    {
+                        Console.WriteLine($"No SPI pins defined in the overlay on busID {busid}");
+                    }
+                }
+            }
+            chipSelectLine = 0;
+            Console.WriteLine($"chipSelectLine {chipSelectLine}");
+            {
+                for (int busid = 0; busid < 10; busid++)
+                {
+                    pins = raspberryPiBoard.GetOverlayPinAssignmentForSpi(new SpiConnectionSettings(busid, chipSelectLine));
+
+                    if (pins != null)
+                    {
+                        Console.WriteLine($"SPI overlay pins on busID {busid}: MISO {pins[0]} MOSI {pins[1]} Clock {pins[2]}.");
+                    }
+                    else
+                    {
+                        Console.WriteLine($"No SPI pins defined in the overlay on busID {busid}");
+                    }
+                }
+            }
+            chipSelectLine = 1;
+            Console.WriteLine($"chipSelectLine {chipSelectLine}");
             {
                 for (int busid = 0; busid < 10; busid++)
                 {
