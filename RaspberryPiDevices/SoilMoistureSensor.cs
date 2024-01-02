@@ -19,7 +19,6 @@ namespace RaspberryPiDevices
         private int[] _pins;
 
         private int _busid = 0;
-        private int _pinId = 24;
 
         public int MISOPinId
         {
@@ -57,7 +56,7 @@ namespace RaspberryPiDevices
 
         ~SoilMoistureSensor()
         {
-            _gpioController.ClosePin(_pinId);
+            _gpioController.ClosePin(ClockPinId);
         }
 
         public override string ToString()
