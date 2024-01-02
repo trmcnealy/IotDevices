@@ -87,7 +87,7 @@ namespace RaspberryPiDevices.Tests
 
 
             gpioController.OpenPin(24);
-            gpioController.OpenPin(26);
+            //gpioController.OpenPin(26);
 
             PinValue CE0;
             PinValue CE1;
@@ -95,10 +95,10 @@ namespace RaspberryPiDevices.Tests
             while (keepRunning)
             {
                 CE0 = gpioController.Read(24);
-                CE1 = gpioController.Read(26);
+                //CE1 = gpioController.Read(26);
 
                 Console.WriteLine($"pinValue={(byte)CE0} {(int)CE0}");
-                Console.WriteLine($"pinValue={(byte)CE0} {(int)CE1}");
+                //Console.WriteLine($"pinValue={(byte)CE0} {(int)CE1}");
             }
 
 
