@@ -78,7 +78,7 @@ namespace RaspberryPiDevices.Tests
 
 
 
-            SpiDevice spiDevice;
+            //SpiDevice spiDevice;
 
 
             int busid = 1;
@@ -90,9 +90,9 @@ namespace RaspberryPiDevices.Tests
             {
                 //for ( busid < 10; busid++)
                 {
-                    spiDevice = raspberryPiBoard.CreateSpiDevice(new SpiConnectionSettings(busid, chipSelectLine));
+                    //spiDevice = raspberryPiBoard.CreateSpiDevice(new SpiConnectionSettings(busid, chipSelectLine));
 
-                    pins = raspberryPiBoard.GetOverlayPinAssignmentForSpi(spiDevice);//.ReservePin(24, PinUsage.Gpio, this);
+                    pins = raspberryPiBoard.GetOverlayPinAssignmentForSpi(new SpiConnectionSettings(busid, chipSelectLine));//.ReservePin(24, PinUsage.Gpio, this);
                     
                     
                     gpioController.Read(24);
