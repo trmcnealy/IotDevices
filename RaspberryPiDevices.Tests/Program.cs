@@ -78,11 +78,10 @@ namespace RaspberryPiDevices.Tests
 
             int[] pins;
 
-            for (int chipSelectLine = -1; chipSelectLine < 5; chipSelectLine++)
+            for (int chipSelectLine = -1; chipSelectLine < 10; chipSelectLine++)
             {
-                for (int busid = 0; busid < 2; busid++)
+                for (int busid = 0; busid < 10; busid++)
                 {
-                    // If you want to check chip select, place the number of the chip select pin instead of -1.
                     pins = raspberryPiBoard.GetOverlayPinAssignmentForSpi(new SpiConnectionSettings(busid, chipSelectLine));
 
                     if (pins != null)
