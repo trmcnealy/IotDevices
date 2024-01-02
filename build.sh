@@ -1,11 +1,10 @@
 clear
 
+#rm --force --recursive IotDevices
 
-rm --force --recursive IotDevices
+#ls -1 -lah
 
-ls -1 -lah
-
-sudo git clone https://github.com/trmcnealy/IotDevices.git
+#sudo git clone https://github.com/trmcnealy/IotDevices.git
 
 
 sudo git status
@@ -16,9 +15,9 @@ sudo git pull --rebase=true
 sudo git fetch
 sudo git rebase origin/main
 
+#sudo git reset --hard && sudo git clean -fd && sudo git pull --rebase=true && sudo git fetch && sudo git rebase origin/main
 
-
-sudo chmod 777 --recursive IotDevices
+#sudo chmod 777 --recursive IotDevices
 
 # dotnet build RaspberryPiDevices/RaspberryPiDevices.csproj --configuration Debug --framework net8.0 --runtime linux-arm64 --self-contained false --output ./trmcnealy/Tests/bin/
 #dotnet build RaspberryPiDevices.Tests/RaspberryPiDevices.Tests.csproj --no-restore --configuration Debug --framework net8.0 --runtime linux-arm64 --self-contained false

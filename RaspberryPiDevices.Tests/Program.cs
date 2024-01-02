@@ -82,6 +82,8 @@ namespace RaspberryPiDevices.Tests
             int maxBusId = 0;
             int chipSelectLine = -1;
 
+            Console.WriteLine($"{nameof(chipSelectLine)}={chipSelectLine}");
+
             while (busId < 40)
             {
                 Console.WriteLine($"{nameof(busId)}={busId}");
@@ -113,6 +115,7 @@ namespace RaspberryPiDevices.Tests
             }
 
             chipSelectLine = 0;
+            Console.WriteLine($"{nameof(chipSelectLine)}={chipSelectLine}");
 
             while (busId < 40)
             {
@@ -145,6 +148,7 @@ namespace RaspberryPiDevices.Tests
             }
 
             chipSelectLine = 1;
+            Console.WriteLine($"{nameof(chipSelectLine)}={chipSelectLine}");
 
             while (busId < 40)
             {
