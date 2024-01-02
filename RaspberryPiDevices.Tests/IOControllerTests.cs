@@ -344,8 +344,8 @@ namespace RaspberryPiDevices.Tests
             Assert.IsNotNull(iOController);
             iOController.OpenPin(1, PinMode.Input);
 
-            var task = iOController.WaitForEventAsync(1, PinEventTypes.Falling | PinEventTypes.Rising, TimeSpan.FromSeconds(0.01)).AsTask();
-            var result = await task.WaitAsync(CancellationToken.None);
+            Task<WaitForEventResult> task = iOController.WaitForEventAsync(1, PinEventTypes.Falling | PinEventTypes.Rising, TimeSpan.FromSeconds(0.01)).AsTask();
+            WaitForEventResult result = await task.WaitAsync(CancellationToken.None);
             Assert.IsTrue(task.IsCompleted);
             Assert.IsNull(task.Exception);
             Assert.IsTrue(result.TimedOut);
@@ -367,7 +367,7 @@ namespace RaspberryPiDevices.Tests
             Assert.IsNotNull(iOController);
             iOController.OpenPin(1, PinMode.Input);
 
-            var result = iOController.WaitForEvent(1, PinEventTypes.Falling | PinEventTypes.Rising, TimeSpan.FromSeconds(0.01));
+            WaitForEventResult result = iOController.WaitForEvent(1, PinEventTypes.Falling | PinEventTypes.Rising, TimeSpan.FromSeconds(0.01));
             Assert.IsFalse(result.TimedOut);
             Assert.AreEqual(PinEventTypes.Falling, result.EventTypes);
         }
