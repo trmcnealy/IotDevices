@@ -18,7 +18,7 @@ namespace RaspberryPiDevices
         private GpioPin _gpioPin;
         private int[] _pins;
 
-        private int _busid = 2;
+        private int _busid = 0;
         private int _pinId = 24;
 
         public int MISOPinId
