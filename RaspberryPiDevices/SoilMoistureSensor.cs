@@ -4,11 +4,14 @@ using System.Device.Gpio;
 using System.Device.Model;
 using System.Device.Spi;
 using System.Linq;
+using System.Numerics;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
 using Iot.Device.Board;
+
+using UnitsNet;
 
 namespace RaspberryPiDevices
 {
@@ -51,6 +54,8 @@ namespace RaspberryPiDevices
 
             _pins = raspberryPiBoard.GetOverlayPinAssignmentForSpi(new SpiConnectionSettings(_busid, -1));
 
+            raspberryPiBoard.ReservePin(ClockPinId, PinUsage.Gpio, this);
+            
             _gpioPin = _gpioController.OpenPin(ClockPinId, PinMode.Input);
         }
 
