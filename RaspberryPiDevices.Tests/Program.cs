@@ -7,6 +7,7 @@ using System.Device.Pwm;
 using System.Device.Pwm.Drivers;
 using System.Device.Spi;
 using System.Reflection.Metadata;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
@@ -76,14 +77,27 @@ namespace RaspberryPiDevices.Tests
             Console.WriteLine($"{nameof(spiActivated)}={spiActivated}");
 
 
+
+            SpiDevice spiDevice;
+
+
+            int busid = 1;
+
             int[] pins;
 
             int chipSelectLine = -1;
             Console.WriteLine($"chipSelectLine {chipSelectLine}");
             {
-                for (int busid = 0; busid < 10; busid++)
+                //for ( busid < 10; busid++)
                 {
-                    pins = raspberryPiBoard.GetOverlayPinAssignmentForSpi(new SpiConnectionSettings(busid, chipSelectLine));
+                    spiDevice = raspberryPiBoard.CreateSpiDevice(new SpiConnectionSettings(busid, chipSelectLine));
+
+                    pins = raspberryPiBoard.GetOverlayPinAssignmentForSpi(spiDevice);//.ReservePin(24, PinUsage.Gpio, this);
+                    
+                    
+                    gpioController.Read(24);
+                    
+                    
 
                     if (pins != null)
                     {
@@ -98,7 +112,7 @@ namespace RaspberryPiDevices.Tests
             chipSelectLine = 0;
             Console.WriteLine($"chipSelectLine {chipSelectLine}");
             {
-                for (int busid = 0; busid < 10; busid++)
+                //for (int busid = 0; busid < 10; busid++)
                 {
                     pins = raspberryPiBoard.GetOverlayPinAssignmentForSpi(new SpiConnectionSettings(busid, chipSelectLine));
 
@@ -115,7 +129,7 @@ namespace RaspberryPiDevices.Tests
             chipSelectLine = 1;
             Console.WriteLine($"chipSelectLine {chipSelectLine}");
             {
-                for (int busid = 0; busid < 10; busid++)
+                //for (int busid = 0; busid < 10; busid++)
                 {
                     pins = raspberryPiBoard.GetOverlayPinAssignmentForSpi(new SpiConnectionSettings(busid, chipSelectLine));
 
