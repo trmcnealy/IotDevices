@@ -73,14 +73,78 @@ namespace RaspberryPiDevices.Tests
 
             //PinUsage.AnalogOut
 
-            int busId = 0;
-            int maxBusId = 0;
-            int chipSelectLine = -1;
-
             SpiConnectionSettings connectionSettings;
             SpiDevice spi;
             int[] pinAssignmentSpi;
             int[] overlayPinAssignmentForSpi;
+
+            int busId = 0;
+            int maxBusId = 0;
+            int chipSelectLine = -1;
+
+            while (busId < 40)
+            {
+                Console.WriteLine($"{nameof(busId)}={busId}");
+                try
+                {
+                    connectionSettings = new SpiConnectionSettings(busId, chipSelectLine);
+                    spi = (raspberryPiBoard is RaspberryPiBoard) ? SpiDevice.Create(connectionSettings) : raspberryPiBoard.CreateSpiDevice(connectionSettings);
+                    pinAssignmentSpi = raspberryPiBoard.GetDefaultPinAssignmentForSpi(connectionSettings);
+                    overlayPinAssignmentForSpi = raspberryPiBoard.GetOverlayPinAssignmentForSpi(connectionSettings);
+
+                    foreach (int pinAssignment in pinAssignmentSpi)
+                    {
+                        Console.WriteLine($"{nameof(pinAssignment)}={pinAssignment}");
+                    }
+                    foreach (int overlayPinAssignment in overlayPinAssignmentForSpi)
+                    {
+                        Console.WriteLine($"{nameof(overlayPinAssignment)}={overlayPinAssignment}");
+                    }
+                }
+                catch
+                {
+                    break;
+                }
+                finally
+                {
+                    maxBusId = busId;
+                    ++busId;
+                }
+            }
+
+            chipSelectLine = 0;
+
+            while (busId < 40)
+            {
+                Console.WriteLine($"{nameof(busId)}={busId}");
+                try
+                {
+                    connectionSettings = new SpiConnectionSettings(busId, chipSelectLine);
+                    spi = (raspberryPiBoard is RaspberryPiBoard) ? SpiDevice.Create(connectionSettings) : raspberryPiBoard.CreateSpiDevice(connectionSettings);
+                    pinAssignmentSpi = raspberryPiBoard.GetDefaultPinAssignmentForSpi(connectionSettings);
+                    overlayPinAssignmentForSpi = raspberryPiBoard.GetOverlayPinAssignmentForSpi(connectionSettings);
+
+                    foreach (int pinAssignment in pinAssignmentSpi)
+                    {
+                        Console.WriteLine($"{nameof(pinAssignment)}={pinAssignment}");
+                    }
+                    foreach (int overlayPinAssignment in overlayPinAssignmentForSpi)
+                    {
+                        Console.WriteLine($"{nameof(overlayPinAssignment)}={overlayPinAssignment}");
+                    }
+                }
+                catch
+                {
+                    break;
+                }
+                finally
+                {
+                    maxBusId = busId;
+                    ++busId;
+                }
+            }
+
+            chipSelectLine = 1;
 
             while (busId < 40)
             {
