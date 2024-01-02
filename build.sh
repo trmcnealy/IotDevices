@@ -1,12 +1,12 @@
 clear
 
-#sudo chmod 777 --recursive IotDevices
+#sudo chmod 777 --recursive *
 #rm --force --recursive IotDevices
 
 #ls -1 -lah
 
 #sudo git clone https://github.com/trmcnealy/IotDevices.git
-sudo chmod 777 --recursive *.*
+sudo chmod 777 --recursive *
 #sudo chmod 777 --recursive IotDevices
 
 sudo git status
