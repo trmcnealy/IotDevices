@@ -59,12 +59,15 @@ namespace RaspberryPiDevices.Tests
 {
     internal class Program
     {
+        private static volatile bool keepRunning;
+        private static ConsoleKeyInfo cki;
+
         static void Main(string[] args)
         {
+            Console.Clear();
+
             Console.WriteLine("Raspberry Pi Devices Tests");
-
             Console.WriteLine($"{nameof(IsRaspi4)}={IsRaspi4()}");
-
 
             RaspberryPiBoard raspberryPiBoard = new RaspberryPiBoard();
             GpioController gpioController = raspberryPiBoard.CreateGpioController();
@@ -72,9 +75,17 @@ namespace RaspberryPiDevices.Tests
             bool spiActivated = raspberryPiBoard.IsSpiActivated();
             Console.WriteLine($"{nameof(spiActivated)}={spiActivated}");
 
+
+            Console.CancelKeyPress += (object? sender, ConsoleCancelEventArgs args) =>
+            {
+                args.Cancel = true;
+                keepRunning = false;
+            };
+
+            keepRunning = true;
+
             GpioPin CE0 = gpioController.OpenPin(24, PinMode.Output);
-            
-            Console.WriteLine($"{CE0.PinNumber}={CE0.Read()}");
+            GpioPin CE1 = gpioController.OpenPin(26, PinMode.Output);
 
             CE0.ValueChanged += (s, e) =>
             {
@@ -88,11 +99,6 @@ namespace RaspberryPiDevices.Tests
                 }
             };
 
-
-            GpioPin CE1 = gpioController.OpenPin(26, PinMode.Output);
-
-            Console.WriteLine($"{CE1.PinNumber}={CE1.Read()}");
-
             CE1.ValueChanged += (s, e) =>
             {
                 if (s is GpioPin pin)
@@ -105,9 +111,16 @@ namespace RaspberryPiDevices.Tests
                 }
             };
 
+            while (keepRunning)
+            {
+                Console.WriteLine($"{CE0.PinNumber}={CE0.Read()}");
+                Console.WriteLine($"{CE1.PinNumber}={CE1.Read()}");
 
-
-
+                if (cki.Key == ConsoleKey.C && cki.Modifiers == ConsoleModifiers.Control)
+                {
+                    break;
+                }
+            }
         }
 
         private static void CE0_ValueChanged(object sender, PinValueChangedEventArgs pinValueChangedEventArgs)

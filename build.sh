@@ -1,18 +1,11 @@
 clear
 
 
-cd ~/Tests
-
-rm --force --recursive IotDevices
-
-sudo git clone https://github.com/trmcnealy/IotDevices.git
-sudo chmod 777 --recursive *
-
-cd ~/Tests/IotDevices
+cd ~/Tests && rm --force --recursive IotDevices && sudo git clone https://github.com/trmcnealy/IotDevices.git && sudo chmod 777 --recursive * && cd ~/Tests/IotDevices
 
 dotnet build RaspberryPiDevices.Tests/RaspberryPiDevices.Tests.csproj --configuration Debug --framework net8.0 --arch arm64 --os linux --self-contained false
 
-
+dotnet run --no-restore --project RaspberryPiDevices.Tests/RaspberryPiDevices.Tests.csproj --property:Configuration=Debug
 
 
 
