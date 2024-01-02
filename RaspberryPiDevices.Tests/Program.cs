@@ -77,75 +77,13 @@ namespace RaspberryPiDevices.Tests
             Console.WriteLine($"{nameof(spiActivated)}={spiActivated}");
 
 
-
             //SpiDevice spiDevice;
 
-
-            int busid = 1;
-
-            int[] pins;
-
-            int chipSelectLine = -1;
-            Console.WriteLine($"chipSelectLine {chipSelectLine}");
-            {
-                //for ( busid < 10; busid++)
-                {
-                    //spiDevice = raspberryPiBoard.CreateSpiDevice(new SpiConnectionSettings(busid, chipSelectLine));
-
-                    pins = raspberryPiBoard.GetOverlayPinAssignmentForSpi(new SpiConnectionSettings(busid, chipSelectLine));//.ReservePin(24, PinUsage.Gpio, this);
-                    
-                    
-                    gpioController.Read(24);
-                    
-                    
-
-                    if (pins != null)
-                    {
-                        Console.WriteLine($"SPI overlay pins on busID {busid}: MISO {pins[0]} MOSI {pins[1]} Clock {pins[2]}.");
-                    }
-                    else
-                    {
-                        Console.WriteLine($"No SPI pins defined in the overlay on busID {busid}");
-                    }
-                }
-            }
-            chipSelectLine = 0;
-            Console.WriteLine($"chipSelectLine {chipSelectLine}");
-            {
-                //for (int busid = 0; busid < 10; busid++)
-                {
-                    pins = raspberryPiBoard.GetOverlayPinAssignmentForSpi(new SpiConnectionSettings(busid, chipSelectLine));
-
-                    if (pins != null)
-                    {
-                        Console.WriteLine($"SPI overlay pins on busID {busid}: MISO {pins[0]} MOSI {pins[1]} Clock {pins[2]}.");
-                    }
-                    else
-                    {
-                        Console.WriteLine($"No SPI pins defined in the overlay on busID {busid}");
-                    }
-                }
-            }
-            chipSelectLine = 1;
-            Console.WriteLine($"chipSelectLine {chipSelectLine}");
-            {
-                //for (int busid = 0; busid < 10; busid++)
-                {
-                    pins = raspberryPiBoard.GetOverlayPinAssignmentForSpi(new SpiConnectionSettings(busid, chipSelectLine));
-
-                    if (pins != null)
-                    {
-                        Console.WriteLine($"SPI overlay pins on busID {busid}: MISO {pins[0]} MOSI {pins[1]} Clock {pins[2]}.");
-                    }
-                    else
-                    {
-                        Console.WriteLine($"No SPI pins defined in the overlay on busID {busid}");
-                    }
-                }
-            }
+            gpioController.OpenPin(24, PinMode.Output);
+            PinValue pinValue = gpioController.Read(24);
 
 
-
+            Console.WriteLine($"pinValue={(byte)pinValue}");
 
 
 
