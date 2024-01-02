@@ -84,6 +84,7 @@ namespace RaspberryPiDevices.Tests
 
             while (busId < 40)
             {
+                Console.WriteLine($"{nameof(busId)}={busId}");
                 try
                 {
                     connectionSettings = new SpiConnectionSettings(busId, chipSelectLine);
