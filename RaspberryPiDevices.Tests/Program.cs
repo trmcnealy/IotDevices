@@ -65,6 +65,12 @@ namespace RaspberryPiDevices.Tests
 
         static void Main(string[] args)
         {
+            Console.CancelKeyPress += (object? sender, ConsoleCancelEventArgs args) =>
+            {
+                args.Cancel = true;
+                keepRunning = false;
+            };
+
             Console.Clear();
 
             Console.WriteLine("Raspberry Pi Devices Tests");
@@ -77,28 +83,24 @@ namespace RaspberryPiDevices.Tests
             Console.WriteLine($"{nameof(spiActivated)}={spiActivated}");
 
 
-            //SpiDevice spiDevice;
-            
             gpioController.OpenPin(24, PinMode.Output);
             gpioController.OpenPin(26, PinMode.Output);
 
-            PinValue CE0 = gpioController.Read(24);
-            PinValue CE1 = gpioController.Read(26);
-            
+            PinValue CE0;
+            PinValue CE1;
 
             while (keepRunning)
-            {                
+            {
+                CE0 = gpioController.Read(24);
+                CE1 = gpioController.Read(26);
+
                 Console.WriteLine($"pinValue={(byte)CE0} {(int)CE0}");
                 Console.WriteLine($"pinValue={(byte)CE0} {(int)CE1}");
             }
 
 
 
-            //Console.CancelKeyPress += (object? sender, ConsoleCancelEventArgs args) =>
-            //{
-            //    args.Cancel = true;
-            //    keepRunning = false;
-            //};
+
 
             //keepRunning = true;
 
