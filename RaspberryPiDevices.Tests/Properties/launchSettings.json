@@ -1,0 +1,9 @@
+{
+  "profiles": {
+    "RaspberryPiDevices.Tests": {
+      "commandName": "Project",
+      "remoteDebugEnabled": true,
+      "remoteDebugMachine": "trmcnealy@192.168.1.110"
+    }
+  }
+}

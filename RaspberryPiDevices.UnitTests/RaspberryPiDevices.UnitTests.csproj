@@ -3,25 +3,15 @@
     <PropertyGroup>
         <TargetFramework>net8.0</TargetFramework>
 
-        <Platforms>AnyCPU;x64;ARM64</Platforms>
+        <Platforms>AnyCPU;ARM64</Platforms>
+        <RuntimeIdentifiers>linux-arm64</RuntimeIdentifiers>
 
-        <!--<RuntimeIdentifier>any</RuntimeIdentifier>
-        <RuntimeIdentifier Condition="'$(Platform)'=='x64'">win-x64</RuntimeIdentifier>-->
-        <RuntimeIdentifier Condition="'$(Platform)'=='ARM64'">linux-arm64</RuntimeIdentifier>
-
-        <!--<RuntimeIdentifiers>any;win-x64;linux-arm64</RuntimeIdentifiers>-->
-
-        <!--<IsAotCompatible>true</IsAotCompatible>-->
-        <PublishAot>True</PublishAot>
-
-        <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
+        <ImplicitUsings>enable</ImplicitUsings>
 
-        <!--<StripSymbols>false</StripSymbols>
-        <OptimizationPreference>Speed</OptimizationPreference>-->
-
+        <InvariantGlobalization>true</InvariantGlobalization>
+        
         <IsPackable>false</IsPackable>
-
         <IsTestProject>true</IsTestProject>
     </PropertyGroup>
 
