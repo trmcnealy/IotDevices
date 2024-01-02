@@ -86,8 +86,8 @@ namespace RaspberryPiDevices.Tests
             Console.WriteLine(raspberryPiBoard.QueryComponentInformation());
 
 
-            gpioController.OpenPin(24, PinMode.Output);
-            gpioController.OpenPin(26, PinMode.Output);
+            gpioController.OpenPin(24);
+            gpioController.OpenPin(26);
 
             PinValue CE0;
             PinValue CE1;
