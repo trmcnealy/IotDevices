@@ -15,6 +15,7 @@ using System.Threading;
 using Iot.Device.Adc;
 using Iot.Device.Board;
 using Iot.Device.Card.CreditCardProcessing;
+using Iot.Device.Common;
 using Iot.Device.Mfrc522;
 
 
@@ -81,13 +82,19 @@ namespace RaspberryPiDevices.Tests
 
             bool spiActivated = raspberryPiBoard.IsSpiActivated();
             Console.WriteLine($"{nameof(spiActivated)}={spiActivated}");
-
-
+            
             Console.WriteLine(raspberryPiBoard.QueryComponentInformation());
 
+            using SpiDevice spiDevice = raspberryPiBoard.CreateSpiDevice(new SpiConnectionSettings(0, -1));
+
+            Console.WriteLine(raspberryPiBoard.DetermineCurrentPinUsage(8));
+            Console.WriteLine(raspberryPiBoard.DetermineCurrentPinUsage(7));
+
+            Console.WriteLine(gpioController.GetPinMode(8));
+
             try
-            {            
-               GpioPin gpioPin = gpioController.OpenPin(11, PinMode.Input);
+            {
+                GpioPin gpioPin = gpioController.OpenPin(8);
 
                 //SoilMoistureSensor sms = new SoilMoistureSensor(raspberryPiBoard, gpioController);
 

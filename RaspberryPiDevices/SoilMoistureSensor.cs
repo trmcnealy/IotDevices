@@ -52,7 +52,7 @@ namespace RaspberryPiDevices
         {
             _gpioController = gpioController;
 
-            _pins = raspberryPiBoard.GetOverlayPinAssignmentForSpi(new SpiConnectionSettings(_busid, -1));
+            _pins = raspberryPiBoard.GetOverlayPinAssignmentForSpi();
 
             raspberryPiBoard.ReservePin(ClockPinId, PinUsage.Gpio, this);
             
