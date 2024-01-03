@@ -83,12 +83,12 @@ namespace RaspberryPiDevices.Tests
             bool spiActivated = raspberryPiBoard.IsSpiActivated();
             Console.WriteLine($"{nameof(spiActivated)}={spiActivated}");
 
-            Console.WriteLine(raspberryPiBoard.QueryComponentInformation());
+            //Console.WriteLine(raspberryPiBoard.QueryComponentInformation());
 
             using SpiDevice spiDevice = raspberryPiBoard.CreateSpiDevice(new SpiConnectionSettings(0, -1));
 
-            Console.WriteLine(raspberryPiBoard.DetermineCurrentPinUsage(8));
-            Console.WriteLine(raspberryPiBoard.DetermineCurrentPinUsage(7));
+            Console.WriteLine($"GPIO7={raspberryPiBoard.DetermineCurrentPinUsage(7)}");
+            Console.WriteLine($"GPIO8={raspberryPiBoard.DetermineCurrentPinUsage(8)}");
 
 
             try
