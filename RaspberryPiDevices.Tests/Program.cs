@@ -82,7 +82,7 @@ namespace RaspberryPiDevices.Tests
 
             bool spiActivated = raspberryPiBoard.IsSpiActivated();
             Console.WriteLine($"{nameof(spiActivated)}={spiActivated}");
-            
+
             Console.WriteLine(raspberryPiBoard.QueryComponentInformation());
 
             using SpiDevice spiDevice = raspberryPiBoard.CreateSpiDevice(new SpiConnectionSettings(0, -1));
@@ -90,11 +90,11 @@ namespace RaspberryPiDevices.Tests
             Console.WriteLine(raspberryPiBoard.DetermineCurrentPinUsage(8));
             Console.WriteLine(raspberryPiBoard.DetermineCurrentPinUsage(7));
 
-            Console.WriteLine(gpioController.GetPinMode(8));
 
             try
             {
                 GpioPin gpioPin = gpioController.OpenPin(8);
+                Console.WriteLine(gpioController.GetPinMode(8));
 
                 //SoilMoistureSensor sms = new SoilMoistureSensor(raspberryPiBoard, gpioController);
 
