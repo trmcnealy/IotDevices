@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "RemoteFolderSync": {
+      "commandName": "Project",
+      "commandLineArgs": "E:/Github/trmcnealy/IotDevices/RaspberryPiDevices.Tests/bin/publish trmpi ~/Projects trmcnealy C@Mero406420"
+    }
+  }
+}

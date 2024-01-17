@@ -15,7 +15,15 @@
 
 //namespace RaspberryPiDevices
 //{
-//    public class SoilMoistureSensor
+//  /// <summary>
+//  /// LM393
+//  /// DC 3.3-5.5V
+//  /// AHT21
+//  /// IIC
+//  /// DHT11
+//  /// AHT10
+//  /// </summary>
+//    public class HygrometerSensor
 //    {
 //        private GpioController _gpioController;
 //        private GpioPin _gpioPin;

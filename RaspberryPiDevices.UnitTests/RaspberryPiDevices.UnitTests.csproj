@@ -3,8 +3,9 @@
     <PropertyGroup>
         <TargetFramework>net8.0</TargetFramework>
 
-        <Platforms>AnyCPU;ARM64</Platforms>
-        <RuntimeIdentifiers>linux-arm64</RuntimeIdentifiers>
+        <PlatformTarget>ARM64</PlatformTarget>
+        <Platforms>ARM64</Platforms>
+        <RuntimeIdentifier>linux-arm64</RuntimeIdentifier>
 
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>

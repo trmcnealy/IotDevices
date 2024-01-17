@@ -1,11 +1,23 @@
 ﻿{
-  "version": "1",
-  "environments": [
-    // See https://aka.ms/remotetesting for more details
-    {
-        "name": "RaspberryP{i",
-        "type": "ssh",
-        "remoteUri": "ssh://trmcnealy@192.168.1.110"
-    }
-  ]
+    "version": "1",
+    "adapter": "c:\\mytools\\plink.exe",
+    "adapterArgs": "-i c:\\users\\greggm\\ssh-key.ppk greggm@mylinuxbox -batch -T ~/vsdbg/vsdbg --interpreter=vscode",
+    "configurations": [
+        {
+            "name": ".NET Core Launch",
+            "type": "coreclr",
+            "cwd": "~/clicon",
+            "program": "bin/Debug/netcoreapp1.0/clicon.dll",
+            "request": "launch"
+        }
+    ],
+
+    "environments": [
+        // See https://aka.ms/remotetesting for more details
+        {
+            "name": "RaspberryPi",
+            "type": "ssh",
+            "remoteUri": "ssh://trmcnealy@trmpi:22"
+        }
+    ]
 }

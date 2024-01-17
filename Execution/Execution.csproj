@@ -1,0 +1,34 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <Platforms>AnyCPU;ARM32;ARM64</Platforms>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Bash.cs" />
+    <Compile Remove="TerminalProcess.cs" />
+    <Compile Remove="TerminalService.cs" />
+    <Compile Remove="VisualStudioLocator.cs" />
+    <Compile Remove="VisualStudioVersion.cs" />
+    <Compile Remove="WindowsSdkLocator.cs" />
+    <Compile Remove="WindowsSdkVersion.cs" />
+    <Compile Remove="WinPty.cs" />
+    <Compile Remove="WinPtyAgent.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="Bash.cs" />
+    <None Include="TerminalProcess.cs" />
+    <None Include="TerminalService.cs" />
+    <None Include="VisualStudioLocator.cs" />
+    <None Include="VisualStudioVersion.cs" />
+    <None Include="WindowsSdkLocator.cs" />
+    <None Include="WindowsSdkVersion.cs" />
+    <None Include="WinPty.cs" />
+    <None Include="WinPtyAgent.cs" />
+  </ItemGroup>
+
+</Project>

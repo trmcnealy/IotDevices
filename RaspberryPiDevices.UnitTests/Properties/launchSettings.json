@@ -1,10 +1,10 @@
 {
   "profiles": {
     "RaspberryPiDevices.Tests": {
-      "commandName": "Project",
-      "remoteDebugEnabled": true,
-      "remoteDebugMachine": "192.168.1.110",
-      "authenticationMode": "Windows"
+        "commandName": "Project",
+        "remoteDebugEnabled": true,
+        "remoteDebugMachine": "trmpi",
+        "authenticationMode": "Windows"
     }
   }
 }

@@ -1,0 +1,30 @@
+{
+    "RPiSettings": {
+        "RPiDevices": [
+            {
+                "Uid": "F43EE6DB-EA14-4F97-863E-200000000001",
+                "Name": "WaterFlow",
+                "Calibrations": [
+                    {
+                        "Name": "WaterFlow",
+                        "Calibrations": [
+                            {
+                                "Name": "WaterFlow",
+                                "Points": [
+                                    {
+                                        "X": 0.0,
+                                        "Y": 0.0
+                                    }
+                                ],
+                                "Line": {
+                                    "Slope": 0.04347826087,
+                                    "Intercept": 0.0
+                                }
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    }
+}
