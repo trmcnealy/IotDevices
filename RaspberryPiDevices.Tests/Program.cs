@@ -232,6 +232,8 @@ namespace RaspberryPiDevices.Tests
 
                 cts.Cancel();
 
+                Task.Delay(1);
+
                 device.Dispose();
 
                 //waterFlowSensor.Dispose();
@@ -239,10 +241,10 @@ namespace RaspberryPiDevices.Tests
             };
 
 
-            {
-                //I2cBus i2cBus = _raspberryPiBoard.CreateOrGetI2cBus(1);
-                //ScanI2CBus(i2cBus);
-            }
+            //{
+            //    //I2cBus i2cBus = _raspberryPiBoard.CreateOrGetI2cBus(1);
+            //    //ScanI2CBus(i2cBus);
+            //}
 
             device.Run(cts.Token);
 

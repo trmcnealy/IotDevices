@@ -84,6 +84,11 @@ public class LED4DigitDisplay : IDisposable
             Character.Nothing, Character.Nothing, Character.Nothing
     };
 
+    private static readonly Character[] nanCharactersToDisplay = new Character[4]
+    {
+            Character.Minus, Character.Minus, Character.Minus, Character.Minus
+    };
+
     public void Display(ReadOnlySpan<Character> rawData)
     {
         _sensor.Display(rawData);
@@ -103,11 +108,14 @@ public class LED4DigitDisplay : IDisposable
         _sensor.Display(charactersToDisplay);
     }
 
-    public void Display(int value)
+        public void Display(int value)
     {
         if (value > 9999 || value < 0)
         {
             Clear();
+
+            _sensor.Display(nanCharactersToDisplay);
+
             return;
             //throw new Exception();
         }

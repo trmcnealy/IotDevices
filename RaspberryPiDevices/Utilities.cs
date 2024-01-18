@@ -297,6 +297,7 @@ namespace RaspberryPiDevices
 
         public static List<byte> PerformBusScan(this I2cBus bus, byte lowest = 0x3, byte highest = 0x77)
         {
+            byte result = 0;
             List<byte> ret = new List<byte>();
             for (byte addr = lowest; addr <= highest; addr++)
             {
@@ -304,8 +305,44 @@ namespace RaspberryPiDevices
                 {
                     using (I2cDevice device = bus.CreateDevice(addr))
                     {
-                        device.ReadByte();
+                        result = device.ReadByte();
                         ret.Add(addr);
+
+                        if (result != 0)
+                        {
+                            Console.WriteLine("PerformBusScan ReadByte Error");
+                        }
+
+                        bus.RemoveDevice(addr);
+                    }
+                }
+                catch
+                {
+                }
+            }
+
+            return ret;
+        }
+
+        public static List<int> PerformBusScan(this I2cBus bus, int lowest = 0x3, int highest = 0x77)
+        {
+            byte result = 0;
+            List<int> ret = new List<int>();
+            for (int addr = lowest; addr <= highest; addr++)
+            {
+                try
+                {
+                    using (I2cDevice device = bus.CreateDevice(addr))
+                    {
+                        result = device.ReadByte();
+                        ret.Add(addr);
+
+                        if (result != 0)
+                        {
+                            Console.WriteLine("PerformBusScan ReadByte Error");
+                        }
+
+                        bus.RemoveDevice(addr);
                     }
                 }
                 catch
@@ -399,6 +436,36 @@ namespace RaspberryPiDevices
 
                 stringBuilder.Append(Environment.NewLine);
             }
+
+            return stringBuilder.ToString();
+        }
+
+        public static string ToTable(this List<byte> FoundDevices)
+        {
+            StringBuilder stringBuilder = new StringBuilder();
+
+            stringBuilder.AppendLine("Table");
+
+            foreach (byte deviceAddress in FoundDevices)
+            {
+                stringBuilder.Append($"{deviceAddress:x2} ");
+            }
+
+            return stringBuilder.ToString();
+        }
+
+        public static string ToTable(this List<int> FoundDevices)
+        {
+            StringBuilder stringBuilder = new StringBuilder();
+
+            stringBuilder.AppendLine();
+
+            foreach (int deviceAddress in FoundDevices)
+            {
+                stringBuilder.AppendLine($"{deviceAddress:x2} ");
+            }
+
+            stringBuilder.AppendLine();
 
             return stringBuilder.ToString();
         }

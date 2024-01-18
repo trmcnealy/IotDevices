@@ -23,6 +23,8 @@ using Iot.Device.Bno055;
 using Iot.Device.Board;
 using Iot.Device.Common;
 using Iot.Device.FtCommon;
+using Iot.Device.Mcp25xxx.Register;
+using Iot.Device.Mcp25xxx.Register.ErrorDetection;
 using Iot.Device.Media;
 using Iot.Device.Mpr121;
 using Iot.Device.Pcx857x;
@@ -41,6 +43,7 @@ public class RPiHardware : IDisposable
 {
     public static readonly Acceleration Gravity = new Acceleration(32.17405, AccelerationUnit.FootPerSecondSquared);
 
+    [Flags]
     public enum Pcf8574I2CSlaveSwitch : byte
     {
         None = 0b0000,
@@ -61,8 +64,10 @@ public class RPiHardware : IDisposable
         public const int Relay12V = 0b0100_0000;
     }
 
+    internal static Dictionary<Guid, int> DeviceRegistry;
 
-    static Dictionary<Guid, int> DeviceRegistry;
+    internal const byte LowestAddress = 0x03;
+    internal const byte HighestAddress = 0x77;
 
     public static readonly Guid Pcf8574Id = Guid.Parse("F43EE6DB-EA14-4F97-863E-000000000001");
     public static readonly Guid Tca9548AId = Guid.Parse("F43EE6DB-EA14-4F97-863E-000000000002");
@@ -82,31 +87,31 @@ public class RPiHardware : IDisposable
 
     //public const byte BarometricPressureSensor_Address = 0x27;
 
-
-
     public const byte Pcf8574_BaseAddress = 0x27;
     internal static byte Pcf8574_Address(Pcf8574I2CSlaveSwitch slaveSwitch)
     {
         return (byte)(Pcf8574_BaseAddress - slaveSwitch);
     }
-    public const byte Tca9548A_Address = 0x70;
-    public const byte PHProbeSensor1_Address = 0x48;
-    public const byte PHProbeSensor2_Address = 0x48;
-    public const byte TemperatureHumiditySensor_Address = 0x38;
-    public const byte WaterFlowSensor_Address = 0x48;
 
-    public const int PHProbeSensor1_Channel = 0;
-    public const int PHProbeSensor2_Channel = 1;
+    public const byte Tca9548A_Address = 0x70;
+    public const byte TemperatureHumiditySensor_Address = 0x38;
+
     public const int TemperatureHumiditySensor_Channel = 2;
-    public const int WaterFlowSensor_Channel = 3;
+
+    public const byte PHProbeSensor1_Address = 0x48;
+    public const byte PHProbeSensor2_Address = 0x49;
+    public const byte WaterFlowSensor_Address = 0x4A;
+
+    public const int BarometricPressure_PinDio = 23;
+    public const int BarometricPressure_PinClk = 24;
 
     public const int LED1_Channel = 4;
     public const int LED2_Channel = 5;
     public const int LED3_Channel = 6;
     public const int LED4_Channel = 7;
 
-    public const int LED1_PinClk = 17;
-    public const int LED1_PinDio = 27;
+    public const int LED1_PinClk = 27;
+    public const int LED1_PinDio = 22;
     public const int LED2_PinClk = 5;
     public const int LED2_PinDio = 6;
     public const int LED3_PinClk = 13;
@@ -131,8 +136,6 @@ public class RPiHardware : IDisposable
 
     internal readonly byte[] Tca9548A_Addresses = new byte[] { 0x70, 0x71, 0x72, 0x73, 0x74, 0x75, 0x76, 0x77 };
 
-
-
     static RPiHardware()
     {
         DeviceRegistry = new Dictionary<Guid, int>();
@@ -145,7 +148,6 @@ public class RPiHardware : IDisposable
 
     }
 
-
     private bool disposedValue;
 
     private static volatile bool keepRunning;
@@ -155,18 +157,19 @@ public class RPiHardware : IDisposable
     internal readonly RaspberryPiBoard _raspberryPiBoard;
 
     internal readonly I2cBus _i2cBus;
-    internal readonly I2cDevice _pCF8574A_i2cDevice;
-    internal readonly I2cDevice _tca9548A_i2cDevice;
 
-    internal readonly Pcf8574 _pcf8574;
+    //internal readonly I2cDevice _pCF8574A_i2cDevice;
+    //internal readonly Pcf8574 _pcf8574;
+    internal readonly I2cDevice _tca9548A_i2cDevice;
     internal readonly Tca9548A _tca9548a;
 
-
     public readonly Dictionary<Guid, I2cDevice> I2cDevices;
+    public readonly List<IDisposable> Disposables;
 
     //internal readonly I2cDevice _i2cDevice1;
     ////internal readonly I2cDevice _i2cDevice2;
     internal readonly GpioController _gpioController;
+
 
     internal readonly BarometricPressureSensor BarometricPressureSensor;
     internal readonly WaterFlowSensor WaterFlowSensor;
@@ -174,10 +177,19 @@ public class RPiHardware : IDisposable
     internal readonly PHProbeSensor _pHProbeSensor2;
     internal readonly TemperatureHumiditySensor TemperatureHumiditySensor;
 
-    internal readonly LED4DigitDisplay _lED4DigitDisplay1;
-    internal readonly LED4DigitDisplay _lED4DigitDisplay2;
-    internal readonly LED4DigitDisplay _lED4DigitDisplay3;
-    internal readonly LED4DigitDisplay _lED4DigitDisplay4;
+    internal readonly MultiplexerChannel TemperatureHumiditySensorChannel = MultiplexerChannel.Channel0;
+
+    //internal readonly LED4DigitDisplay _lED4DigitDisplay1;
+    //internal readonly LED4DigitDisplay _lED4DigitDisplay2;
+    //internal readonly LED4DigitDisplay _lED4DigitDisplay3;
+    //internal readonly LED4DigitDisplay _lED4DigitDisplay4;
+
+    internal readonly Tca9548AChannelBus temperatureHumiditySensorChannel;
+
+    //internal readonly I2cDevice PHProbeSensor1_I2cDevice;
+    //internal readonly I2cDevice PHProbeSensor2_I2cDevice;
+    //internal readonly I2cDevice TemperatureHumiditySensor_I2cDevice;
+    //internal readonly I2cDevice WaterFlowSensor_I2cDevice;
 
     public int GpioInterruptPinNumber
     {
@@ -253,89 +265,83 @@ public class RPiHardware : IDisposable
 
         _i2cBus = _raspberryPiBoard.CreateOrGetI2cBus(I2cBus);
 
-        //const byte lowestAddress = 0x08;
-        //const byte highestAddress = 0x77;
 
-        //(List<byte> FoundDevices, byte LowestAddress, byte HighestAddress) busScan = _i2cBus.PerformBusScan(ProgressPrinter.Instance, lowestAddress, highestAddress);
-
+        //(List<byte> FoundDevices, byte LowestAddress, byte HighestAddress) busScan = _i2cBus.PerformBusScan(ProgressPrinter.Instance, LowestAddress, HighestAddress);
         //Console.WriteLine(busScan.ToUserReadableTable());
 
+        Disposables = new List<IDisposable>();
         I2cDevices = new Dictionary<Guid, I2cDevice>();
 
-        BarometricPressureSensor = new BarometricPressureSensor(_raspberryPiBoard, _gpioController);
-
-        _pCF8574A_i2cDevice = _raspberryPiBoard.CreateI2cDevice(new I2cConnectionSettings(I2cBus, Pcf8574_Address(slaveSwitch)));
-
-        I2cDevices.Add(Pcf8574Id, _pCF8574A_i2cDevice);
-        _pcf8574 = new Pcf8574(_pCF8574A_i2cDevice, GpioInterruptPinNumber, _gpioController, false);
+        //_pCF8574A_i2cDevice = _raspberryPiBoard.CreateI2cDevice(new I2cConnectionSettings(I2cBus, pcf8574_Address));
+        //I2cDevices.Add(Pcf8574Id, _pCF8574A_i2cDevice);
+        //_pcf8574 = new Pcf8574(_pCF8574A_i2cDevice, GpioInterruptPinNumber, _gpioController, false);
 
         //_pCF8574A_i2cDevice.WriteByte(0b11111111);
 
+
+        ////Console.WriteLine(BusScan(temperatureHumiditySensorChannel).ToTable());
+
+        //PHProbeSensor1_I2cDevice = CreateI2cDevice(pHProbeSensor1Channel, PHProbeSensor1_Address);
+        //PHProbeSensor2_I2cDevice = CreateI2cDevice(pHProbeSensor2Channel, PHProbeSensor2_Address);
+        //TemperatureHumiditySensor_I2cDevice = CreateI2cDevice(temperatureHumiditySensorChannel, TemperatureHumiditySensor_Address);
+        //WaterFlowSensor_I2cDevice = CreateI2cDevice(waterFlowSensorChannel, WaterFlowSensor_Address);
+
+        ////        byte sscan = PerformBusScan(waterFlowSensorChannel, LowestAddress, HighestAddress).First(); Console.WriteLine(sscan);
+        ////PerformBusScan(pHProbeSensor1Channel);
+        ////PerformBusScan(pHProbeSensor2Channel);
+        ////PerformBusScan(temperatureHumiditySensorChannel);
+        ////PerformBusScan(waterFlowSensorChannel);
+
+        //I2cDevices.Add(WaterFlowSensorId1, WaterFlowSensor_I2cDevice);
+        //I2cDevices.Add(PHProbeSensorId1, PHProbeSensor1_I2cDevice);
+        //I2cDevices.Add(PHProbeSensorId2, PHProbeSensor2_I2cDevice);
+        //I2cDevices.Add(TemperatureHumiditySensorId1, TemperatureHumiditySensor_I2cDevice);
+
+        _pHProbeSensor1 = new PHProbeSensor(_i2cBus.CreateDevice(PHProbeSensor1_Address));
+        Console.WriteLine("PHProbeSensor1");
+        _pHProbeSensor2 = new PHProbeSensor(_i2cBus.CreateDevice(PHProbeSensor2_Address));
+        Console.WriteLine("PHProbeSensor2");
+        WaterFlowSensor = new WaterFlowSensor(_i2cBus.CreateDevice(WaterFlowSensor_Address), _gpioController);
+        Console.WriteLine("WaterFlowSensor");                
+
+        BarometricPressureSensor = new BarometricPressureSensor(_raspberryPiBoard, _gpioController, BarometricPressure_PinDio, BarometricPressure_PinClk);
+        Console.WriteLine("BarometricPressureSensor");
+
+        byte pcf8574_Address = Pcf8574_Address(slaveSwitch);
+        Console.WriteLine($"PCF8574 I2C Slave Address: 0x{pcf8574_Address:X2}");
+        
         _tca9548A_i2cDevice = _raspberryPiBoard.CreateI2cDevice(new I2cConnectionSettings(I2cBus, Tca9548A_Address));
         I2cDevices.Add(Tca9548AId, _tca9548A_i2cDevice);
         _tca9548a = new Tca9548A(_tca9548A_i2cDevice, _i2cBus, false);
+        Console.WriteLine("Tca9548A");
 
-        using I2cBus pHProbeSensor1Channel = CreateI2cBusFromChannel(MultiplexerChannel.Channel0);
-        using I2cBus pHProbeSensor2Channel = CreateI2cBusFromChannel(MultiplexerChannel.Channel1);
-        using I2cBus temperatureHumiditySensorChannel = CreateI2cBusFromChannel(MultiplexerChannel.Channel2);
-        using I2cBus waterFlowSensorChannel = CreateI2cBusFromChannel(MultiplexerChannel.Channel3);
+        temperatureHumiditySensorChannel = (Tca9548AChannelBus)CreateI2cBusFromChannel(MultiplexerChannel.Channel0);
+        Console.WriteLine("TemperatureHumiditySensorChannel");
 
-        I2cDevice PHProbeSensor1_I2cDevice = pHProbeSensor1Channel.CreateDevice(PHProbeSensor1_Address);
-        I2cDevice PHProbeSensor2_I2cDevice = pHProbeSensor2Channel.CreateDevice(PHProbeSensor2_Address);
-        I2cDevice TemperatureHumiditySensor_I2cDevice = temperatureHumiditySensorChannel.CreateDevice(TemperatureHumiditySensor_Address);
-        I2cDevice WaterFlowSensor_I2cDevice = waterFlowSensorChannel.CreateDevice(WaterFlowSensor_Address);
+        I2cDevice deivcew = temperatureHumiditySensorChannel.CreateDevice(TemperatureHumiditySensor_Address);
 
-//        byte sscan = PerformBusScan(waterFlowSensorChannel, 0x3, 0x77).First(); Console.WriteLine(sscan);        
+        Console.WriteLine(deivcew.QueryComponentInformation());
 
-        I2cDevices.Add(WaterFlowSensorId1, WaterFlowSensor_I2cDevice);
-        I2cDevices.Add(PHProbeSensorId1, PHProbeSensor1_I2cDevice);
-        I2cDevices.Add(PHProbeSensorId2, PHProbeSensor2_I2cDevice);
-        I2cDevices.Add(TemperatureHumiditySensorId1, TemperatureHumiditySensor_I2cDevice);
+        TemperatureHumiditySensor = new TemperatureHumiditySensor(deivcew);
+        Console.WriteLine("TemperatureHumiditySensor");
 
-        WaterFlowSensor = new WaterFlowSensor(I2cDevices[WaterFlowSensorId1], _gpioController);
-        _pHProbeSensor1 = new PHProbeSensor(I2cDevices[PHProbeSensorId1], 1);
-        _pHProbeSensor2 = new PHProbeSensor(I2cDevices[PHProbeSensorId1], 2);
-        TemperatureHumiditySensor = new TemperatureHumiditySensor(I2cDevices[TemperatureHumiditySensorId1]);
+        //_lED4DigitDisplay1 = new LED4DigitDisplay(_gpioController, LED1_PinClk, LED1_PinDio);
+        //_lED4DigitDisplay2 = new LED4DigitDisplay(_gpioController, LED2_PinClk, LED2_PinDio);
+        //_lED4DigitDisplay3 = new LED4DigitDisplay(_gpioController, LED3_PinClk, LED3_PinDio);
+        //_lED4DigitDisplay4 = new LED4DigitDisplay(_gpioController, LED4_PinClk, LED4_PinDio);
 
-        _lED4DigitDisplay1 = new LED4DigitDisplay(_gpioController, LED1_PinClk, LED1_PinDio);
-        _lED4DigitDisplay2 = new LED4DigitDisplay(_gpioController, LED2_PinClk, LED2_PinDio);
-        _lED4DigitDisplay3 = new LED4DigitDisplay(_gpioController, LED3_PinClk, LED3_PinDio);
-        _lED4DigitDisplay4 = new LED4DigitDisplay(_gpioController, LED4_PinClk, LED4_PinDio);
 
-        
-        static List<byte> PerformBusScan(I2cBus bus, byte lowest = 0x3, byte highest = 0x77)
-        {
-            List<byte> ret = new List<byte>();
-            for (byte addr = lowest; addr <= highest; addr++)
-            {
-                try
-                {
-                    using (I2cDevice device = bus.CreateDevice(addr))
-                    {
-                        device.ReadByte();
-                        ret.Add(addr);
-                    }
-                }
-                catch
-                {
-                }
-            }
+        Disposables.Add(_pHProbeSensor1);
+        Disposables.Add(_pHProbeSensor2);
+        Disposables.Add(WaterFlowSensor);
+        Disposables.Add(TemperatureHumiditySensor);
+        //Disposables.Add(_lED4DigitDisplay1);
+        //Disposables.Add(_lED4DigitDisplay2);
+        //Disposables.Add(_lED4DigitDisplay3);
+        //Disposables.Add(_lED4DigitDisplay4);
 
-            return ret;
-        }
     }
 
-    public I2cBus CreateI2cBusFromChannel(MultiplexerChannel channel)
-    {
-        _tca9548a.SelectChannel(channel);
-
-        if (_tca9548a.TryGetSelectedChannel(out MultiplexerChannel selectedChannel))
-        {
-            return _tca9548a.GetChannel(selectedChannel);
-        }
-
-        throw new Exception("CreateI2cBusFromChannel Failed.");
-    }
 
     #region Dctor
     //[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
@@ -358,10 +364,6 @@ public class RPiHardware : IDisposable
                 //_lED4DigitDisplay2.Dispose();
                 //_pHProbeSensor1.Dispose();
                 //_pHProbeSensor2.Dispose();
-
-                _gpioController.ClosePin(GpioInterruptPinNumber);
-
-                _pCF8574A_i2cDevice.WriteByte(0b11111111);
 
                 //Span<PinValuePair> pinValues = stackalloc PinValuePair[8]
                 //{
@@ -390,26 +392,41 @@ public class RPiHardware : IDisposable
                 //    catch { }
                 //}
 
-                foreach (KeyValuePair<Guid, I2cDevice> i2cDevice in I2cDevices)
-                {
-                    try
-                    {
-                        i2cDevice.Value.Dispose();
-                    }
-                    catch { }
-                }
 
-                try
-                {
-                    _pcf8574.Dispose();
-                }
-                catch { }
+
+                //foreach (IDisposable disposable in Disposables)
+                //{
+                //    try
+                //    {
+                //        disposable.Dispose();
+                //    }
+                //    catch { }
+                //}
+
+                //foreach (KeyValuePair<Guid, I2cDevice> i2cDevice in I2cDevices)
+                //{
+                //    try
+                //    {
+                //        i2cDevice.Value.Dispose();
+                //    }
+                //    catch { }
+                //}
+
+                //_pCF8574A_i2cDevice.WriteByte(0b11111111);
+
+                //try
+                //{
+                //    _pcf8574.Dispose();
+                //}
+                //catch { }
 
                 try
                 {
                     _tca9548a.Dispose();
                 }
                 catch { }
+
+                _gpioController.ClosePin(GpioInterruptPinNumber);
 
                 try
                 {
@@ -437,25 +454,112 @@ public class RPiHardware : IDisposable
     }
     #endregion
 
+    public I2cDevice CreateI2cDevice(Tca9548AChannelBus bus, byte address)
+    {
+        try
+        {
+            return bus.CreateDevice(address);
+        }
+        catch
+        {
+            throw new Exception();
+        }
+    }
+
+    public I2cBus CreateI2cBusFromChannel(MultiplexerChannel channel)
+    {
+        //Console.WriteLine($"channel {Enum.GetName(channel)}");
+
+        _tca9548a.SelectChannel(channel);
+
+        if (_tca9548a.TryGetSelectedChannel(out MultiplexerChannel selectedChannel))
+        {
+            return _tca9548a.GetChannel(selectedChannel);
+        }
+
+        return _tca9548a.GetChannel(channel);
+        //throw new Exception("CreateI2cBusFromChannel Failed.");
+    }
+
+    private void CancellationTokenCallback()
+    {
+        keepRunning = false;
+    }
+
+
+    //private static List<byte> BusScan(Tca9548AChannelBus bus)
+    //{
+    //    List<byte> results = bus.PerformBusScan(LowestAddress, HighestAddress);
+
+    //    if (results.Count == 0)
+    //    {
+    //        Console.WriteLine($"PerformBusScan Failed.");
+    //    }
+    //    else
+    //    {
+    //        foreach (byte result in results)
+    //        {
+    //            Console.WriteLine($"PerformBusScan: 0x{result:X2}");
+    //        }
+
+    //    }
+
+    //    return results;
+    //}
+
+    private static List<byte> BusScan<TBus>(TBus bus, byte lowest = LowestAddress, byte highest = HighestAddress) where TBus : I2cBus
+    {
+        List<byte> ret = new List<byte>((highest - lowest) + 1);
+
+        for (byte addr = lowest; addr <= highest; addr++)
+        {
+            try
+            {
+                using (I2cDevice device = bus.CreateDevice(addr))
+                {
+                    device.ReadByte();
+                    ret.Add(addr);
+                    Console.WriteLine($"Device found @ 0x{addr:X2} on Channel {bus.QueryComponentInformation()}");
+                }
+            }
+            catch
+            {
+                //throw new Exception();
+            }
+            finally
+            {
+                bus.RemoveDevice(addr);
+            }
+        }
+
+        return ret;
+    }
+
     //[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     public void Run(CancellationToken token)
     {
+        token.Register(CancellationTokenCallback);
+
         keepRunning = true;
 
-        TimeSpan delay = new TimeSpan(0, 0, 0, 0, 0, 1);
+        TimeSpan delay = new TimeSpan(0, 0, 0, 0, 100, 0);
 
         (ElectricPotential vcc, double ph, Temperature temperature) values1;
         (ElectricPotential vcc, double ph, Temperature temperature) values2;
 
-        //const int sampleSize = 86;//(int)Math.Round((_pHProbeSensor.DataFrequency * (((double)delay.Seconds)+(((double)delay.Milliseconds)/1000.0)+(((double)delay.Microseconds)/1000000.0))));
+        const int sampleSize = 1;//(int)Math.Round((_pHProbeSensor.DataFrequency * (((double)delay.Seconds)+(((double)delay.Milliseconds)/1000.0)+(((double)delay.Microseconds)/1000000.0))));
 
         //int displayIndex = 0;
         int displayPH1;
         int displayPH2;
-        int displayTemp;
+        int displayTemp1;
+        int displayTemp2;
         double averagePH1;
         double averagePH2;
-        double averageTemp;
+        double averageTemp1;
+        double averageTemp2;
+
+        Console.WriteLine("Running");
 
         while (keepRunning)
         {
@@ -466,34 +570,25 @@ public class RPiHardware : IDisposable
 
             displayPH1 = 0;
             displayPH2 = 0;
-            displayTemp = 0;
+            displayTemp1 = 0;
+            displayTemp2 = 0;
             averagePH1 = 0.0;
             averagePH2 = 0.0;
-            averageTemp = 0.0;
+            averageTemp1 = 0.0;
+            averageTemp2 = 0.0;
 
-            //for (int i = 0; i < sampleSize; i++)
+            for (int i = 0; i < sampleSize; i++)
             {
                 Utilities.Delay(delay);
                 values1 = _pHProbeSensor1.GetValues();
-                values2 = _pHProbeSensor1.GetValues();
+                values2 = _pHProbeSensor2.GetValues();
 
                 averagePH1 += MaxMin((values1.ph * 100.0), 0.0, 1400.0);
+                averageTemp1 += MaxMin((values1.temperature.DegreesFahrenheit), -2000, 200.0);
+
                 averagePH2 += MaxMin((values2.ph * 100.0), 0.0, 1400.0);
-                averageTemp += MaxMin((values1.temperature.DegreesFahrenheit), -2000, 200.0);
-
-                displayPH1 += ((int)Math.Round(averagePH1));
-                displayPH2 += ((int)Math.Round(averagePH2));
-                displayTemp += ((int)Math.Round(averageTemp));
+                averageTemp2 += MaxMin((values2.temperature.DegreesFahrenheit), -2000, 200.0);
             }
-
-            //_lED4DigitDisplay1.Display(displayAveragePH);
-            //_lED4DigitDisplay2.Display(displayAverageTemp);
-
-            //Console.Write($"PH 1 Avg {displayPH1} ");
-            //Console.Write($"AIN0 {_pHProbeSensor1.AIN0.Volts:N6} AIN1 {_pHProbeSensor1.AIN1.Volts:N6} ");
-            //Console.Write($"PH 2 Avg {displayPH2} ");
-            //Console.Write($"AIN0 {_pHProbeSensor2.AIN0.Volts:N6} AIN1 {_pHProbeSensor2.AIN1.Volts:N6} ");
-            //Console.WriteLine($"TEMP Avg {displayTemp}");
 
             Ph1 = _pHProbeSensor1.Ph;
             PhTemperature1 = _pHProbeSensor1.Temperature;
@@ -509,10 +604,17 @@ public class RPiHardware : IDisposable
             FlowRate = WaterFlowSensor.FlowRate;
             TotalLitres = WaterFlowSensor.TotalLitres;
 
-            _lED4DigitDisplay1.Display(Ph1);
-            _lED4DigitDisplay2.Display(PhTemperature1.DegreesFahrenheit);
-            _lED4DigitDisplay3.Display(Ph2);
-            _lED4DigitDisplay4.Display(PhTemperature1.DegreesFahrenheit);
+            displayPH1 += ((int)Math.Round(averagePH1 / sampleSize));
+            displayTemp1 += ((int)Math.Round(averageTemp1 / sampleSize));
+            displayPH2 += ((int)Math.Round(averagePH2 / sampleSize));
+            displayTemp2 += ((int)Math.Round(averageTemp2 / sampleSize));
+
+            Console.WriteLine($"{displayPH1} {displayTemp1} {displayPH2} {displayTemp2}");
+
+            //_lED4DigitDisplay1.Display(displayPH1);
+            //_lED4DigitDisplay2.Display(displayTemp1);
+            //_lED4DigitDisplay3.Display(displayPH2);
+            //_lED4DigitDisplay4.Display(displayTemp2);
         }
 
         keepRunning = false;

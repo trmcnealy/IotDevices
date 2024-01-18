@@ -80,7 +80,7 @@ namespace RaspberryPiDevices
         //private readonly I2cDevice _i2cDevice;
         //private readonly GpioController _gpioController;
 
-        private readonly Ads1115 _ads1115;
+        private readonly Ads1115? _ads1115;
         private readonly Ph4502c _ph4502c;
 
         private static readonly VoltageRange voltageLimits = new VoltageRange(0.0, 5.0);
@@ -108,7 +108,7 @@ namespace RaspberryPiDevices
 
         private readonly Calibration PHCalibration;
         private readonly Calibration TemperatureCalibration;
-        
+
         //[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         static PHProbeSensor()
         {
@@ -120,7 +120,11 @@ namespace RaspberryPiDevices
             //[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get
             {
-                return _ads1115.ReadVoltage();
+                if (_ads1115 is not null)
+                {
+                    return _ads1115.ReadVoltage();
+                }
+                return ElectricPotential.FromVolts(0);
             }
         }
         public ElectricPotential AIN0
@@ -128,7 +132,11 @@ namespace RaspberryPiDevices
             //[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get
             {
-                return _ads1115.ReadVoltage(InputMultiplexer.AIN0);
+                if (_ads1115 is not null)
+                {
+                    return _ads1115.ReadVoltage(InputMultiplexer.AIN0);
+                }
+                return ElectricPotential.FromVolts(0);
             }
         }
         public ElectricPotential AIN1
@@ -136,7 +144,11 @@ namespace RaspberryPiDevices
             //[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get
             {
-                return _ads1115.ReadVoltage(InputMultiplexer.AIN1);
+                if (_ads1115 is not null)
+                {
+                    return _ads1115.ReadVoltage(InputMultiplexer.AIN1);
+                }
+                return ElectricPotential.FromVolts(0);
             }
         }
         public ElectricPotential AIN2
@@ -144,7 +156,11 @@ namespace RaspberryPiDevices
             //[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get
             {
-                return _ads1115.ReadVoltage(InputMultiplexer.AIN2);
+                if (_ads1115 is not null)
+                {
+                    return _ads1115.ReadVoltage(InputMultiplexer.AIN2);
+                }
+                return ElectricPotential.FromVolts(0);
             }
         }
         public ElectricPotential AIN3
@@ -152,7 +168,11 @@ namespace RaspberryPiDevices
             //[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get
             {
-                return _ads1115.ReadVoltage(InputMultiplexer.AIN3);
+                if (_ads1115 is not null)
+                {
+                    return _ads1115.ReadVoltage(InputMultiplexer.AIN3);
+                }
+                return ElectricPotential.FromVolts(0);
             }
         }
         public ElectricPotential AIN0_AIN1
@@ -160,7 +180,11 @@ namespace RaspberryPiDevices
             //[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get
             {
-                return _ads1115.ReadVoltage(InputMultiplexer.AIN0_AIN1);
+                if (_ads1115 is not null)
+                {
+                    return _ads1115.ReadVoltage(InputMultiplexer.AIN0_AIN1);
+                }
+                return ElectricPotential.FromVolts(0);
             }
         }
         public ElectricPotential AIN0_AIN3
@@ -168,7 +192,11 @@ namespace RaspberryPiDevices
             //[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get
             {
-                return _ads1115.ReadVoltage(InputMultiplexer.AIN0_AIN3);
+                if (_ads1115 is not null)
+                {
+                    return _ads1115.ReadVoltage(InputMultiplexer.AIN0_AIN3);
+                }
+                return ElectricPotential.FromVolts(0);
             }
         }
         public ElectricPotential AIN1_AIN3
@@ -176,7 +204,11 @@ namespace RaspberryPiDevices
             //[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get
             {
-                return _ads1115.ReadVoltage(InputMultiplexer.AIN1_AIN3);
+                if (_ads1115 is not null)
+                {
+                    return _ads1115.ReadVoltage(InputMultiplexer.AIN1_AIN3);
+                }
+                return ElectricPotential.FromVolts(0);
             }
         }
         public ElectricPotential AIN2_AIN3
@@ -184,7 +216,11 @@ namespace RaspberryPiDevices
             //[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get
             {
-                return _ads1115.ReadVoltage(InputMultiplexer.AIN2_AIN3);
+                if (_ads1115 is not null)
+                {
+                    return _ads1115.ReadVoltage(InputMultiplexer.AIN2_AIN3);
+                }
+                return ElectricPotential.FromVolts(0);
             }
         }
         public ElectricPotential MaximumVoltage
@@ -192,7 +228,7 @@ namespace RaspberryPiDevices
             //[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get
             {
-                return ElectricPotential.FromVolts(5);//_ads1115.MaxVoltageFromMeasuringRange(_ads1115.MeasuringRange);
+                return ElectricPotential.FromVolts(5);//_ads1115?.MaxVoltageFromMeasuringRange(_ads1115?.MeasuringRange);
             }
         }
         public double DataFrequency
@@ -200,7 +236,11 @@ namespace RaspberryPiDevices
             //[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get
             {
-                return _ads1115.FrequencyFromDataRate(_ads1115.DataRate);
+                if (_ads1115 is not null)
+                {
+                    return _ads1115.FrequencyFromDataRate(_ads1115.DataRate);
+                }
+                return 0.0;
             }
         }
 
@@ -211,7 +251,7 @@ namespace RaspberryPiDevices
             get
             {
                 return _ph;
-                //double val = GetSensorValue(_ph4502c, _ads1115, InputMultiplexer.AIN0, _ads1115.MeasuringRange, _phVoltageSlope, _ph4502c.PhCalibration);
+                //double val = GetSensorValue(_ph4502c, _ads1115, InputMultiplexer.AIN0, _ads1115?.MeasuringRange, _phVoltageSlope, _ph4502c.PhCalibration);
 
                 //if (!double.IsNormal(val))
                 //{
@@ -235,7 +275,7 @@ namespace RaspberryPiDevices
                 //return GetAverageTemperature();
                 //return new Temperature(GetTemperatureValue(AIN1), TemperatureUnit.DegreeCelsius);
 
-                //double val = GetSensorValue(_ph4502c, _ads1115, InputMultiplexer.AIN1, _ads1115.MeasuringRange, _phTemperatureSlope);
+                //double val = GetSensorValue(_ph4502c, _ads1115, InputMultiplexer.AIN1, _ads1115?.MeasuringRange, _phTemperatureSlope);
 
                 //if (!double.IsNormal(val))
                 //{
@@ -251,7 +291,7 @@ namespace RaspberryPiDevices
             }
         }
         #endregion
-        
+
         //[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         //internal PHProbeSensor() : base(GetPHProbeSensorUid(1), GetPHProbeSensorName(1))
         //{
@@ -263,8 +303,8 @@ namespace RaspberryPiDevices
         //}
 
         //[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        public PHProbeSensor(I2cDevice i2cDevice, int selectPhProbe = 1) //: base(GetPHProbeSensorUid(selectPhProbe), GetPHProbeSensorName(selectPhProbe))
-        {        
+        public PHProbeSensor(I2cDevice i2cDevice)//, int selectPhProbe = 1) //: base(GetPHProbeSensorUid(selectPhProbe), GetPHProbeSensorName(selectPhProbe))
+        {
             PHCalibration = new Calibration(PHCalibrationName);
             PHCalibration.Points.Add(new CalibrationPoint() { X = 2.677648649, Y = 7 });
             PHCalibration.Points.Add(new CalibrationPoint() { X = 3.189777778, Y = 4 });
@@ -299,12 +339,12 @@ namespace RaspberryPiDevices
 
             //_ads1115 = new Ads1115(_i2cDevice, _gpioController, 23, false, InputMultiplexer.AIN0, MeasuringRange.FS6144, DataRate.SPS128, DeviceMode.Continuous);
 
-            //_ads1115.AlertReadyAsserted += () =>
+            //_ads1115?.AlertReadyAsserted += () =>
             //{
-            //    //Console.WriteLine($"AlertReadyAsserted {_ads1115.ReadVoltage()}");
+            //    //Console.WriteLine($"AlertReadyAsserted {_ads1115?.ReadVoltage()}");
             //};
 
-            //_ads1115.EnableConversionReady();
+            //_ads1115?.EnableConversionReady();
 
             _ph4502c = new Ph4502c();
 
@@ -318,9 +358,9 @@ namespace RaspberryPiDevices
 
             //Console.WriteLine($"ReadVoltage {Voltage}");
 
-            //Console.WriteLine($"FrequencyFromDataRate {_ads1115.FrequencyFromDataRate(_ads1115.DataRate)}");
+            //Console.WriteLine($"FrequencyFromDataRate {_ads1115?.FrequencyFromDataRate(_ads1115?.DataRate)}");
 
-            //(ElectricPotential lower, ElectricPotential upper) voltageRange = VoltageRange(_ads1115.MeasuringRange);
+            //(ElectricPotential lower, ElectricPotential upper) voltageRange = VoltageRange(_ads1115?.MeasuringRange);
             //Console.WriteLine($"VoltageRange {voltageRange.lower} {voltageRange.upper}");
 
             //if (CalibrationPoints.Count == 0)
@@ -349,7 +389,7 @@ namespace RaspberryPiDevices
 
                     //_gpioController.Dispose();
                     //_i2cDevice.Dispose();
-                    _ads1115.Dispose();
+                    _ads1115?.Dispose();
                     //_board.Dispose();
                 }
 
@@ -367,7 +407,7 @@ namespace RaspberryPiDevices
 
 
 
-        
+
         //public void Calibrate(double Ph)
         //{
         //    Calibration calibration = CalibrationPoints.First(o => o.Name == PHCalibrationName);
@@ -416,11 +456,15 @@ namespace RaspberryPiDevices
         //[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public (ElectricPotential Vcc, ElectricPotential Ain0, ElectricPotential Ain1) GetVoltages()
         {
-            double vcc = _ads1115.ReadVoltage().Volts;
-            double ain0 = _ads1115.ReadVoltage(InputMultiplexer.AIN0).Volts;
-            double ain1 = _ads1115.ReadVoltage(InputMultiplexer.AIN1).Volts;
+            if (_ads1115 is not null)
+            {
+                double vcc = _ads1115.ReadVoltage().Volts;
+                double ain0 = _ads1115.ReadVoltage(InputMultiplexer.AIN0).Volts;
+                double ain1 = _ads1115.ReadVoltage(InputMultiplexer.AIN1).Volts;
 
-            return new(ElectricPotential.FromVolts(vcc), ElectricPotential.FromVolts(ain0), ElectricPotential.FromVolts(ain1));
+                return new(ElectricPotential.FromVolts(vcc), ElectricPotential.FromVolts(ain0), ElectricPotential.FromVolts(ain1));
+            }
+            return new(ElectricPotential.FromVolts(0), ElectricPotential.FromVolts(0), ElectricPotential.FromVolts(0));
         }
 
         //[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
@@ -459,49 +503,49 @@ namespace RaspberryPiDevices
 
 
 
-        public (ElectricPotential Vcc, double Ph, Temperature Temperature) GetAverageValues()
-        {
-            (ElectricPotential vcc, ElectricPotential ain0, ElectricPotential ain1) averageVoltages = GetAverageVoltages();
+        //public (ElectricPotential Vcc, double Ph, Temperature Temperature) GetAverageValues()
+        //{
+        //    (ElectricPotential vcc, ElectricPotential ain0, ElectricPotential ain1) averageVoltages = GetAverageVoltages();
 
-            _ph = GetPhValue(averageVoltages.ain0);
-            _temperature = new Temperature(GetTemperatureValue(averageVoltages.ain1), TemperatureUnit.DegreeCelsius);
+        //    _ph = GetPhValue(averageVoltages.ain0);
+        //    _temperature = new Temperature(GetTemperatureValue(averageVoltages.ain1), TemperatureUnit.DegreeCelsius);
 
-            return new(averageVoltages.vcc, _ph, _temperature);
-        }
+        //    return new(averageVoltages.vcc, _ph, _temperature);
+        //}
 
-        //[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        public (ElectricPotential Vcc, ElectricPotential Ain0, ElectricPotential Ain1) GetAverageVoltages()
-        {
-            TimeSpan span = new TimeSpan(0, 0, 0, 0, 100);
-            TimeSpan delay = new TimeSpan(0, 0, 0, 0, 1, 162);
+        ////[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        //public (ElectricPotential Vcc, ElectricPotential Ain0, ElectricPotential Ain1) GetAverageVoltages()
+        //{
+        //    TimeSpan span = new TimeSpan(0, 0, 0, 0, 100);
+        //    TimeSpan delay = new TimeSpan(0, 0, 0, 0, 1, 162);
 
-            int length = ((int)_ads1115.FrequencyFromDataRate(_ads1115.DataRate));
+        //    int length = ((int)_ads1115?.FrequencyFromDataRate(_ads1115?.DataRate));
 
 
-            Console.WriteLine($"length{length}");
+        //    Console.WriteLine($"length{length}");
 
-            double vcc = 0.0;
-            double ain0 = 0.0;
-            double ain1 = 0.0;
+        //    double vcc = 0.0;
+        //    double ain0 = 0.0;
+        //    double ain1 = 0.0;
 
-            for (int sample = 0; sample < length; ++sample)
-            {
-                vcc += _ads1115.ReadVoltage().Volts;
-                ain0 += _ads1115.ReadVoltage(InputMultiplexer.AIN0).Volts;
-                ain1 += _ads1115.ReadVoltage(InputMultiplexer.AIN1).Volts;
-                Utilities.Delay(delay);
-            }
+        //    for (int sample = 0; sample < length; ++sample)
+        //    {
+        //        vcc += _ads1115?.ReadVoltage().Volts ?? 0.0;
+        //        ain0 += _ads1115?.ReadVoltage(InputMultiplexer.AIN0).Volts ?? 0.0;
+        //        ain1 += _ads1115?.ReadVoltage(InputMultiplexer.AIN1).Volts ?? 0.0;
+        //        Utilities.Delay(delay);
+        //    }
 
-            Console.WriteLine($"vcc{vcc}");
-            Console.WriteLine($"ain0{ain0}");
-            Console.WriteLine($"ain1{ain1}");
+        //    Console.WriteLine($"vcc{vcc}");
+        //    Console.WriteLine($"ain0{ain0}");
+        //    Console.WriteLine($"ain1{ain1}");
 
-            vcc /= length;
-            ain0 /= length;
-            ain1 /= length;
+        //    vcc /= length;
+        //    ain0 /= length;
+        //    ain1 /= length;
 
-            return new(ElectricPotential.FromVolts(vcc), ElectricPotential.FromVolts(ain0), ElectricPotential.FromVolts(ain1));
-        }
+        //    return new(ElectricPotential.FromVolts(vcc), ElectricPotential.FromVolts(ain0), ElectricPotential.FromVolts(ain1));
+        //}
 
 
 
@@ -515,9 +559,9 @@ namespace RaspberryPiDevices
         ////[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         //public ElectricPotential ReadVoltage(InputMultiplexer inputMultiplexer)
         //{
-        //    short raw = _ads1115.ReadRaw(inputMultiplexer);
+        //    short raw = _ads1115?.ReadRaw(inputMultiplexer);
 
-        //    return _ads1115.RawToVoltage(raw);
+        //    return _ads1115?.RawToVoltage(raw);
         //}
 
         ////[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
