@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Device.Gpio;
 using System.Device.I2c;
 using System.Device.Spi;
+using System.Drawing;
 using System.Diagnostics;
 using System.Linq;
 using System.Numerics;
@@ -23,19 +24,23 @@ using Iot.Device.Bno055;
 using Iot.Device.Board;
 using Iot.Device.Common;
 using Iot.Device.FtCommon;
+using Iot.Device.Graphics;
+using Iot.Device.Graphics.SkiaSharpAdapter;
 using Iot.Device.Mcp25xxx.Register;
 using Iot.Device.Mcp25xxx.Register.ErrorDetection;
 using Iot.Device.Media;
 using Iot.Device.Mpr121;
 using Iot.Device.Pcx857x;
 using Iot.Device.Tca954x;
+using Iot.Device.Ssd13xx;
 
-using Microsoft.Extensions.Logging;
 
 using UnitsNet;
 using UnitsNet.Units;
+using Iot.Device.Ssd13xx.Commands;
+using SkiaSharp;
+using static System.Net.Mime.MediaTypeNames;
 
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace RaspberryPiDevices;
 
@@ -83,18 +88,25 @@ public class RPiHardware : IDisposable
     public static readonly Guid LEDDigitDisplayId4 = Guid.Parse("F43EE6DB-EA14-4F97-863E-500000000004");
     //public static readonly Guid Relay12VId1                     = Guid.Parse("F43EE6DB-EA14-4F97-863E-700000000001");
 
-    private const int I2cBus = 1;
+    private const int I2cBusIndex = 1;
 
     //public const byte BarometricPressureSensor_Address = 0x27;
 
-    public const byte Pcf8574_BaseAddress = 0x27;
-    internal static byte Pcf8574_Address(Pcf8574I2CSlaveSwitch slaveSwitch)
+    public const byte Pcf8574A_BaseAddress = 0x27;
+    internal static byte Pcf8574A_SlaveAddress(Pcf8574I2CSlaveSwitch slaveSwitch)
     {
-        return (byte)(Pcf8574_BaseAddress - slaveSwitch);
+        return (byte)(Pcf8574A_BaseAddress - slaveSwitch);
     }
 
-    public const byte Tca9548A_Address = 0x70;
+
+
     public const byte TemperatureHumiditySensor_Address = 0x38;
+
+    public const byte Tca9548A_Address = 0x70;
+    public const byte Ssd1306Address = 0x3C;
+
+    public const int Ssd1306Width = 128;
+    public const int Ssd1306Height = 32;
 
     public const int TemperatureHumiditySensor_Channel = 2;
 
@@ -158,18 +170,17 @@ public class RPiHardware : IDisposable
 
     internal readonly I2cBus _i2cBus;
 
-    //internal readonly I2cDevice _pCF8574A_i2cDevice;
-    //internal readonly Pcf8574 _pcf8574;
-    internal readonly I2cDevice _tca9548A_i2cDevice;
-    internal readonly Tca9548A _tca9548a;
 
     public readonly Dictionary<Guid, I2cDevice> I2cDevices;
     public readonly List<IDisposable> Disposables;
 
-    //internal readonly I2cDevice _i2cDevice1;
-    ////internal readonly I2cDevice _i2cDevice2;
     internal readonly GpioController _gpioController;
 
+    internal readonly I2cDevice _pCF8574A_i2cDevice;
+    internal readonly Pcf8574 _pcf8574;
+    internal readonly I2cDevice _tca9548A_i2cDevice;
+    internal readonly Tca9548A _tca9548a;
+    internal readonly Ssd1306 _ssd1306;
 
     internal readonly BarometricPressureSensor BarometricPressureSensor;
     internal readonly WaterFlowSensor WaterFlowSensor;
@@ -178,18 +189,7 @@ public class RPiHardware : IDisposable
     internal readonly TemperatureHumiditySensor TemperatureHumiditySensor;
 
     internal readonly MultiplexerChannel TemperatureHumiditySensorChannel = MultiplexerChannel.Channel0;
-
-    //internal readonly LED4DigitDisplay _lED4DigitDisplay1;
-    //internal readonly LED4DigitDisplay _lED4DigitDisplay2;
-    //internal readonly LED4DigitDisplay _lED4DigitDisplay3;
-    //internal readonly LED4DigitDisplay _lED4DigitDisplay4;
-
     internal readonly Tca9548AChannelBus temperatureHumiditySensorChannel;
-
-    //internal readonly I2cDevice PHProbeSensor1_I2cDevice;
-    //internal readonly I2cDevice PHProbeSensor2_I2cDevice;
-    //internal readonly I2cDevice TemperatureHumiditySensor_I2cDevice;
-    //internal readonly I2cDevice WaterFlowSensor_I2cDevice;
 
     public int GpioInterruptPinNumber
     {
@@ -251,6 +251,22 @@ public class RPiHardware : IDisposable
     }
 
 
+    public IGraphics Ssd1306Graphics
+    {
+        get
+        {
+            return _ssd1306BitmapImage.GetDrawingApi();
+        }
+    }
+
+    private readonly StringBuilder _ssd1306Text;
+
+    private readonly BitmapImage _ssd1306BitmapImage;// = BitmapImage.CreateBitmap(Ssd1306Width, Ssd1306Height, PixelFormat.Format32bppArgb);
+
+    private readonly int _ssd1306FontSize = 9;
+    private readonly string _ssd1306Font = "Cascadia Code";
+
+
     //[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     public RPiHardware(Pcf8574I2CSlaveSwitch slaveSwitch = Pcf8574I2CSlaveSwitch.None)
     {
@@ -263,8 +279,7 @@ public class RPiHardware : IDisposable
 
         _gpioController = _raspberryPiBoard.CreateGpioController();
 
-        _i2cBus = _raspberryPiBoard.CreateOrGetI2cBus(I2cBus);
-
+        _i2cBus = _raspberryPiBoard.CreateOrGetI2cBus(I2cBusIndex);
 
         //(List<byte> FoundDevices, byte LowestAddress, byte HighestAddress) busScan = _i2cBus.PerformBusScan(ProgressPrinter.Instance, LowestAddress, HighestAddress);
         //Console.WriteLine(busScan.ToUserReadableTable());
@@ -272,74 +287,62 @@ public class RPiHardware : IDisposable
         Disposables = new List<IDisposable>();
         I2cDevices = new Dictionary<Guid, I2cDevice>();
 
-        //_pCF8574A_i2cDevice = _raspberryPiBoard.CreateI2cDevice(new I2cConnectionSettings(I2cBus, pcf8574_Address));
-        //I2cDevices.Add(Pcf8574Id, _pCF8574A_i2cDevice);
-        //_pcf8574 = new Pcf8574(_pCF8574A_i2cDevice, GpioInterruptPinNumber, _gpioController, false);
+        _ssd1306 = new Ssd1306(_raspberryPiBoard.CreateI2cDevice(new I2cConnectionSettings(I2cBusIndex, Ssd1306Address)), Ssd1306Width, Ssd1306Height);
 
-        //_pCF8574A_i2cDevice.WriteByte(0b11111111);
+        _ssd1306Text = new StringBuilder();
+        _ssd1306BitmapImage = _ssd1306.GetBackBufferCompatibleImage();
 
 
-        ////Console.WriteLine(BusScan(temperatureHumiditySensorChannel).ToTable());
+        if (_ssd1306BitmapImage.Width != Ssd1306Width || _ssd1306BitmapImage.Height != Ssd1306Height)
+        {
+            throw new Exception($"{_ssd1306BitmapImage.Width} != {Ssd1306Width} || {_ssd1306BitmapImage.Height} != {Ssd1306Height}");
+        }
 
-        //PHProbeSensor1_I2cDevice = CreateI2cDevice(pHProbeSensor1Channel, PHProbeSensor1_Address);
-        //PHProbeSensor2_I2cDevice = CreateI2cDevice(pHProbeSensor2Channel, PHProbeSensor2_Address);
-        //TemperatureHumiditySensor_I2cDevice = CreateI2cDevice(temperatureHumiditySensorChannel, TemperatureHumiditySensor_Address);
-        //WaterFlowSensor_I2cDevice = CreateI2cDevice(waterFlowSensorChannel, WaterFlowSensor_Address);
+        _ssd1306.ClearScreen();
 
-        ////        byte sscan = PerformBusScan(waterFlowSensorChannel, LowestAddress, HighestAddress).First(); Console.WriteLine(sscan);
-        ////PerformBusScan(pHProbeSensor1Channel);
-        ////PerformBusScan(pHProbeSensor2Channel);
-        ////PerformBusScan(temperatureHumiditySensorChannel);
-        ////PerformBusScan(waterFlowSensorChannel);
-
-        //I2cDevices.Add(WaterFlowSensorId1, WaterFlowSensor_I2cDevice);
-        //I2cDevices.Add(PHProbeSensorId1, PHProbeSensor1_I2cDevice);
-        //I2cDevices.Add(PHProbeSensorId2, PHProbeSensor2_I2cDevice);
-        //I2cDevices.Add(TemperatureHumiditySensorId1, TemperatureHumiditySensor_I2cDevice);
+        //for (int x = 0; x < _ssd1306BitmapImage.Width; x++)
+        //{
+        //    for (int y = 0; y < _ssd1306BitmapImage.Height; y++)
+        //    {
+        //        _ssd1306BitmapImage[x, y] = Color.White;
+        //    }
+        //}
 
         _pHProbeSensor1 = new PHProbeSensor(_i2cBus.CreateDevice(PHProbeSensor1_Address));
-        Console.WriteLine("PHProbeSensor1");
+        //Console.WriteLine("PHProbeSensor1");
         _pHProbeSensor2 = new PHProbeSensor(_i2cBus.CreateDevice(PHProbeSensor2_Address));
-        Console.WriteLine("PHProbeSensor2");
+        //Console.WriteLine("PHProbeSensor2");
         WaterFlowSensor = new WaterFlowSensor(_i2cBus.CreateDevice(WaterFlowSensor_Address), _gpioController);
-        Console.WriteLine("WaterFlowSensor");                
+        //Console.WriteLine("WaterFlowSensor");
 
         BarometricPressureSensor = new BarometricPressureSensor(_raspberryPiBoard, _gpioController, BarometricPressure_PinDio, BarometricPressure_PinClk);
-        Console.WriteLine("BarometricPressureSensor");
+        //Console.WriteLine("BarometricPressureSensor");
 
-        byte pcf8574_Address = Pcf8574_Address(slaveSwitch);
-        Console.WriteLine($"PCF8574 I2C Slave Address: 0x{pcf8574_Address:X2}");
-        
-        _tca9548A_i2cDevice = _raspberryPiBoard.CreateI2cDevice(new I2cConnectionSettings(I2cBus, Tca9548A_Address));
-        I2cDevices.Add(Tca9548AId, _tca9548A_i2cDevice);
+        byte pcf8574_Address = Pcf8574A_SlaveAddress(slaveSwitch);
+        //Console.WriteLine($"PCF8574 I2C Slave Address: 0x{pcf8574_Address:X2}");
+        _pCF8574A_i2cDevice = _raspberryPiBoard.CreateI2cDevice(new I2cConnectionSettings(I2cBusIndex, pcf8574_Address));
+        _pcf8574 = new Pcf8574(_pCF8574A_i2cDevice, GpioInterruptPinNumber, _gpioController, false);
+
+        _tca9548A_i2cDevice = _raspberryPiBoard.CreateI2cDevice(new I2cConnectionSettings(I2cBusIndex, Tca9548A_Address));
+        //I2cDevices.Add(Tca9548AId, _tca9548A_i2cDevice);
         _tca9548a = new Tca9548A(_tca9548A_i2cDevice, _i2cBus, false);
-        Console.WriteLine("Tca9548A");
+        //Console.WriteLine("Tca9548A");
 
         temperatureHumiditySensorChannel = (Tca9548AChannelBus)CreateI2cBusFromChannel(MultiplexerChannel.Channel0);
-        Console.WriteLine("TemperatureHumiditySensorChannel");
-
-        I2cDevice deivcew = temperatureHumiditySensorChannel.CreateDevice(TemperatureHumiditySensor_Address);
-
-        Console.WriteLine(deivcew.QueryComponentInformation());
-
-        TemperatureHumiditySensor = new TemperatureHumiditySensor(deivcew);
-        Console.WriteLine("TemperatureHumiditySensor");
-
-        //_lED4DigitDisplay1 = new LED4DigitDisplay(_gpioController, LED1_PinClk, LED1_PinDio);
-        //_lED4DigitDisplay2 = new LED4DigitDisplay(_gpioController, LED2_PinClk, LED2_PinDio);
-        //_lED4DigitDisplay3 = new LED4DigitDisplay(_gpioController, LED3_PinClk, LED3_PinDio);
-        //_lED4DigitDisplay4 = new LED4DigitDisplay(_gpioController, LED4_PinClk, LED4_PinDio);
+        //Console.WriteLine("TemperatureHumiditySensorChannel");
 
 
+        TemperatureHumiditySensor = new TemperatureHumiditySensor(temperatureHumiditySensorChannel.CreateDevice(TemperatureHumiditySensor_Address));
+        //Console.WriteLine("TemperatureHumiditySensor");
+
+        Disposables.Add(_ssd1306BitmapImage);
+        Disposables.Add(_ssd1306);
         Disposables.Add(_pHProbeSensor1);
         Disposables.Add(_pHProbeSensor2);
         Disposables.Add(WaterFlowSensor);
+        Disposables.Add(_pcf8574);
+        Disposables.Add(_tca9548a);
         Disposables.Add(TemperatureHumiditySensor);
-        //Disposables.Add(_lED4DigitDisplay1);
-        //Disposables.Add(_lED4DigitDisplay2);
-        //Disposables.Add(_lED4DigitDisplay3);
-        //Disposables.Add(_lED4DigitDisplay4);
-
     }
 
 
@@ -359,49 +362,25 @@ public class RPiHardware : IDisposable
             {
                 keepRunning = false;
 
+
                 //ExportSettings(Settings);
-                //_lED4DigitDisplay1.Dispose();
-                //_lED4DigitDisplay2.Dispose();
-                //_pHProbeSensor1.Dispose();
-                //_pHProbeSensor2.Dispose();
 
-                //Span<PinValuePair> pinValues = stackalloc PinValuePair[8]
-                //{
-                //    new PinValuePair(0, PinValue.Low),                    
-                //    new PinValuePair(1, PinValue.Low),                    
-                //    new PinValuePair(2, PinValue.Low),                    
-                //    new PinValuePair(3, PinValue.Low),                    
-                //    new PinValuePair(4, PinValue.Low),                    
-                //    new PinValuePair(5, PinValue.Low),                    
-                //    new PinValuePair(6, PinValue.Low),
-                //    new PinValuePair(7, PinValue.Low)
-                //};
+                _ssd1306.ClearScreen();
+                Utilities.DelayMicroseconds(100);
+                _ssd1306.SendCommand(new SetDisplayOff());
 
-                //_pcf8574.Read(pinValues);
+                _pCF8574A_i2cDevice.WriteByte(0b11111111);
+                Utilities.DelayMicroseconds(10);
 
-                //Span<PinValuePair> values = stackalloc PinValuePair[1];
-
-                //foreach (PinValuePair item in pinValues)
-                //{
-                //    try
-                //    {
-                //        values[0] = new PinValuePair(item.PinNumber, PinValue.Low);
-                //        _pcf8574.Write(values);
-
-                //    }
-                //    catch { }
-                //}
-
-
-
-                //foreach (IDisposable disposable in Disposables)
-                //{
-                //    try
-                //    {
-                //        disposable.Dispose();
-                //    }
-                //    catch { }
-                //}
+                foreach (IDisposable disposable in Disposables)
+                {
+                    try
+                    {
+                        disposable.Dispose();
+                        Utilities.DelayMicroseconds(10);
+                    }
+                    catch { }
+                }
 
                 //foreach (KeyValuePair<Guid, I2cDevice> i2cDevice in I2cDevices)
                 //{
@@ -412,33 +391,21 @@ public class RPiHardware : IDisposable
                 //    catch { }
                 //}
 
-                //_pCF8574A_i2cDevice.WriteByte(0b11111111);
+                //_gpioController.ClosePin(GpioInterruptPinNumber);
 
                 //try
                 //{
-                //    _pcf8574.Dispose();
+                //    _gpioController.Dispose();
                 //}
                 //catch { }
 
                 try
                 {
-                    _tca9548a.Dispose();
-                }
-                catch { }
-
-                _gpioController.ClosePin(GpioInterruptPinNumber);
-
-                try
-                {
-                    _gpioController.Dispose();
-                }
-                catch { }
-
-                try
-                {
                     _raspberryPiBoard.Dispose();
+                    Utilities.DelayMicroseconds(10);
                 }
                 catch { }
+
             }
 
             // unmanaged
@@ -453,6 +420,50 @@ public class RPiHardware : IDisposable
         GC.SuppressFinalize(this);
     }
     #endregion
+
+    private void DrawBitmap()
+    {
+        _ssd1306.DrawBitmap(_ssd1306BitmapImage);
+    }
+
+    private void DisplayText(string text, int startX = 0, int startY = 0)
+    {
+        _ssd1306BitmapImage.Clear(Color.Black);
+
+        Ssd1306Graphics.DrawText(text, _ssd1306Font, _ssd1306FontSize, Color.White, new Point(startX, startY));
+
+        DrawBitmap();
+    }
+
+    private void DisplayClock(int startX = 0, int startY = 0)
+    {
+        _ssd1306BitmapImage.Clear(Color.Black);
+
+        Ssd1306Graphics.DrawText(DateTime.Now.ToString("HH:mm:ss"), _ssd1306Font, _ssd1306FontSize, Color.White, new Point(startX, startY));
+
+        DrawBitmap();
+    }
+
+    private static void DisplayImage(GraphicDisplay ssd1306, BitmapImage ssd1306BitmapImage)
+    {
+        Console.WriteLine("Display Image");
+        ssd1306.DrawBitmap(ssd1306BitmapImage);
+    }
+    private static void DisplayClock(GraphicDisplay ssd1306, BitmapImage ssd1306BitmapImage)
+    {
+        Console.WriteLine("Display clock");
+
+        int fontSize = 25;
+        string font = "DejaVu Sans";
+
+        ssd1306BitmapImage.Clear(Color.Black);
+
+        IGraphics g = ssd1306BitmapImage.GetDrawingApi();
+
+        g.DrawText(DateTime.Now.ToString("HH:mm:ss"), font, fontSize, Color.White, new Point(0, 0));
+
+        ssd1306.DrawBitmap(ssd1306BitmapImage);
+    }
 
     public I2cDevice CreateI2cDevice(Tca9548AChannelBus bus, byte address)
     {
@@ -486,55 +497,6 @@ public class RPiHardware : IDisposable
         keepRunning = false;
     }
 
-
-    //private static List<byte> BusScan(Tca9548AChannelBus bus)
-    //{
-    //    List<byte> results = bus.PerformBusScan(LowestAddress, HighestAddress);
-
-    //    if (results.Count == 0)
-    //    {
-    //        Console.WriteLine($"PerformBusScan Failed.");
-    //    }
-    //    else
-    //    {
-    //        foreach (byte result in results)
-    //        {
-    //            Console.WriteLine($"PerformBusScan: 0x{result:X2}");
-    //        }
-
-    //    }
-
-    //    return results;
-    //}
-
-    private static List<byte> BusScan<TBus>(TBus bus, byte lowest = LowestAddress, byte highest = HighestAddress) where TBus : I2cBus
-    {
-        List<byte> ret = new List<byte>((highest - lowest) + 1);
-
-        for (byte addr = lowest; addr <= highest; addr++)
-        {
-            try
-            {
-                using (I2cDevice device = bus.CreateDevice(addr))
-                {
-                    device.ReadByte();
-                    ret.Add(addr);
-                    Console.WriteLine($"Device found @ 0x{addr:X2} on Channel {bus.QueryComponentInformation()}");
-                }
-            }
-            catch
-            {
-                //throw new Exception();
-            }
-            finally
-            {
-                bus.RemoveDevice(addr);
-            }
-        }
-
-        return ret;
-    }
-
     //[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     public void Run(CancellationToken token)
     {
@@ -542,18 +504,18 @@ public class RPiHardware : IDisposable
 
         keepRunning = true;
 
-        TimeSpan delay = new TimeSpan(0, 0, 0, 0, 100, 0);
+        TimeSpan delay = new TimeSpan(0, 0, 0, 0, 0, 100);
 
         (ElectricPotential vcc, double ph, Temperature temperature) values1;
         (ElectricPotential vcc, double ph, Temperature temperature) values2;
 
         const int sampleSize = 1;//(int)Math.Round((_pHProbeSensor.DataFrequency * (((double)delay.Seconds)+(((double)delay.Milliseconds)/1000.0)+(((double)delay.Microseconds)/1000000.0))));
 
-        //int displayIndex = 0;
-        int displayPH1;
-        int displayPH2;
-        int displayTemp1;
-        int displayTemp2;
+        int displayIndex = 0;
+        double displayPH1;
+        double displayPH2;
+        double displayTemp1;
+        double displayTemp2;
         double averagePH1;
         double averagePH2;
         double averageTemp1;
@@ -565,8 +527,12 @@ public class RPiHardware : IDisposable
         {
             if (token.IsCancellationRequested)
             {
+                keepRunning = false;
                 break;
             }
+
+            ProgressPrinter.Instance.Report(((float)displayIndex));
+            displayIndex = (++displayIndex % 100);
 
             displayPH1 = 0;
             displayPH2 = 0;
@@ -579,15 +545,32 @@ public class RPiHardware : IDisposable
 
             for (int i = 0; i < sampleSize; i++)
             {
-                Utilities.Delay(delay);
+
                 values1 = _pHProbeSensor1.GetValues();
+                if (token.IsCancellationRequested)
+                {
+                    keepRunning = false;
+                    break;
+                }
                 values2 = _pHProbeSensor2.GetValues();
+                if (token.IsCancellationRequested)
+                {
+                    keepRunning = false;
+                    break;
+                }
 
-                averagePH1 += MaxMin((values1.ph * 100.0), 0.0, 1400.0);
-                averageTemp1 += MaxMin((values1.temperature.DegreesFahrenheit), -2000, 200.0);
+                averagePH1 += MaxMin(values1.ph, 0.0, 14.0);
+                averageTemp1 += MaxMin((values1.temperature.DegreesFahrenheit), -200, 200.0);
 
-                averagePH2 += MaxMin((values2.ph * 100.0), 0.0, 1400.0);
-                averageTemp2 += MaxMin((values2.temperature.DegreesFahrenheit), -2000, 200.0);
+                averagePH2 += MaxMin(values2.ph, 0.0, 14.0);
+                averageTemp2 += MaxMin((values2.temperature.DegreesFahrenheit), -200, 200.0);
+
+                //Utilities.Delay(delay);
+            }
+            if (token.IsCancellationRequested)
+            {
+                keepRunning = false;
+                break;
             }
 
             Ph1 = _pHProbeSensor1.Ph;
@@ -604,17 +587,25 @@ public class RPiHardware : IDisposable
             FlowRate = WaterFlowSensor.FlowRate;
             TotalLitres = WaterFlowSensor.TotalLitres;
 
-            displayPH1 += ((int)Math.Round(averagePH1 / sampleSize));
-            displayTemp1 += ((int)Math.Round(averageTemp1 / sampleSize));
-            displayPH2 += ((int)Math.Round(averagePH2 / sampleSize));
-            displayTemp2 += ((int)Math.Round(averageTemp2 / sampleSize));
+            displayPH1 += Math.Round(averagePH1 / sampleSize, 2);
+            displayTemp1 += Math.Round(averageTemp1 / sampleSize, 2);
+            displayPH2 += Math.Round(averagePH2 / sampleSize, 2);
+            displayTemp2 += Math.Round(averageTemp2 / sampleSize, 2);
 
-            Console.WriteLine($"{displayPH1} {displayTemp1} {displayPH2} {displayTemp2}");
+            if (token.IsCancellationRequested)
+            {
+                keepRunning = false;
+                break;
+            }
 
-            //_lED4DigitDisplay1.Display(displayPH1);
-            //_lED4DigitDisplay2.Display(displayTemp1);
-            //_lED4DigitDisplay3.Display(displayPH2);
-            //_lED4DigitDisplay4.Display(displayTemp2);
+            _ssd1306Text.AppendLine($"Ph 1: {displayPH1:N} Temp 1: {displayTemp1:N}");
+            _ssd1306Text.AppendLine($"Ph 2: {displayPH2:N} Temp 2: {displayTemp2:N}");
+            _ssd1306Text.AppendLine($"Flow: {FlowRate:N} Total: {TotalLitres:N}");
+            //_ssd1306Text.AppendLine($"012345678901234567890");
+
+            DisplayText(_ssd1306Text.ToString(), 0, 0);
+
+            _ssd1306Text.Clear();
         }
 
         keepRunning = false;
@@ -710,4 +701,53 @@ public class RPiHardware : IDisposable
         return false;
     }
 
+
+
+    //private static List<byte> BusScan(Tca9548AChannelBus bus)
+    //{
+    //    List<byte> results = bus.PerformBusScan(LowestAddress, HighestAddress);
+
+    //    if (results.Count == 0)
+    //    {
+    //        Console.WriteLine($"PerformBusScan Failed.");
+    //    }
+    //    else
+    //    {
+    //        foreach (byte result in results)
+    //        {
+    //            Console.WriteLine($"PerformBusScan: 0x{result:X2}");
+    //        }
+
+    //    }
+
+    //    return results;
+    //}
+
+    private static List<byte> BusScan<TBus>(TBus bus, byte lowest = LowestAddress, byte highest = HighestAddress) where TBus : I2cBus
+    {
+        List<byte> ret = new List<byte>((highest - lowest) + 1);
+
+        for (byte addr = lowest; addr <= highest; addr++)
+        {
+            try
+            {
+                using (I2cDevice device = bus.CreateDevice(addr))
+                {
+                    device.ReadByte();
+                    ret.Add(addr);
+                    Console.WriteLine($"Device found @ 0x{addr:X2} on Channel {bus.QueryComponentInformation()}");
+                }
+            }
+            catch
+            {
+                //throw new Exception();
+            }
+            finally
+            {
+                bus.RemoveDevice(addr);
+            }
+        }
+
+        return ret;
+    }
 }
