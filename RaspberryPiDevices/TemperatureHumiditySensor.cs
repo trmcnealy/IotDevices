@@ -98,7 +98,7 @@ namespace RaspberryPiDevices
 
         public override string ToString()
         {
-            return $"{DateTime.Now.ToLongTimeString()}: {Temperature.DegreesFahrenheit:N5}°F, {Humidity.Percent:N4}%";
+            return $"{Temperature.DegreesFahrenheit:N5}°F, {Humidity.Percent:N4}%";
         }
 
     }

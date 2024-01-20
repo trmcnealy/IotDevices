@@ -435,7 +435,7 @@ namespace RaspberryPiDevices
         //private static (ElectricPotential Vcc, double Ph, Temperature Temperature) values;
 
         //[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        public (ElectricPotential vcc, double ph, Temperature temperature) GetValues()
+        public RPiPhSensorValues GetValues()
         {
             try
             {
@@ -449,7 +449,7 @@ namespace RaspberryPiDevices
                 Console.WriteLine($"Error: {e}");
             }
 
-            return new(voltageValues.Vcc, _ph, _temperature);
+            return new RPiPhSensorValues(voltageValues.Vcc, _ph, _temperature);
         }
 
 

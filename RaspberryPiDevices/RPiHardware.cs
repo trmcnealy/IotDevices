@@ -1,45 +1,29 @@
-﻿using System;
-using System.Buffers.Binary;
+﻿
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Device.Gpio;
 using System.Device.I2c;
-using System.Device.Spi;
-using System.Drawing;
 using System.Diagnostics;
+using System.Drawing;
 using System.Linq;
-using System.Numerics;
-using System.Reflection.PortableExecutable;
-using System.Runtime;
 using System.Runtime.CompilerServices;
-using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
-using System.Xml.Linq;
 using System.Xml.Serialization;
 
-using Iot.Device.Ads1115;
-using Iot.Device.Bmp180;
-using Iot.Device.Bno055;
 using Iot.Device.Board;
-using Iot.Device.Common;
-using Iot.Device.FtCommon;
 using Iot.Device.Graphics;
 using Iot.Device.Graphics.SkiaSharpAdapter;
-using Iot.Device.Mcp25xxx.Register;
-using Iot.Device.Mcp25xxx.Register.ErrorDetection;
-using Iot.Device.Media;
-using Iot.Device.Mpr121;
 using Iot.Device.Pcx857x;
-using Iot.Device.Tca954x;
 using Iot.Device.Ssd13xx;
+using Iot.Device.Ssd13xx.Commands;
+using Iot.Device.Tca954x;
 
+using RaspberryPiDevices;
 
 using UnitsNet;
 using UnitsNet.Units;
-using Iot.Device.Ssd13xx.Commands;
-using SkiaSharp;
-using static System.Net.Mime.MediaTypeNames;
 
 
 namespace RaspberryPiDevices;
@@ -73,6 +57,51 @@ public class RPiHardware : IDisposable
 
     internal const byte LowestAddress = 0x03;
     internal const byte HighestAddress = 0x77;
+
+    internal const char SpaceChar = ' ';
+    internal const char LightShadeChar = '░';
+    internal const char FullBlockChar = '█';
+    internal static readonly char[] FullBlockSpacePattern1 = new char[]
+    {
+        FullBlockChar, SpaceChar, FullBlockChar, SpaceChar, FullBlockChar, SpaceChar,
+        FullBlockChar, SpaceChar, FullBlockChar, SpaceChar, FullBlockChar, SpaceChar,
+        FullBlockChar, SpaceChar, FullBlockChar, SpaceChar, FullBlockChar, SpaceChar,
+        FullBlockChar, SpaceChar, FullBlockChar, SpaceChar, FullBlockChar, SpaceChar,
+        FullBlockChar, SpaceChar, FullBlockChar, SpaceChar, FullBlockChar, SpaceChar,
+        FullBlockChar, SpaceChar, FullBlockChar, SpaceChar, FullBlockChar
+    };
+    internal static readonly string FullBlockSpacePatternString1 = new string(FullBlockSpacePattern1);
+    internal static readonly char[] FullBlockSpacePattern2 = new char[]
+    {
+        SpaceChar, FullBlockChar, SpaceChar, FullBlockChar, SpaceChar,
+        FullBlockChar, SpaceChar, FullBlockChar, SpaceChar, FullBlockChar, SpaceChar,
+        FullBlockChar, SpaceChar, FullBlockChar, SpaceChar, FullBlockChar, SpaceChar,
+        FullBlockChar, SpaceChar, FullBlockChar, SpaceChar, FullBlockChar, SpaceChar,
+        FullBlockChar, SpaceChar, FullBlockChar, SpaceChar, FullBlockChar, SpaceChar,
+        FullBlockChar, SpaceChar, FullBlockChar, SpaceChar, FullBlockChar
+    };
+    internal static readonly string FullBlockSpacePatternString2 = new string(FullBlockSpacePattern2);
+
+    internal static readonly char[] FullBlockLightShadePattern1 = new char[]
+    {
+        FullBlockChar, LightShadeChar, FullBlockChar, LightShadeChar, FullBlockChar, LightShadeChar,
+        FullBlockChar, LightShadeChar, FullBlockChar, LightShadeChar, FullBlockChar, LightShadeChar,
+        FullBlockChar, LightShadeChar, FullBlockChar, LightShadeChar, FullBlockChar, LightShadeChar,
+        FullBlockChar, LightShadeChar, FullBlockChar, LightShadeChar, FullBlockChar, LightShadeChar,
+        FullBlockChar, LightShadeChar, FullBlockChar, LightShadeChar, FullBlockChar, LightShadeChar,
+        FullBlockChar, LightShadeChar, FullBlockChar, LightShadeChar, FullBlockChar
+    };
+    internal static readonly string FullBlockLightShadePatternString1 = new string(FullBlockLightShadePattern1);
+    internal static readonly char[] FullBlockLightShadePattern2 = new char[]
+    {
+        LightShadeChar, FullBlockChar, LightShadeChar, FullBlockChar, LightShadeChar,
+        FullBlockChar, LightShadeChar, FullBlockChar, LightShadeChar, FullBlockChar, LightShadeChar,
+        FullBlockChar, LightShadeChar, FullBlockChar, LightShadeChar, FullBlockChar, LightShadeChar,
+        FullBlockChar, LightShadeChar, FullBlockChar, LightShadeChar, FullBlockChar, LightShadeChar,
+        FullBlockChar, LightShadeChar, FullBlockChar, LightShadeChar, FullBlockChar, LightShadeChar,
+        FullBlockChar, LightShadeChar, FullBlockChar, LightShadeChar, FullBlockChar
+    };
+    internal static readonly string FullBlockLightShadePatternString2 = new string(FullBlockLightShadePattern2);
 
     public static readonly Guid Pcf8574Id = Guid.Parse("F43EE6DB-EA14-4F97-863E-000000000001");
     public static readonly Guid Tca9548AId = Guid.Parse("F43EE6DB-EA14-4F97-863E-000000000002");
@@ -244,7 +273,7 @@ public class RPiHardware : IDisposable
         //[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         get; private set;
     }
-    public double TotalLitres
+    public Volume TotalLitres
     {
         //[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         get; private set;
@@ -263,14 +292,21 @@ public class RPiHardware : IDisposable
 
     private readonly BitmapImage _ssd1306BitmapImage;// = BitmapImage.CreateBitmap(Ssd1306Width, Ssd1306Height, PixelFormat.Format32bppArgb);
 
-    private readonly int _ssd1306FontSize = 9;
+    private readonly int _ssd1306FontSize = 12;
     private readonly string _ssd1306Font = "Cascadia Code";
 
+    //private RPiDisplayData _displayData;
+
+    //private RPiPhSensorValues[] _phSensorValues;
 
     //[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     public RPiHardware(Pcf8574I2CSlaveSwitch slaveSwitch = Pcf8574I2CSlaveSwitch.None)
     {
         _settings = new RPiSettings();
+
+        //_displayData = new RPiDisplayData();
+
+        //_phSensorValues = new RPiPhSensorValues[2] { new RPiPhSensorValues(), new RPiPhSensorValues() };
 
         _raspberryPiBoard = new RaspberryPiBoard()
         {
@@ -299,6 +335,8 @@ public class RPiHardware : IDisposable
         }
 
         _ssd1306.ClearScreen();
+
+        //DisplayFullBlocks();
 
         //for (int x = 0; x < _ssd1306BitmapImage.Width; x++)
         //{
@@ -356,60 +394,63 @@ public class RPiHardware : IDisposable
     //[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     protected virtual void Dispose(bool disposing)
     {
-        if (!disposedValue)
+        lock (this)
         {
-            if (disposing)
+            if (!disposedValue)
             {
-                keepRunning = false;
-
-
-                //ExportSettings(Settings);
-
-                _ssd1306.ClearScreen();
-                Utilities.DelayMicroseconds(100);
-                _ssd1306.SendCommand(new SetDisplayOff());
-
-                _pCF8574A_i2cDevice.WriteByte(0b11111111);
-                Utilities.DelayMicroseconds(10);
-
-                foreach (IDisposable disposable in Disposables)
+                if (disposing)
                 {
+                    keepRunning = false;
+
+
+                    //ExportSettings(Settings);
+
+                    _ssd1306.ClearScreen();
+                    Utilities.DelayMicroseconds(1);
+                    _ssd1306.SendCommand(new SetDisplayOff());
+
+                    _pCF8574A_i2cDevice.WriteByte(0b11111111);
+                    Utilities.DelayMicroseconds(10);
+
+                    foreach (IDisposable disposable in Disposables)
+                    {
+                        try
+                        {
+                            disposable.Dispose();
+                            Utilities.DelayMicroseconds(10);
+                        }
+                        catch { }
+                    }
+
+                    //foreach (KeyValuePair<Guid, I2cDevice> i2cDevice in I2cDevices)
+                    //{
+                    //    try
+                    //    {
+                    //        i2cDevice.Value.Dispose();
+                    //    }
+                    //    catch { }
+                    //}
+
+                    //_gpioController.ClosePin(GpioInterruptPinNumber);
+
+                    //try
+                    //{
+                    //    _gpioController.Dispose();
+                    //}
+                    //catch { }
+
                     try
                     {
-                        disposable.Dispose();
+                        _raspberryPiBoard.Dispose();
                         Utilities.DelayMicroseconds(10);
                     }
                     catch { }
+
                 }
 
-                //foreach (KeyValuePair<Guid, I2cDevice> i2cDevice in I2cDevices)
-                //{
-                //    try
-                //    {
-                //        i2cDevice.Value.Dispose();
-                //    }
-                //    catch { }
-                //}
-
-                //_gpioController.ClosePin(GpioInterruptPinNumber);
-
-                //try
-                //{
-                //    _gpioController.Dispose();
-                //}
-                //catch { }
-
-                try
-                {
-                    _raspberryPiBoard.Dispose();
-                    Utilities.DelayMicroseconds(10);
-                }
-                catch { }
-
+                // unmanaged
+                disposedValue = true;
             }
-
-            // unmanaged
-            disposedValue = true;
         }
     }
 
@@ -419,11 +460,36 @@ public class RPiHardware : IDisposable
         Dispose(disposing: true);
         GC.SuppressFinalize(this);
     }
+
+    public bool IsDisposed
+    {
+        get
+        {
+            return disposedValue;
+        }
+    }
     #endregion
 
     private void DrawBitmap()
     {
         _ssd1306.DrawBitmap(_ssd1306BitmapImage);
+    }
+
+    private void DisplayFullBlocks(int startX = 0, int startY = 0)
+    {
+        _ssd1306BitmapImage.Clear(Color.Black);
+
+        StringBuilder sb = new StringBuilder();
+
+        sb.AppendLine(FullBlockLightShadePatternString1);
+        sb.AppendLine(FullBlockLightShadePatternString2);
+        sb.AppendLine(FullBlockLightShadePatternString1);
+        sb.AppendLine(FullBlockLightShadePatternString2);
+        sb.AppendLine(FullBlockLightShadePatternString1);
+
+        Ssd1306Graphics.DrawText(sb.ToString(), _ssd1306Font, _ssd1306FontSize, Color.White, new Point(startX, startY));
+
+        DrawBitmap();
     }
 
     private void DisplayText(string text, int startX = 0, int startY = 0)
@@ -506,24 +572,34 @@ public class RPiHardware : IDisposable
 
         TimeSpan delay = new TimeSpan(0, 0, 0, 0, 0, 100);
 
-        (ElectricPotential vcc, double ph, Temperature temperature) values1;
-        (ElectricPotential vcc, double ph, Temperature temperature) values2;
+        TimeSpan switchDisplayTime = new TimeSpan(days: 0, hours: 0, minutes: 0, seconds: 0, milliseconds: 500, microseconds: 0);
+        int switchDisplay = 0;
+        const int switchDisplayMax = 6;
 
         const int sampleSize = 1;//(int)Math.Round((_pHProbeSensor.DataFrequency * (((double)delay.Seconds)+(((double)delay.Milliseconds)/1000.0)+(((double)delay.Microseconds)/1000000.0))));
 
-        int displayIndex = 0;
-        double displayPH1;
-        double displayPH2;
-        double displayTemp1;
-        double displayTemp2;
-        double averagePH1;
-        double averagePH2;
-        double averageTemp1;
-        double averageTemp2;
+
+        int Index = 0;
+        double PhSensor1_PH = 0.0;
+        double PhSensor1_Temperature = 0.0;
+        double PhSensor1_AveragePH = 0.0;
+        double PhSensor1_AverageTemperature = 0.0;
+
+        double PhSensor2_PH = 0.0;
+        double PhSensor2_Temperature = 0.0;
+        double PhSensor2_AveragePH = 0.0;
+        double PhSensor2_AverageTemperature = 0.0;
 
         Console.WriteLine("Running");
 
-        while (keepRunning)
+        RPiPhSensorValues phSensorValues1 = new RPiPhSensorValues();
+        RPiPhSensorValues phSensorValues2 = new RPiPhSensorValues();
+
+        Stopwatch sw = new Stopwatch();
+        sw.Reset();
+        sw.Start();
+
+        while ((!Console.KeyAvailable) || (!token.IsCancellationRequested) || (keepRunning))
         {
             if (token.IsCancellationRequested)
             {
@@ -531,89 +607,131 @@ public class RPiHardware : IDisposable
                 break;
             }
 
-            ProgressPrinter.Instance.Report(((float)displayIndex));
-            displayIndex = (++displayIndex % 100);
+            //ProgressPrinter.Instance.Report(((float)double Index));
 
-            displayPH1 = 0;
-            displayPH2 = 0;
-            displayTemp1 = 0;
-            displayTemp2 = 0;
-            averagePH1 = 0.0;
-            averagePH2 = 0.0;
-            averageTemp1 = 0.0;
-            averageTemp2 = 0.0;
+            Index = ((++Index) % 100);
 
-            for (int i = 0; i < sampleSize; i++)
+            PhSensor1_AveragePH = 0.0;
+            PhSensor2_AveragePH = 0.0;
+            PhSensor1_AverageTemperature = 0.0;
+            PhSensor2_AverageTemperature = 0.0;
+
+            //for (int i = 0; i < sampleSize; i++)
+            //{
+            //    Task.Run(async () => await SampleTasksAsync());
+            //    //Utilities.Delay(delay);
+            //}
+
+            Task.Run(() =>
             {
+                phSensorValues1 = _pHProbeSensor1.GetValues();
+                phSensorValues2 = _pHProbeSensor2.GetValues();
+                WaterFlowSensor.Run();
+                TemperatureHumidity = TemperatureHumiditySensor.Temperature;
+                Humidity = TemperatureHumiditySensor.Humidity;
+                Pressure = (BarometricPressureSensor.Weight * Gravity) / Area.FromSquareInches(0.03937);
+            }).Wait();
 
-                values1 = _pHProbeSensor1.GetValues();
-                if (token.IsCancellationRequested)
-                {
-                    keepRunning = false;
-                    break;
-                }
-                values2 = _pHProbeSensor2.GetValues();
-                if (token.IsCancellationRequested)
-                {
-                    keepRunning = false;
-                    break;
-                }
 
-                averagePH1 += MaxMin(values1.ph, 0.0, 14.0);
-                averageTemp1 += MaxMin((values1.temperature.DegreesFahrenheit), -200, 200.0);
-
-                averagePH2 += MaxMin(values2.ph, 0.0, 14.0);
-                averageTemp2 += MaxMin((values2.temperature.DegreesFahrenheit), -200, 200.0);
-
-                //Utilities.Delay(delay);
-            }
-            if (token.IsCancellationRequested)
-            {
-                keepRunning = false;
-                break;
-            }
-
+            PhSensor1_AveragePH += MaxMin(phSensorValues1.Ph, 0.0, 14.0);
+            PhSensor1_AverageTemperature += MaxMin((phSensorValues1.Temperature.DegreesFahrenheit), -200, 200.0);
             Ph1 = _pHProbeSensor1.Ph;
             PhTemperature1 = _pHProbeSensor1.Temperature;
 
+            PhSensor2_AveragePH += MaxMin(phSensorValues2.Ph, 0.0, 14.0);
+            PhSensor2_AverageTemperature += MaxMin((phSensorValues2.Temperature.DegreesFahrenheit), -200, 200.0);
             Ph2 = _pHProbeSensor2.Ph;
             PhTemperature2 = _pHProbeSensor2.Temperature;
-
-            TemperatureHumidity = TemperatureHumiditySensor.Temperature;
-            Humidity = TemperatureHumiditySensor.Humidity;
-
-            Pressure = (BarometricPressureSensor.Weight * Gravity) / Area.FromSquareInches(0.03937);
 
             FlowRate = WaterFlowSensor.FlowRate;
             TotalLitres = WaterFlowSensor.TotalLitres;
 
-            displayPH1 += Math.Round(averagePH1 / sampleSize, 2);
-            displayTemp1 += Math.Round(averageTemp1 / sampleSize, 2);
-            displayPH2 += Math.Round(averagePH2 / sampleSize, 2);
-            displayTemp2 += Math.Round(averageTemp2 / sampleSize, 2);
+            PhSensor1_PH = Math.Round(PhSensor1_AveragePH / sampleSize, 2);
+            PhSensor1_Temperature = Math.Round(PhSensor1_AverageTemperature / sampleSize, 2);
+            PhSensor2_PH = Math.Round(PhSensor2_AveragePH / sampleSize, 2);
+            PhSensor2_Temperature = Math.Round(PhSensor2_AverageTemperature / sampleSize, 2);
 
-            if (token.IsCancellationRequested)
+
+            if (sw.ElapsedMilliseconds > switchDisplayTime.TotalMilliseconds)
             {
-                keepRunning = false;
-                break;
+                _ssd1306Text.Clear();
+
+                switch (switchDisplay)
+                {
+                    case 0:
+                    {
+                        _ssd1306Text.AppendLine($"Ph 1: {PhSensor1_PH:N3}");
+                        _ssd1306Text.AppendLine($"Temperature 1: {PhSensor1_Temperature:N5}");
+                        break;
+                    }
+                    case 1:
+                    {
+                        _ssd1306Text.AppendLine($"Ph 2: {PhSensor2_PH:N3}");
+                        _ssd1306Text.AppendLine($"Temperature 2: {PhSensor2_Temperature:N5}");
+                        break;
+                    }
+                    case 2:
+                    {
+                        _ssd1306Text.AppendLine($"Flow: {FlowRate.LitersPerMinute:N4}");
+                        _ssd1306Text.AppendLine($"Total: {TotalLitres.Liters:N6}");
+                        break;
+                    }
+                    case 3:
+                    {
+                        _ssd1306Text.AppendLine($"Temperature: {TemperatureHumidity.DegreesFahrenheit:N5}");
+                        _ssd1306Text.AppendLine($"Humidity: {(Humidity.Percent / 100.0):N4}");
+                        break;
+                    }
+                    case 4:
+                    {
+                        _ssd1306Text.AppendLine($"Pressure: {Pressure.Kilopascals:N5}");
+                        break;
+                    }
+                    case 5:
+                    {
+                        _ssd1306Text.AppendLine($"Pressure: {Pressure.Kilopascals:N5}");
+                        break;
+                    }
+                }
+                
+                DisplayText(_ssd1306Text.ToString(), 0, 0);
+
+                switchDisplay = (++switchDisplay) % switchDisplayMax;
+
+                sw.Restart();
             }
 
-            _ssd1306Text.AppendLine($"Ph 1: {displayPH1:N} Temp 1: {displayTemp1:N}");
-            _ssd1306Text.AppendLine($"Ph 2: {displayPH2:N} Temp 2: {displayTemp2:N}");
-            _ssd1306Text.AppendLine($"Flow: {FlowRate:N} Total: {TotalLitres:N}");
-            //_ssd1306Text.AppendLine($"012345678901234567890");
+            //ProgressPrinter.Instance.Report();
 
-            DisplayText(_ssd1306Text.ToString(), 0, 0);
-
-            _ssd1306Text.Clear();
+            //Utilities.DelayMicroseconds(0);
         }
 
         keepRunning = false;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        double MaxMin(double value, double low, double high)
+        static double MaxMin(double value, double low, double high)
         {
             return Math.Max(low, Math.Min(value, high));
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        static async Task SampleTasksAsync(IEnumerable<Task> tasks, CancellationToken cancellationToken)
+        {
+            await foreach (Task task in ToAsync(tasks, cancellationToken))
+            {
+                await task.WaitAsync(cancellationToken);
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        static async IAsyncEnumerable<Task> ToAsync(IEnumerable<Task> tasks, [EnumeratorCancellation] CancellationToken cancellationToken)
+        {
+            using IEnumerator<Task> enumerator = tasks.GetEnumerator();
+
+            while (await Task.Run(enumerator.MoveNext).ConfigureAwait(false))
+            {
+                yield return enumerator.Current;
+            }
         }
     }
 

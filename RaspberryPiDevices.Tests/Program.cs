@@ -227,17 +227,16 @@ namespace RaspberryPiDevices.Tests
 
             Console.CancelKeyPress += (object? sender, ConsoleCancelEventArgs args) =>
             {
-                //keepRunning = false;
-                args.Cancel = true;
-
                 cts.Cancel();
 
-                Task.Delay(1);
+                Utilities.DelayMilliseconds(100, false);
 
                 device.Dispose();
 
                 //waterFlowSensor.Dispose();
                 //_raspberryPiBoard.Dispose();
+                //keepRunning = false;
+                args.Cancel = true;
             };
 
 
@@ -252,7 +251,7 @@ namespace RaspberryPiDevices.Tests
 
             //int counter = 0;
 
-            //while (keepRunning)
+            //while (!Console.KeyAvailable || keepRunning)
             //{
             //    //waterFlowSensor.Run();
             //    //Utilities.DelayMilliseconds(1);
@@ -266,13 +265,18 @@ namespace RaspberryPiDevices.Tests
             //    //Task.Run(waterFlowSensor.Run).WaitAsync(cts.Token);
             //}
 
+            //while(!Console.KeyAvailable)
+            //{
+            //}
 
             //LED8DigitDisplay _lED8DigitDisplay1 = new LED8DigitDisplay(_raspberryPiBoard);
 
             //_lED8DigitDisplay1.Display(1);
 
-
-
+            if (!device.IsDisposed)
+            {
+                device.Dispose();
+            }
         }
 
     }

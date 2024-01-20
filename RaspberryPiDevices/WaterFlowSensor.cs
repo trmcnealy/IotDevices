@@ -147,7 +147,7 @@ public class WaterFlowSensor : ISensor<WaterFlowSensor>
         }
     }
 
-    public double TotalLitres
+    public Volume TotalLitres
     {
         get; set;
     }
@@ -282,7 +282,7 @@ public class WaterFlowSensor : ISensor<WaterFlowSensor>
         _FirstPulse = false;
         _pulseCount = 0;
         FirstTimestamp = CurrentTimestamp;
-        TotalLitres = 0.0;
+        TotalLitres = Volume.FromLiters(0.0);
     }
 
     ////[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
@@ -385,11 +385,11 @@ public class WaterFlowSensor : ISensor<WaterFlowSensor>
             double minutes = GetTimeInMinutes(_delta);
 
             _flowRate = GetFlowRateValue(_pulseCount, _calibrationFactor);
-            TotalLitres += (_flowRate.LitersPerMinute * minutes);
+            TotalLitres += Volume.FromLiters(_flowRate.LitersPerMinute * minutes);
 
             //Console.Write($"pulseCount: {_pulseCount} ");
 
-            Console.WriteLine($"{DateTime.Now.ToString("mm:ss:fff")}: {_delta} FlowRate:{_flowRate.LitersPerMinute:N4} TotalLitres:{TotalLitres:N4}");
+            //Console.WriteLine($"{DateTime.Now.ToString("mm:ss:fff")}: {_delta} FlowRate:{_flowRate.LitersPerMinute:N4} TotalLitres:{TotalLitres:N4}");
 
             _pulseCount = 0;
             FirstTimestamp = CurrentTimestamp;
