@@ -8,7 +8,9 @@ using System.Drawing;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
+using System.Threading.Tasks.Dataflow;
 using System.Xml;
 using System.Xml.Serialization;
 
@@ -116,6 +118,8 @@ public class RPiHardware : IDisposable
     public static readonly Guid LEDDigitDisplayId3 = Guid.Parse("F43EE6DB-EA14-4F97-863E-500000000003");
     public static readonly Guid LEDDigitDisplayId4 = Guid.Parse("F43EE6DB-EA14-4F97-863E-500000000004");
     //public static readonly Guid Relay12VId1                     = Guid.Parse("F43EE6DB-EA14-4F97-863E-700000000001");
+
+    public static readonly TimeSpan Timeout = new TimeSpan(0, 0, 1);
 
     private const int I2cBusIndex = 1;
 
@@ -279,6 +283,7 @@ public class RPiHardware : IDisposable
         get; private set;
     }
 
+    private bool WaterFlowRateHasChanged;
 
     public IGraphics Ssd1306Graphics
     {
@@ -295,6 +300,8 @@ public class RPiHardware : IDisposable
     private readonly int _ssd1306FontSize = 12;
     private readonly string _ssd1306Font = "Cascadia Code";
 
+    private RPiSensors _sensors;
+
     //private RPiDisplayData _displayData;
 
     //private RPiPhSensorValues[] _phSensorValues;
@@ -302,6 +309,7 @@ public class RPiHardware : IDisposable
     //[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     public RPiHardware(Pcf8574I2CSlaveSwitch slaveSwitch = Pcf8574I2CSlaveSwitch.None)
     {
+        _sensors = new RPiSensors();
         _settings = new RPiSettings();
 
         //_displayData = new RPiDisplayData();
@@ -351,6 +359,7 @@ public class RPiHardware : IDisposable
         _pHProbeSensor2 = new PHProbeSensor(_i2cBus.CreateDevice(PHProbeSensor2_Address));
         //Console.WriteLine("PHProbeSensor2");
         WaterFlowSensor = new WaterFlowSensor(_i2cBus.CreateDevice(WaterFlowSensor_Address), _gpioController);
+        WaterFlowSensor.PulseEvent += WaterFlowSensor_PulseEvent;
         //Console.WriteLine("WaterFlowSensor");
 
         BarometricPressureSensor = new BarometricPressureSensor(_raspberryPiBoard, _gpioController, BarometricPressure_PinDio, BarometricPressure_PinClk);
@@ -373,7 +382,7 @@ public class RPiHardware : IDisposable
         TemperatureHumiditySensor = new TemperatureHumiditySensor(temperatureHumiditySensorChannel.CreateDevice(TemperatureHumiditySensor_Address));
         //Console.WriteLine("TemperatureHumiditySensor");
 
-        Disposables.Add(_ssd1306BitmapImage);
+        //Disposables.Add(_ssd1306BitmapImage);
         Disposables.Add(_ssd1306);
         Disposables.Add(_pHProbeSensor1);
         Disposables.Add(_pHProbeSensor2);
@@ -382,6 +391,7 @@ public class RPiHardware : IDisposable
         Disposables.Add(_tca9548a);
         Disposables.Add(TemperatureHumiditySensor);
     }
+
 
 
     #region Dctor
@@ -446,6 +456,7 @@ public class RPiHardware : IDisposable
                     }
                     catch { }
 
+                    _ssd1306BitmapImage.Dispose();
                 }
 
                 // unmanaged
@@ -512,12 +523,12 @@ public class RPiHardware : IDisposable
 
     private static void DisplayImage(GraphicDisplay ssd1306, BitmapImage ssd1306BitmapImage)
     {
-        Console.WriteLine("Display Image");
+        //Console.WriteLine("Display Image");
         ssd1306.DrawBitmap(ssd1306BitmapImage);
     }
     private static void DisplayClock(GraphicDisplay ssd1306, BitmapImage ssd1306BitmapImage)
     {
-        Console.WriteLine("Display clock");
+        //Console.WriteLine("Display clock");
 
         int fontSize = 25;
         string font = "DejaVu Sans";
@@ -563,10 +574,11 @@ public class RPiHardware : IDisposable
         keepRunning = false;
     }
 
+
     //[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public void Run(CancellationToken token)
+    public void Run(CancellationToken cancellationToken)
     {
-        token.Register(CancellationTokenCallback);
+        cancellationToken.Register(CancellationTokenCallback);
 
         keepRunning = true;
 
@@ -574,83 +586,162 @@ public class RPiHardware : IDisposable
 
         TimeSpan switchDisplayTime = new TimeSpan(days: 0, hours: 0, minutes: 0, seconds: 0, milliseconds: 500, microseconds: 0);
         int switchDisplay = 0;
-        const int switchDisplayMax = 6;
+        const int switchDisplayMax = 5;
 
-        const int sampleSize = 1;//(int)Math.Round((_pHProbeSensor.DataFrequency * (((double)delay.Seconds)+(((double)delay.Milliseconds)/1000.0)+(((double)delay.Microseconds)/1000000.0))));
+        const int sampleSize = 10;//(int)Math.Round((_pHProbeSensor.DataFrequency * (((double)delay.Seconds)+(((double)delay.Milliseconds)/1000.0)+(((double)delay.Microseconds)/1000000.0))));
 
 
-        int Index = 0;
-        double PhSensor1_PH = 0.0;
-        double PhSensor1_Temperature = 0.0;
+        //int Index = 0;
+
+        double displayPhSensor1_PH = 0.0;
+        double displayPhSensor1_Temperature = 0.0;
+        double displayPhSensor2_PH = 0.0;
+        double displayPhSensor2_Temperature = 0.0;
+        double displayWaterFlowSensor1_AverageFlow = 0.0;
+        double displayWaterFlowSensor1_AverageTotal = 0.0;
+        double displayTemperatureHumidity1_AverageHumidity = 0.0;
+        double displayTemperatureHumidity1_AverageTemperature = 0.0;
+        double displayBarometricPressure1_AveragePressure = 0.0;
+
         double PhSensor1_AveragePH = 0.0;
         double PhSensor1_AverageTemperature = 0.0;
-
-        double PhSensor2_PH = 0.0;
-        double PhSensor2_Temperature = 0.0;
         double PhSensor2_AveragePH = 0.0;
         double PhSensor2_AverageTemperature = 0.0;
+        double WaterFlowSensor1_AverageFlow = 0.0;
+        double WaterFlowSensor1_AverageTotal = 0.0;
+        double TemperatureHumidity1_AverageHumidity = 0.0;
+        double TemperatureHumidity1_AverageTemperature = 0.0;
+        double BarometricPressure1_AveragePressure = 0.0;
 
         Console.WriteLine("Running");
 
-        RPiPhSensorValues phSensorValues1 = new RPiPhSensorValues();
-        RPiPhSensorValues phSensorValues2 = new RPiPhSensorValues();
+        _sensors = new RPiSensors();
+
 
         Stopwatch sw = new Stopwatch();
         sw.Reset();
         sw.Start();
 
-        while ((!Console.KeyAvailable) || (!token.IsCancellationRequested) || (keepRunning))
+        List<Task> sensorTasks = new List<Task>(5);
+
+        while ((!Console.KeyAvailable) || (!cancellationToken.IsCancellationRequested) || (keepRunning))
         {
-            if (token.IsCancellationRequested)
+            if (cancellationToken.IsCancellationRequested)
             {
                 keepRunning = false;
                 break;
             }
 
-            //ProgressPrinter.Instance.Report(((float)double Index));
+            //ProgressPrinter.Instance.Report(((float)Index));
 
-            Index = ((++Index) % 100);
+            //Index = ((++Index) % 100);
 
             PhSensor1_AveragePH = 0.0;
             PhSensor2_AveragePH = 0.0;
             PhSensor1_AverageTemperature = 0.0;
             PhSensor2_AverageTemperature = 0.0;
+            WaterFlowSensor1_AverageFlow = 0.0;
+            WaterFlowSensor1_AverageTotal = 0.0;
+            TemperatureHumidity1_AverageHumidity = 0.0;
+            TemperatureHumidity1_AverageTemperature = 0.0;
+            BarometricPressure1_AveragePressure = 0.0;
 
-            //for (int i = 0; i < sampleSize; i++)
-            //{
-            //    Task.Run(async () => await SampleTasksAsync());
-            //    //Utilities.Delay(delay);
-            //}
-
-            Task.Run(() =>
+            for (int i = 0; i < sampleSize; i++)
             {
-                phSensorValues1 = _pHProbeSensor1.GetValues();
-                phSensorValues2 = _pHProbeSensor2.GetValues();
-                WaterFlowSensor.Run();
-                TemperatureHumidity = TemperatureHumiditySensor.Temperature;
-                Humidity = TemperatureHumiditySensor.Humidity;
-                Pressure = (BarometricPressureSensor.Weight * Gravity) / Area.FromSquareInches(0.03937);
-            }).Wait();
+                Console.Write($"{DateTime.Now.ToLongTimeString()}");
 
+                //Task.Run(async () => await SampleTasksAsync());
+                //Utilities.Delay(delay);
 
-            PhSensor1_AveragePH += MaxMin(phSensorValues1.Ph, 0.0, 14.0);
-            PhSensor1_AverageTemperature += MaxMin((phSensorValues1.Temperature.DegreesFahrenheit), -200, 200.0);
-            Ph1 = _pHProbeSensor1.Ph;
-            PhTemperature1 = _pHProbeSensor1.Temperature;
+                //Task.Run(() =>
+                //{
+                //    _sensors.Ph1 = _pHProbeSensor1.GetValues();
+                //    _sensors.Ph2 = _pHProbeSensor2.GetValues();
 
-            PhSensor2_AveragePH += MaxMin(phSensorValues2.Ph, 0.0, 14.0);
-            PhSensor2_AverageTemperature += MaxMin((phSensorValues2.Temperature.DegreesFahrenheit), -200, 200.0);
-            Ph2 = _pHProbeSensor2.Ph;
-            PhTemperature2 = _pHProbeSensor2.Temperature;
+                //    WaterFlowSensor.Run();
 
-            FlowRate = WaterFlowSensor.FlowRate;
-            TotalLitres = WaterFlowSensor.TotalLitres;
+                //    _sensors.TemperatureHumidity1.TemperatureHumidity = TemperatureHumiditySensor.Temperature;
+                //    _sensors.TemperatureHumidity1.Humidity = TemperatureHumiditySensor.Humidity;
 
-            PhSensor1_PH = Math.Round(PhSensor1_AveragePH / sampleSize, 2);
-            PhSensor1_Temperature = Math.Round(PhSensor1_AverageTemperature / sampleSize, 2);
-            PhSensor2_PH = Math.Round(PhSensor2_AveragePH / sampleSize, 2);
-            PhSensor2_Temperature = Math.Round(PhSensor2_AverageTemperature / sampleSize, 2);
+                //    _sensors.BarometricPressure1.Pressure = (BarometricPressureSensor.Weight * Gravity) / Area.FromSquareInches(0.03937);
+                //}).Wait();
 
+                Task pHProbeSensor1Task = Task.Factory.StartNew(() =>
+                {
+                    Console.WriteLine(nameof(pHProbeSensor1Task));
+                    _sensors.Ph1 = _pHProbeSensor1.GetValues();
+                });
+
+                Task pHProbeSensor2Task = Task.Factory.StartNew(() =>
+                {
+                    Console.WriteLine(nameof(pHProbeSensor2Task));
+                    _sensors.Ph2 = _pHProbeSensor2.GetValues();
+                });
+
+                Task waterFlowSensor1Task = Task.Factory.StartNew(() =>
+                {
+                    Console.WriteLine(nameof(waterFlowSensor1Task));
+                    WaterFlowSensor.Run();
+                });
+
+                Task temperatureHumidity1Task = Task.Factory.StartNew(() =>
+                {
+                    Console.WriteLine(nameof(temperatureHumidity1Task));
+                    _sensors.TemperatureHumidity1.Temperature = TemperatureHumiditySensor.Temperature;
+                    _sensors.TemperatureHumidity1.Humidity = TemperatureHumiditySensor.Humidity;
+                });
+
+                Task barometricPressure1Task = Task.Factory.StartNew(() =>
+                {
+                    Console.WriteLine(nameof(barometricPressure1Task));
+                    _sensors.BarometricPressure1.Pressure = (BarometricPressureSensor.Weight * Gravity) / Area.FromSquareInches(0.03937);
+                });
+
+                sensorTasks.Clear();
+                sensorTasks.Add(pHProbeSensor1Task);
+                sensorTasks.Add(pHProbeSensor2Task);
+                sensorTasks.Add(waterFlowSensor1Task);
+                sensorTasks.Add(temperatureHumidity1Task);
+                sensorTasks.Add(barometricPressure1Task);
+
+                //Task.WaitAll(sensorTasks.ToArray(), 1000);
+                RunTasksAsync(sensorTasks, cancellationToken).Wait();
+
+                //Task.WaitAll(sensorTasks.ToArray(), 1000);
+                //RunTasks(sensorTasks, cancellationToken).Wait(Timeout);
+
+                PhSensor1_AveragePH += MaxMin(_sensors.Ph1.Ph, 0.0, 14.0);
+                displayPhSensor1_PH = Math.Round(PhSensor1_AveragePH / sampleSize, 2);
+
+                PhSensor1_AverageTemperature += MaxMin((_sensors.Ph1.Temperature.DegreesFahrenheit), -200, 200.0);
+                displayPhSensor1_Temperature = Math.Round(PhSensor1_AverageTemperature / sampleSize, 2);
+
+                PhSensor2_AveragePH += MaxMin(_sensors.Ph2.Ph, 0.0, 14.0);
+                displayPhSensor2_PH = Math.Round(PhSensor2_AveragePH / sampleSize, 2);
+
+                PhSensor2_AverageTemperature += MaxMin((_sensors.Ph2.Temperature.DegreesFahrenheit), -200, 200.0);
+                displayPhSensor2_Temperature = Math.Round(PhSensor2_AverageTemperature / sampleSize, 2);
+
+                if (WaterFlowRateHasChanged)
+                {
+                    WaterFlowSensor1_AverageFlow += MaxMin(_sensors.WaterFlow1.FlowRate.LitersPerMinute, 0.0, 100.0);
+                    displayWaterFlowSensor1_AverageFlow = Math.Round(WaterFlowSensor1_AverageFlow / sampleSize, 2);
+
+                    WaterFlowSensor1_AverageTotal += MaxMin(_sensors.WaterFlow1.TotalLitres.Liters, 0.0, 100.0);
+                    displayWaterFlowSensor1_AverageTotal = Math.Round(WaterFlowSensor1_AverageTotal / sampleSize, 2);
+
+                    WaterFlowRateHasChanged = false;
+                }
+
+                TemperatureHumidity1_AverageHumidity += MaxMin(_sensors.TemperatureHumidity1.Humidity.Percent, 0.0, 100.0);
+                displayTemperatureHumidity1_AverageHumidity = Math.Round(TemperatureHumidity1_AverageHumidity / sampleSize, 2);
+
+                TemperatureHumidity1_AverageTemperature += MaxMin(_sensors.TemperatureHumidity1.Temperature.DegreesFahrenheit, -200.0, 20.0);
+                displayTemperatureHumidity1_AverageTemperature = Math.Round(TemperatureHumidity1_AverageTemperature / sampleSize, 2);
+
+                BarometricPressure1_AveragePressure += MaxMin(_sensors.BarometricPressure1.Pressure.Kilopascals, -1000.0, 1000.0);
+                displayBarometricPressure1_AveragePressure = Math.Round(BarometricPressure1_AveragePressure / sampleSize, 2);
+            }
 
             if (sw.ElapsedMilliseconds > switchDisplayTime.TotalMilliseconds)
             {
@@ -660,14 +751,14 @@ public class RPiHardware : IDisposable
                 {
                     case 0:
                     {
-                        _ssd1306Text.AppendLine($"Ph 1: {PhSensor1_PH:N3}");
-                        _ssd1306Text.AppendLine($"Temperature 1: {PhSensor1_Temperature:N5}");
+                        _ssd1306Text.AppendLine($"Ph 1: {displayPhSensor1_PH:N3}");
+                        _ssd1306Text.AppendLine($"Temperature 1: {displayPhSensor1_Temperature:N5}");
                         break;
                     }
                     case 1:
                     {
-                        _ssd1306Text.AppendLine($"Ph 2: {PhSensor2_PH:N3}");
-                        _ssd1306Text.AppendLine($"Temperature 2: {PhSensor2_Temperature:N5}");
+                        _ssd1306Text.AppendLine($"Ph 2: {displayPhSensor2_PH:N3}");
+                        _ssd1306Text.AppendLine($"Temperature 2: {displayPhSensor2_Temperature:N5}");
                         break;
                     }
                     case 2:
@@ -678,22 +769,17 @@ public class RPiHardware : IDisposable
                     }
                     case 3:
                     {
-                        _ssd1306Text.AppendLine($"Temperature: {TemperatureHumidity.DegreesFahrenheit:N5}");
-                        _ssd1306Text.AppendLine($"Humidity: {(Humidity.Percent / 100.0):N4}");
+                        _ssd1306Text.AppendLine($"Temperature: {Math.Round(TemperatureHumidity.DegreesFahrenheit, 2):N5}");
+                        _ssd1306Text.AppendLine($"Humidity: {Math.Round(Humidity.Percent, 4):N4}%");
                         break;
                     }
                     case 4:
                     {
-                        _ssd1306Text.AppendLine($"Pressure: {Pressure.Kilopascals:N5}");
-                        break;
-                    }
-                    case 5:
-                    {
-                        _ssd1306Text.AppendLine($"Pressure: {Pressure.Kilopascals:N5}");
+                        _ssd1306Text.AppendLine($"Pressure: {Pressure.Kilopascals:N3}");
                         break;
                     }
                 }
-                
+
                 DisplayText(_ssd1306Text.ToString(), 0, 0);
 
                 switchDisplay = (++switchDisplay) % switchDisplayMax;
@@ -709,30 +795,74 @@ public class RPiHardware : IDisposable
         keepRunning = false;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        static double MaxMin(double value, double low, double high)
+        static double MaxMin(in double value, in double low, in double high)
         {
             return Math.Max(low, Math.Min(value, high));
         }
 
+        //[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        //static async Task RunTasks(IEnumerable<Task> tasks, CancellationToken cancellationToken)
+        //{
+        //    await foreach (Task task in ToAsync(tasks, cancellationToken))
+        //    {
+        //        task.Wait(cancellationToken);
+        //    }
+        //}
+
+
+
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        static async Task SampleTasksAsync(IEnumerable<Task> tasks, CancellationToken cancellationToken)
+        static async Task RunTasksAsync(IEnumerable<Task> tasks, CancellationToken cancellationToken)
         {
-            await foreach (Task task in ToAsync(tasks, cancellationToken))
+            foreach (Task task in tasks)
             {
-                await task.WaitAsync(cancellationToken);
+                await task.WaitAsync(WaitAsyncDelay, cancellationToken);
             }
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        static async IAsyncEnumerable<Task> ToAsync(IEnumerable<Task> tasks, [EnumeratorCancellation] CancellationToken cancellationToken)
-        {
-            using IEnumerator<Task> enumerator = tasks.GetEnumerator();
+        //[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        //static async IAsyncEnumerable<Task> ToAsync(IEnumerable<Task> tasks, [EnumeratorCancellation] CancellationToken cancellationToken)
+        //{
+        //    foreach (Task item in tasks)
+        //    {
+        //        await item.WaitAsync(cancellationToken);
+        //        yield return item;
+        //    }
 
-            while (await Task.Run(enumerator.MoveNext).ConfigureAwait(false))
-            {
-                yield return enumerator.Current;
-            }
-        }
+
+
+        //    //using IEnumerator<Task> enumerator = tasks.GetEnumerator();
+
+        //    //while (enumerator.MoveNext())
+        //    //{
+        //    //    await Task.Run(enumerator.MoveNext);
+        //    //    yield return enumerator.Current;
+        //    //}
+        //    //while (await Task.Run(enumerator.MoveNext).ConfigureAwait(false))
+        //    //{
+        //    //    Console.WriteLine("await Task.Run");
+        //    //    yield return enumerator.Current;
+        //    //}
+        //}
+
+        //[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        //static async IAsyncEnumerable<Task> Execute(IAsyncEnumerable<Task> data)
+        //{
+        //    await foreach (Task item in data)
+        //    {
+        //        yield return item;
+        //    }
+        //}
+    }
+
+    private static readonly TimeSpan WaitAsyncDelay = new TimeSpan(0, 0, 0, 1, 0, 0);
+
+    private void WaterFlowSensor_PulseEvent(object? sender, WaterFlowSensorEventArgs args)
+    {
+        _sensors.WaterFlow1.FlowRate = args.FlowRate;
+        _sensors.WaterFlow1.TotalLitres = args.TotalLitres;
+
+        WaterFlowRateHasChanged = true;
     }
 
     //public Tca9548A Setup(I2cDevice i2cDevice, I2cBus i2cBus)
@@ -841,7 +971,7 @@ public class RPiHardware : IDisposable
     //    return results;
     //}
 
-    private static List<byte> BusScan<TBus>(TBus bus, byte lowest = LowestAddress, byte highest = HighestAddress) where TBus : I2cBus
+    private static List<byte> BusScan<TBus>(TBus bus, in byte lowest = LowestAddress, in byte highest = HighestAddress) where TBus : I2cBus
     {
         List<byte> ret = new List<byte>((highest - lowest) + 1);
 
@@ -853,7 +983,7 @@ public class RPiHardware : IDisposable
                 {
                     device.ReadByte();
                     ret.Add(addr);
-                    Console.WriteLine($"Device found @ 0x{addr:X2} on Channel {bus.QueryComponentInformation()}");
+                    //Console.WriteLine($"Device found @ 0x{addr:X2} on Channel {bus.QueryComponentInformation()}");
                 }
             }
             catch

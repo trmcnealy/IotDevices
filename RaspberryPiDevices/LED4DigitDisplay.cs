@@ -29,7 +29,7 @@ public class LED4DigitDisplay : IDisposable
     //    _sensor.ClearDisplay();
     //}
 
-    public LED4DigitDisplay(GpioController gpioController, int pinClk, int pinDio) //: base(Id, nameof(LED4DigitDisplay))
+    public LED4DigitDisplay(GpioController gpioController, in int pinClk, in int pinDio) //: base(Id, nameof(LED4DigitDisplay))
     {
         _sensor = new Tm1637(pinClk, pinDio, PinNumberingScheme.Logical, gpioController, shouldDispose: false);
 
@@ -94,12 +94,12 @@ public class LED4DigitDisplay : IDisposable
         _sensor.Display(rawData);
     }
 
-    public void Display(byte characterPosition, Character rawData)
+    public void Display(in byte characterPosition, Character rawData)
     {
         _sensor.Display(characterPosition, rawData);
     }
 
-    public void Display(TimeOnly time)
+    public void Display(in TimeOnly time)
     {
         charactersToDisplay[0] = (Character)Enum.Parse(typeof(Character), $"Digit{time.Minute / 10}");
         charactersToDisplay[1] = (Character)Enum.Parse(typeof(Character), $"Digit{time.Minute % 10}") | Character.Dot;
@@ -108,7 +108,7 @@ public class LED4DigitDisplay : IDisposable
         _sensor.Display(charactersToDisplay);
     }
 
-        public void Display(int value)
+    public void Display(in int value)
     {
         if (value > 9999 || value < 0)
         {
@@ -173,7 +173,7 @@ public class LED4DigitDisplay : IDisposable
                                                                  10_000, 100_000, 1_000_000,
                                                                  10_000_000, 100_000_000, 1_000_000_000 };
 
-    public void Display(double value)
+    public void Display(in double value)
     {
         int decimals = CountDigitsAfterDecimal(value);
         int precision = Precision(value);
@@ -201,13 +201,13 @@ public class LED4DigitDisplay : IDisposable
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public static double RoundToMultiple(double x, double m)
+    public static double RoundToMultiple(in double x, in double m)
     {
         return Math.Round(x / m) * m;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public static int Precision(double x)
+    public static int Precision(in double x)
     {
         int precision = 0;
 
@@ -220,7 +220,7 @@ public class LED4DigitDisplay : IDisposable
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public static int CountDigitsAfterDecimal(double value)
+    public static int CountDigitsAfterDecimal(in double value)
     {
         bool start = false;
         int count = 0;
@@ -240,7 +240,7 @@ public class LED4DigitDisplay : IDisposable
         return count;
     }
 
-    private static byte[] GetDigits(int value)
+    private static byte[] GetDigits(in int value)
     {
 
         if (value < 10)

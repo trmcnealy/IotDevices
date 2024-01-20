@@ -408,7 +408,7 @@ namespace RaspberryPiDevices
 
 
 
-        //public void Calibrate(double Ph)
+        //public void Calibrate(in double Ph)
         //{
         //    Calibration calibration = CalibrationPoints.First(o => o.Name == PHCalibrationName);
 
@@ -468,7 +468,7 @@ namespace RaspberryPiDevices
         }
 
         //[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        private double GetPhValue(ElectricPotential voltage)
+        private double GetPhValue(in ElectricPotential voltage)
         {
             //Calibration calibration = PHCalibration.Points.First(o => o.Name == PHCalibrationName);
 
@@ -483,7 +483,7 @@ namespace RaspberryPiDevices
         }
 
         //[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        private double GetTemperatureValue(ElectricPotential voltage)
+        private double GetTemperatureValue(in ElectricPotential voltage)
         {
             //Calibration calibration = CalibrationPoints.First(o => o.Name == TemperatureCalibrationName);
 
@@ -491,7 +491,7 @@ namespace RaspberryPiDevices
         }
 
 
-        //private void TemperatureCompensation(double pH_0, ElectricPotential V, Temperature T, Temperature T_cal_0)
+        //private void TemperatureCompensation(in double pH_0, ElectricPotential V, Temperature T, Temperature T_cal_0)
         //{
         //    double T_coeff = -0.057 * (pH_0 / (V.Volts * T.DegreesCelsius));
 
@@ -699,7 +699,7 @@ namespace RaspberryPiDevices
         }
 
         //[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        private static double CheckVoltage(double voltage)
+        private static double CheckVoltage(in double voltage)
         {
             if (voltageLimits != voltage)
             {
@@ -709,14 +709,14 @@ namespace RaspberryPiDevices
         }
 
         ////[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        //private static double GetPhValue(double voltage, double max_voltage)
+        //private static double GetPhValue(in double voltage, double max_voltage)
         //{
         //    return (voltage / _phVoltageSlope(max_voltage));
         //    //return (MidValue.ph + ((MidValue.voltage - AIN0.Volts) / _phVoltageSlope));
         //}
 
         ////[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        //private static double GetTemperatureValue(double voltage, double max_voltage)
+        //private static double GetTemperatureValue(in double voltage, double max_voltage)
         //{
         //    return (voltage / _phTemperatureSlope(max_voltage)) - 21.38889;
         //}
@@ -740,7 +740,7 @@ namespace RaspberryPiDevices
         //}
 
         //[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        private static double GetPhVoltageSlope(double vp0_voltage, double vp0_ph, double vp1_voltage, double vp1_ph)
+        private static double GetPhVoltageSlope(in double vp0_voltage, double vp0_ph, double vp1_voltage, double vp1_ph)
         {
             return (vp1_voltage - vp0_voltage) / (vp1_ph - vp0_ph);
         }

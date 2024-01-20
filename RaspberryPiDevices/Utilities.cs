@@ -130,7 +130,7 @@ namespace RaspberryPiDevices
 
         #region ToDigitArray
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        public static Digit[] ToDigitArray(this sbyte value, out bool isPositive)
+        public static Digit[] ToDigitArray(this in sbyte value, out bool isPositive)
         {
             isPositive = (value >= 0);
 
@@ -150,7 +150,7 @@ namespace RaspberryPiDevices
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        public static Digit[] ToDigitArray(this byte value, out bool isPositive)
+        public static Digit[] ToDigitArray(this in byte value, out bool isPositive)
         {
             isPositive = (true);
 
@@ -170,7 +170,7 @@ namespace RaspberryPiDevices
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        public static Digit[] ToDigitArray(this int value, out bool isPositive)
+        public static Digit[] ToDigitArray(this in int value, out bool isPositive)
         {
             isPositive = (value >= 0);
 
@@ -190,7 +190,7 @@ namespace RaspberryPiDevices
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        public static Digit[] ToDigitArray(this uint value, out bool isPositive)
+        public static Digit[] ToDigitArray(this in uint value, out bool isPositive)
         {
             isPositive = (true);
 
@@ -210,7 +210,7 @@ namespace RaspberryPiDevices
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        public static Digit[] ToDigitArray(this long value, out bool isPositive)
+        public static Digit[] ToDigitArray(this in long value, out bool isPositive)
         {
             isPositive = (value >= 0);
 
@@ -230,7 +230,7 @@ namespace RaspberryPiDevices
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        public static Digit[] ToDigitArray(this ulong value, out bool isPositive)
+        public static Digit[] ToDigitArray(this in ulong value, out bool isPositive)
         {
             isPositive = (true);
 
@@ -295,7 +295,7 @@ namespace RaspberryPiDevices
         #endregion
 
 
-        public static List<byte> PerformBusScan(this I2cBus bus, byte lowest = 0x3, byte highest = 0x77)
+        public static List<byte> PerformBusScan(this I2cBus bus, in byte lowest = 0x3, in byte highest = 0x77)
         {
             byte result = 0;
             List<byte> ret = new List<byte>();
@@ -324,7 +324,7 @@ namespace RaspberryPiDevices
             return ret;
         }
 
-        public static List<int> PerformBusScan(this I2cBus bus, int lowest = 0x3, int highest = 0x77)
+        public static List<int> PerformBusScan(this I2cBus bus, in int lowest = 0x3, in int highest = 0x77)
         {
             byte result = 0;
             List<int> ret = new List<int>();
@@ -355,8 +355,8 @@ namespace RaspberryPiDevices
 
         public static (List<byte> FoundDevices, byte LowestAddress, byte HighestAddress) PerformBusScan(this I2cBus bus,
                                                                                                         IProgress<float>? progress,
-                                                                                                        byte lowestAddress = 0x08,
-                                                                                                        byte highestAddress = 0x77)
+                                                                                                        in byte lowestAddress = 0x08,
+                                                                                                        in byte highestAddress = 0x77)
         {
             List<byte> addresses = new();
 

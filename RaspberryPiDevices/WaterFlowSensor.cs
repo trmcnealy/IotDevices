@@ -26,6 +26,11 @@ using UnitsNet.Units;
 
 namespace RaspberryPiDevices;
 
+public class WaterFlowSensorEventArgs : EventArgs
+{
+    public VolumeFlow FlowRate { get; set; }
+    public Volume TotalLitres { get; set; }
+}
 
 public class WaterFlowSensor : ISensor<WaterFlowSensor>
 {
@@ -152,6 +157,27 @@ public class WaterFlowSensor : ISensor<WaterFlowSensor>
         get; set;
     }
     #endregion
+
+
+    public event EventHandler<WaterFlowSensorEventArgs>? PulseEvent;
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    private void OnPulseEvent(WaterFlowSensorEventArgs e)
+    {
+        PulseEvent?.Invoke(this, e);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    private void Pulse(VolumeFlow flowRate, Volume volume)
+    {
+        WaterFlowSensorEventArgs args = new WaterFlowSensorEventArgs()
+        {
+            FlowRate = flowRate,
+            TotalLitres = volume
+        };
+
+        OnPulseEvent(args);
+    }
 
 
     private const int gpoiPin = 26;
@@ -387,6 +413,8 @@ public class WaterFlowSensor : ISensor<WaterFlowSensor>
             _flowRate = GetFlowRateValue(_pulseCount, _calibrationFactor);
             TotalLitres += Volume.FromLiters(_flowRate.LitersPerMinute * minutes);
 
+            Pulse(_flowRate, TotalLitres);
+
             //Console.Write($"pulseCount: {_pulseCount} ");
 
             //Console.WriteLine($"{DateTime.Now.ToString("mm:ss:fff")}: {_delta} FlowRate:{_flowRate.LitersPerMinute:N4} TotalLitres:{TotalLitres:N4}");
@@ -394,6 +422,30 @@ public class WaterFlowSensor : ISensor<WaterFlowSensor>
             _pulseCount = 0;
             FirstTimestamp = CurrentTimestamp;
         }
+    }
+
+    //[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    public async Task RunAsync(CancellationToken cancellationToken)
+    {
+        await Task.Run(() =>
+        {
+            _delta = DeltaTimestamp;
+
+            if (_FirstPulse && (_delta > deltaTimestampDelay))
+            {
+                double minutes = GetTimeInMinutes(_delta);
+
+                _flowRate = GetFlowRateValue(_pulseCount, _calibrationFactor);
+                TotalLitres += Volume.FromLiters(_flowRate.LitersPerMinute * minutes);
+
+                //Console.Write($"pulseCount: {_pulseCount} ");
+
+                //Console.WriteLine($"{DateTime.Now.ToString("mm:ss:fff")}: {_delta} FlowRate:{_flowRate.LitersPerMinute:N4} TotalLitres:{TotalLitres:N4}");
+
+                _pulseCount = 0;
+                FirstTimestamp = CurrentTimestamp;
+            }
+        }).WaitAsync(cancellationToken);
     }
 
     //[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
