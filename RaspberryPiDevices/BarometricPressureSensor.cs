@@ -13,6 +13,7 @@ using Iot.Device.Gpio;
 using Iot.Device.Hx711;
 
 using UnitsNet;
+using UnitsNet.Units;
 
 using static System.Formats.Asn1.AsnWriter;
 
@@ -26,6 +27,8 @@ namespace RaspberryPiDevices
     /// </summary>
     public class BarometricPressureSensor : IDisposable
     {
+        public static readonly Acceleration Gravity = new Acceleration(32.17405, AccelerationUnit.FootPerSecondSquared);
+
         public const int PinDout = 23;
         public const int PinPdSck = 24;
 
@@ -181,6 +184,14 @@ namespace RaspberryPiDevices
             get
             {
                 return _sensor.GetWeight();
+            }
+        }
+
+        public Pressure Pressure
+        {        
+            get
+            {
+                return (_sensor.GetWeight() * Gravity) / Area.FromSquareInches(0.03937);    
             }
         }
 

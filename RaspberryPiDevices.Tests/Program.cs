@@ -199,7 +199,7 @@ namespace RaspberryPiDevices.Tests
             }
         }
 
-        static void Main(string[] args)
+        static async Task Main(string[] args)
         {
             //keepRunning = true;
 
@@ -245,7 +245,7 @@ namespace RaspberryPiDevices.Tests
             //    //ScanI2CBus(i2cBus);
             //}
 
-            device.Run(cts.Token);
+            await device.RunAsync(cts.Token);
 
             //TimeSpan delay = TimeSpan.FromMilliseconds(0);
 
