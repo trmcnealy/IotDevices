@@ -1,38 +1,14 @@
-﻿using System;
-using System.Device;
-using System.Device.Gpio;
-using System.Device.Gpio.Drivers;
+﻿using System.Device.Gpio;
 using System.Device.I2c;
-using System.Device.Pwm;
-using System.Device.Pwm.Drivers;
 using System.Device.Spi;
-using System.IO;
-using System.Linq;
-using System.Numerics;
-using System.Reflection.Metadata;
-using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading;
-using System.Xml;
-using System.Xml.Linq;
-using System.Xml.Serialization;
-
-using Iot.Device.Adc;
-using Iot.Device.Bmxx80;
-using Iot.Device.Bmxx80.PowerMode;
-using Iot.Device.Board;
-using Iot.Device.Card.CreditCardProcessing;
-using Iot.Device.Common;
-using Iot.Device.Display;
-using Iot.Device.Graphics.SkiaSharpAdapter;
-using Iot.Device.Graphics;
-using Iot.Device.Hx711;
-using Iot.Device.Max31865;
-using Iot.Device.Mfrc522;
-using Iot.Device.Multiplexing;
-using Iot.Device.Ssd1351;
 using System.Drawing;
+
+using Iot.Device.Board;
+using Iot.Device.Graphics;
+using Iot.Device.Graphics.SkiaSharpAdapter;
+using Iot.Device.Ssd1351;
+
+using SkiaSharp;
 
 
 public static class Try
@@ -264,22 +240,25 @@ namespace RaspberryPiDevices.Tests
 
             InitDisplayForAdafruit(ssd1351);
 
-            dotnetBM.Clear(Color.Black);
 
-            for (int x = 0; x < dotnetBM.Width; x++)
-            {
-                for (int y = 0; y < dotnetBM.Height; y++)
-                {
-                    dotnetBM[x,y] = Color.Yellow;
-                }
-            }
+            //for (int x = 0; x < dotnetBM.Width; x++)
+            //{
+            //    for (int y = 0; y < dotnetBM.Height; y++)
+            //    {
+            //        dotnetBM[x,y] = Color.Yellow;
+            //    }
+            //}
 
-            IGraphics graphics = dotnetBM.GetDrawingApi();
 
             const int FONTSIZE = 12;
             const string FONTFAMILYNAME = "Cascadia Code";
 
-            graphics.DrawText("FUCK", FONTFAMILYNAME, FONTSIZE, Color.Yellow, Point.Empty);
+            dotnetBM.Clear(Color.Black);
+            IGraphics graphics = dotnetBM.GetDrawingApi();
+            
+            graphics.DrawText("Color.Red", FONTFAMILYNAME, FONTSIZE, Ssd1351Color.Convert(Color.Red), Point.Empty);
+            graphics.DrawText("Color.Green", FONTFAMILYNAME, FONTSIZE, Ssd1351Color.Convert(Color.Green), new Point(0, 12));
+            graphics.DrawText("Color.Blue", FONTFAMILYNAME, FONTSIZE, Ssd1351Color.Convert(Color.Blue), new Point(0, 24));
 
             //graphics.DrawImage(dotnetBM, 0, 0);
 
@@ -313,10 +292,11 @@ namespace RaspberryPiDevices.Tests
             };
 
 
-            await Task.Delay(1000).WaitAsync(cts.Token);
+            await Task.Delay(2000).WaitAsync(cts.Token);
 
 
-
+            
+            ssd1351.SetDisplayOff();
 
 
             //{
