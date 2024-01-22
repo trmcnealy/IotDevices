@@ -1,15 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Cryptography;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml.Linq;
+﻿using System.Runtime.CompilerServices;
 using System.Xml.Serialization;
-
-using Iot.Device.Board;
-
-using static System.Formats.Asn1.AsnWriter;
 
 namespace RaspberryPiDevices;
 
@@ -21,13 +11,13 @@ public class CalibrationPoint
     [XmlElement]
     public double X
     {
-        get; set;
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]get; [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]set;
     }
 
     [XmlElement]
     public double Y
     {
-        get; set;
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]get; [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]set;
     }
 
     public CalibrationPoint()
@@ -43,14 +33,14 @@ public class Calibration
     [XmlElement]
     public string Name
     {
-        get; set;
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]get; [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]set;
     }
 
     [XmlArray]
     //[XmlArrayItem("Points", Type = typeof(CalibrationPoint))]
     public List<CalibrationPoint> Points
     {
-        get; set;
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]get; [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]set;
     }
 
 
@@ -135,19 +125,19 @@ public class Calibration
 //    [XmlElement]
 //    public Guid Uid
 //    {
-//        get; set;
+//        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]get; [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]set;
 //    }
 //    [XmlElement]
 //    public string Name
 //    {
-//        get; set;
+//        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]get; [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]set;
 //    }
 
 //    [XmlArray]
 //    //[XmlArrayItem("Calibration", Type = typeof(Calibration))]
 //    public List<Calibration> CalibrationPoints
 //    {
-//        get; set;
+//        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]get; [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]set;
 //    }
 
 //    public Device()
@@ -173,7 +163,7 @@ public class Calibration
 //    [XmlArray]
 //    public List<Device> Devices
 //    {
-//        get; set;
+//        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]get; [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]set;
 //    }
 
 //    internal DeviceSettings()

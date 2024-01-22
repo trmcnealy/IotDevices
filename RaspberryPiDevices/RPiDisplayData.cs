@@ -6,19 +6,19 @@
 //{
 //    public double PH
 //    {
-//        get; set;
+//        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]get; [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]set;
 //    }
 //    public double AveragePH
 //    {
-//        get; set;
+//        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]get; [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]set;
 //    }
 //    public Temperature Temperature
 //    {
-//        get; set;
+//        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]get; [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]set;
 //    }
 //    public double AverageTemperature
 //    {
-//        get; set;
+//        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]get; [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]set;
 //    }
 
 //    public PhSensorData()
@@ -34,11 +34,11 @@
 //{
 //    public VolumeFlow Rate
 //    {
-//        get; set;
+//        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]get; [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]set;
 //    }
 //    public Volume Total
 //    {
-//        get; set;
+//        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]get; [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]set;
 //    }
 
 //    public FlowData()
@@ -52,11 +52,11 @@
 //{
 //    public Temperature Temperature
 //    {
-//        get; set;
+//        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]get; [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]set;
 //    }
 //    public RelativeHumidity Humidity
 //    {
-//        get; set;
+//        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]get; [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]set;
 //    }
 
 //    public TemperatureHumidityData()
@@ -70,7 +70,7 @@
 //{
 //    public Pressure Pressure
 //    {
-//        get; set;
+//        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]get; [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]set;
 //    }
 
 //    public BarometricPressureData()
@@ -83,31 +83,31 @@
 //{
 //    public int Index
 //    {
-//        get; set;
+//        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]get; [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]set;
 //    }
 
 //    public PhSensorData PhSensor1
 //    {
-//        get; set;
+//        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]get; [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]set;
 //    }
 
 //    public PhSensorData PhSensor2
 //    {
-//        get; set;
+//        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]get; [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]set;
 //    }
 //    public FlowData FlowSensor1
 //    {
-//        get; set;
+//        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]get; [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]set;
 //    }
 
 //    public TemperatureHumidityData TemperatureHumiditySensor1
 //    {
-//        get; set;
+//        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]get; [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]set;
 //    }
 
 //    public BarometricPressureData BarometricPressureSensor1
 //    {
-//        get; set;
+//        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]get; [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]set;
 //    }
 
 //    public RPiDisplayData()
@@ -129,15 +129,15 @@
 //{
 //    public ElectricPotential Vcc
 //    {
-//        get; set;
+//        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]get; [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]set;
 //    }
 //    public double Ph
 //    {
-//        get; set;
+//        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]get; [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]set;
 //    }
 //    public Temperature Temperature
 //    {
-//        get; set;
+//        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]get; [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]set;
 //    }
 
 //    public RPiPhSensorValues()
@@ -160,12 +160,12 @@
 //    public VolumeFlow FlowRate
 //    {
 //        //[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-//        get; set;
+//        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]get; [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]set;
 //    }
 //    public Volume TotalLitres
 //    {
 //        //[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-//        get; set;
+//        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]get; [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]set;
 //    }
 
 //    public RPiWaterFlowSensorValues()
@@ -186,7 +186,7 @@
 //    public Pressure Pressure
 //    {
 //        //[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-//        get; set;
+//        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]get; [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]set;
 //    }
 
 //    public RPiBarometricPressureSensorValues()
@@ -204,12 +204,12 @@
 //    public Temperature Temperature
 //    {
 //        //[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-//        get; set;
+//        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]get; [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]set;
 //    }
 //    public RelativeHumidity Humidity
 //    {
 //        //[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-//        get; set;
+//        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]get; [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]set;
 //    }
 
 //    public RPiTemperatureHumiditySensorValues()
@@ -228,23 +228,23 @@
 //{
 //    public RPiPhSensorValues Ph1
 //    {
-//        get; set;
+//        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]get; [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]set;
 //    }
 //    public RPiPhSensorValues Ph2
 //    {
-//        get; set;
+//        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]get; [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]set;
 //    }
 //    public RPiWaterFlowSensorValues WaterFlow1
 //    {
-//        get; set;
+//        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]get; [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]set;
 //    }
 //    public RPiTemperatureHumiditySensorValues TemperatureHumidity1
 //    {
-//        get; set;
+//        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]get; [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]set;
 //    }
 //    public RPiBarometricPressureSensorValues BarometricPressure1
 //    {
-//        get; set;
+//        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]get; [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]set;
 //    }
 
 //    public RPiSensors()

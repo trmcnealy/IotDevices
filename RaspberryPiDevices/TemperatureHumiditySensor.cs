@@ -57,7 +57,8 @@ namespace RaspberryPiDevices
                 return _sensor.GetHumidity();
             }
         }
-
+        
+    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public TemperatureHumiditySensor(I2cDevice i2cDevice)
         {
             _sensor = new Aht20(i2cDevice);
@@ -95,7 +96,8 @@ namespace RaspberryPiDevices
         } 
         #endregion
 
-
+        
+    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public override string ToString()
         {
             return $"{Temperature.DegreesFahrenheit:N5}°F, {Humidity.Percent:N4}%";

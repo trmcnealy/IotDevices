@@ -30,11 +30,11 @@ public sealed class WaterFlowPulseEventArgs : EventArgs
 {
     public VolumeFlow FlowRate
     {
-        get; set;
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]get; [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]set;
     }
     public Volume TotalLitres
     {
-        get; set;
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]get; [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]set;
     }
 
     public WaterFlowPulseEventArgs()
@@ -179,7 +179,7 @@ public class WaterFlowSensor : ISensor<WaterFlowSensor>
 
     //public Volume TotalLitres
     //{
-    //    get; set;
+    //    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]get; [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]set;
     //}
     #endregion
 

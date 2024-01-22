@@ -1,4 +1,6 @@
 ﻿
+using System.Runtime.CompilerServices;
+
 using SkiaSharp;
 
 namespace RaspberryPiDevices;
@@ -7,7 +9,7 @@ public sealed class OLEDDisplayPage
 {
     public string Text
     {
-        get; set;
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]get; [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]set;
     }
 
     public OLEDDisplayPage(int numberOfChars)
@@ -62,7 +64,7 @@ public sealed class OLEDDisplay
     {
         measuredWidth = MeasureText(text, out SKRect bounds);
 
-        if((bounds.Height > Height) || (bounds.Width > Width))
+        if ((bounds.Height > Height) || (bounds.Width > Width))
         {
             return false;
         }
@@ -77,7 +79,7 @@ public sealed class OLEDDisplay
 
         return _sKFont.MeasureText(glyphs, out bounds);
     }
-    
+
     public OLEDDisplayPage CreatePage()
     {
         OLEDDisplayPage page = new OLEDDisplayPage(Width * Height);

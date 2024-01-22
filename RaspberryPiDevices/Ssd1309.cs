@@ -1,22 +1,34 @@
-﻿using System;
+﻿
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
-using System.Reflection.Emit;
-using System.Reflection.Metadata;
-using System.Text;
-using System.Threading.Tasks;
-
+using System.Device.Gpio;
 using System.Device.Spi;
+using System.Diagnostics;
+using System.Drawing;
+using System.Linq;
+using System.Runtime.CompilerServices;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Threading.Tasks.Dataflow;
+using System.Xml;
+using System.Xml.Serialization;
+
+using Iot.Device.Board;
+using Iot.Device.Graphics;
+using Iot.Device.Graphics.SkiaSharpAdapter;
+using Iot.Device.Pcx857x;
+using Iot.Device.Ssd13xx;
+using Iot.Device.Ssd13xx.Commands;
+using Iot.Device.Tca954x;
+
+using SkiaSharp;
 
 using UnitsNet;
-using Iot.Device.Board;
-using Iot.Device.Max7219;
-using System.Device.Gpio;
-using System.Runtime.CompilerServices;
-using Iot.Device.Ads1115;
-using System.Diagnostics.Contracts;
-using System.Text.RegularExpressions;
+using UnitsNet.Units;
+
+using static RaspberryPiDevices.Regression;
 
 namespace RaspberryPiDevices;
 
@@ -55,7 +67,7 @@ namespace RaspberryPiDevices;
 /// 
 /// Online Development Resources /User Manual ://bit.ly/45LKn4c
 /// </summary>
-public sealed class SSD1309 : IDisposable
+public sealed class Ssd1309 : IDisposable
 {
 
     public static class ControlPinInterface
@@ -380,23 +392,18 @@ public sealed class SSD1309 : IDisposable
 
     public const int SIZE = 16;
 
-    public const int Max_Column = 128;
-    public const int Max_Row = 64;
-
     public const int Brightness = 0xFF;
 
-    public const int X_WIDTH = 128;
-    public const int Y_WIDTH = 64;
+    public const int ScreenWidth = 128;
+    public const int ScreenHeight = 64;
 
     public const int SCLK_PIN = 11;
     public const int MOSI_PIN = 10;
-    public const int RST_PIN = 5;
-    public const int DC_PIN = 6;
-    public const int CS_PIN = 13;
+    public const int RST_PIN = 17;
+    public const int DC_PIN = 27;
+    public const int CS_PIN = 22;
 
-
-
-    private byte[] gui_disp_buf = new byte[X_WIDTH * Y_WIDTH / 8]{
+    private byte[] gui_disp_buf = new byte[ScreenWidth * ScreenHeight / 8]{
 0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
 0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
 0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
@@ -462,23 +469,48 @@ public sealed class SSD1309 : IDisposable
 0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
 0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
 };
+
     private bool disposedValue;
     private readonly GpioController _gpioController;
     private readonly SpiDevice _spiDevice;
 
-    public SSD1309(RaspberryPiBoard raspberryPiBoard)
+    private readonly OLEDDisplay _oLEDDisplay;
+
+    private BitmapImage _bitmapImage;// = BitmapImage.CreateBitmap(Ssd1306Width, Ssd1306Height, PixelFormat.Format32bppArgb);
+
+    public IGraphics GraphicsApi
     {
+        get
+        {
+            return _bitmapImage.GetDrawingApi();
+        }
+    }
+
+    private const int FONTSIZE = 12;
+    private const string FONTFAMILYNAME = "Cascadia Code";
+
+    private AsciiFont _asciiFont;
+    private Paint _paint;
+
+    public Ssd1309(RaspberryPiBoard raspberryPiBoard)
+    {
+        _oLEDDisplay = new OLEDDisplay(ScreenWidth, ScreenHeight);
+        _oLEDDisplay.CreatePages(5);
+
+        _bitmapImage = GetBackBufferCompatibleImage();
+
+        _paint = new Paint(ScreenWidth, ScreenHeight);
+        _asciiFont = new AsciiFont(AsciiFont.Size.Font12);
+
         _gpioController = raspberryPiBoard.CreateGpioController();
 
-        _gpioController.OpenPin(SCLK_PIN);
-        _gpioController.OpenPin(MOSI_PIN);
+        //_gpioController.OpenPin(SCLK_PIN);
+        //_gpioController.OpenPin(MOSI_PIN);
         _gpioController.OpenPin(RST_PIN);
         _gpioController.OpenPin(DC_PIN);
         _gpioController.OpenPin(CS_PIN);
 
-        _gpioController.RegisterCallbackForPinValueChangedEvent(RST_PIN, PinEventTypes.Falling, ConversionReadyCallback);
-
-        SpiConnectionSettings connectionSettings = new SpiConnectionSettings(0, -1)
+        SpiConnectionSettings connectionSettings = new SpiConnectionSettings(0, 0)
         {
             //BusId,
             //ChipSelectLine,
@@ -514,6 +546,12 @@ public sealed class SSD1309 : IDisposable
             {
                 //managed
                 Clear();
+
+                _gpioController.ClosePin(SCLK_PIN);
+                _gpioController.ClosePin(MOSI_PIN);
+                _gpioController.ClosePin(RST_PIN);
+                _gpioController.ClosePin(DC_PIN);
+                _gpioController.ClosePin(CS_PIN);
             }
 
             //unmanaged
@@ -521,7 +559,7 @@ public sealed class SSD1309 : IDisposable
         }
     }
 
-    ~SSD1309()
+    ~Ssd1309()
     {
         Dispose(disposing: false);
     }
@@ -533,14 +571,10 @@ public sealed class SSD1309 : IDisposable
     }
     #endregion
 
-    public event Action? AlertReadyAsserted;
 
-    private void ConversionReadyCallback(object sender, PinValueChangedEventArgs pinValueChangedEventArgs)
+    public BitmapImage GetBackBufferCompatibleImage()
     {
-        if (AlertReadyAsserted is object)
-        {
-            AlertReadyAsserted();
-        }
+        return BitmapImage.CreateBitmap(ScreenWidth, ScreenHeight, PixelFormat.Format32bppXrgb);
     }
 
     private void SCLK_Set() => _gpioController.Write(SCLK_PIN, PinValue.High);
@@ -559,6 +593,7 @@ public sealed class SSD1309 : IDisposable
     {
         _gpioController.Write(pin, PinValue.Low);
     }
+
     private void SetPinHigh(int pin)
     {
         _gpioController.Write(pin, PinValue.Low);
@@ -576,7 +611,7 @@ public sealed class SSD1309 : IDisposable
 
     private void WriteReg(byte Reg)
     {
-        //DC_0;
+        SetPinLow(DC_PIN);
         _spiDevice.WriteByte(Reg);
     }
 
@@ -642,11 +677,97 @@ public sealed class SSD1309 : IDisposable
         }
     }
 
-    private void Display(byte[] Image)
-    {
-        byte page, column, temp;
 
-        for (page = 0; page < 8; page++)
+    public PixelFormat NativePixelFormat => PixelFormat.Format1bppBw;
+
+    //public void Display(string text, int fontSize = FONTSIZE, string fontFamilyName = FONTFAMILYNAME)
+    //{
+    //    float width = _oLEDDisplay.MeasureText(text, out SKRect bounds);
+
+    //    Console.WriteLine($"Display MeasureText width {width} bounds {bounds.Width} {bounds.Height}");
+
+    //    _bitmapImage.Clear(Color.Black);
+
+    //    GraphicsApi.DrawText(text, fontFamilyName, fontSize, Color.White, Point.Empty);
+
+    //    _ssd1306.DrawBitmap(_ssd1306BitmapImage);
+    //}
+
+    //private void DrawBitmap(BitmapImage image)
+    //{        
+
+    //    int width = ScreenWidth;
+    //    Int16 pages = 4;
+    //    List<byte> buffer = new();
+
+    //    for (int page = 0; page < pages; page++)
+    //    {
+    //        for (int x = 0; x < width; x++)
+    //        {
+    //            int bits = 0;
+    //            for (byte bit = 0; bit < 8; bit++)
+    //            {
+    //                bits = bits << 1;
+    //                bits |= image[x, page * 8 + 7 - bit].GetBrightness() > BrightnessThreshold ? 1 : 0;
+    //            }
+
+    //            buffer.Add((byte)bits);
+    //        }
+    //    }
+
+    //    int chunk_size = 16;
+    //    for (int i = 0; i < buffer.Count; i += chunk_size)
+    //    {
+    //        SendData(buffer.Skip(i).Take(chunk_size).ToArray());
+    //    }
+    //}
+
+    public void DisplayAllPixelsOn()
+    {
+        for (int x = 0; x < _bitmapImage.Width; ++x)
+        {
+            for (int y = 0; y < _bitmapImage.Height; ++y)
+            {
+                _bitmapImage[x, y] = Color.White;
+            }
+        }
+    }
+    public void DisplayAllPixelsOff()
+    {
+        for (int x = 0; x < _bitmapImage.Width; ++x)
+        {
+            for (int y = 0; y < _bitmapImage.Height; ++y)
+            {
+                _bitmapImage[x, y] = Color.Black;
+            }
+        }
+    }
+
+    public void DisplayPixelOn(int x, int y)
+    {
+        _bitmapImage[x, y] = Color.White;
+    }
+
+    public void DisplayPixelOff(int x, int y)
+    {
+        _bitmapImage[x, y] = Color.Black;
+    }
+
+    public void DisplayBitmapImage()
+    {
+        Display(_bitmapImage.AsByteSpan());
+    }
+
+    private void Display(byte[] image_bytes)
+    {
+        Display(image_bytes.AsSpan());
+    }
+
+    private void Display(ReadOnlySpan<byte> image_bytes)
+    {
+        byte temp;
+
+        for (byte page = 0; page < 8; page++)
         {
             /* set page address */
             WriteReg((byte)(0xB0 + page));
@@ -656,14 +777,93 @@ public sealed class SSD1309 : IDisposable
             WriteReg(0x10);
 
             /* write data */
-            for (column = 0; column < 128; column++)
+            for (byte column = 0; column < 128; column++)
             {
-                temp = Image[(7 - page) + column * 8];
+                temp = image_bytes[(7 - page) + column * 8];
                 WriteData(temp);
             }
         }
     }
 
+
+    public void DisplayString(string toDisplay)
+    {
+        _paint.DrawString(0, 0, toDisplay.ToCharArray(), ref _asciiFont, Paint.WHITE, Paint.BLACK);
+    }
+
+    private int Test()
+    {
+        //Console.Write("2.42inch OLED test demo\n");
+
+        //Console.Write("OLED Init...\r\n");
+        //Init();
+        ////DEV_Delay_ms(500);
+        //Clear();
+        //// 0.Create a new image cache
+        //int Imagesize = ((ScreenWidth % 8 == 0) ? (ScreenWidth / 8) : (ScreenWidth / 8 + 1)) * ScreenHeight;
+        //byte[] BlackImage = new byte[Imagesize];
+
+        //Console.Write("Paint_NewImage\r\n");
+
+        //Paint_NewImage(BlackImage, ScreenWidth, ScreenHeight, 270, BLACK);
+
+        //// Paint_SetScale(16);
+        //Console.Write("Drawing\r\n");
+
+        ////1.Select Image
+        //Paint_SelectImage(BlackImage);
+        //DEV_Delay_ms(500);
+        //Paint_Clear(BLACK);
+
+        //// 2.Drawing on the image   
+        //Console.Write("Drawing:page 1\r\n");
+        //Paint_DrawPoint(20, 10, WHITE, DOT_PIXEL_1X1, DOT_STYLE_DFT);
+        //Paint_DrawPoint(30, 10, WHITE, DOT_PIXEL_2X2, DOT_STYLE_DFT);
+        //Paint_DrawPoint(40, 10, WHITE, DOT_PIXEL_3X3, DOT_STYLE_DFT);
+        //Paint_DrawLine(10, 10, 10, 20, WHITE, DOT_PIXEL_1X1, LINE_STYLE_SOLID);
+        //Paint_DrawLine(20, 20, 20, 30, WHITE, DOT_PIXEL_1X1, LINE_STYLE_SOLID);
+        //Paint_DrawLine(30, 30, 30, 40, WHITE, DOT_PIXEL_1X1, LINE_STYLE_DOTTED);
+        //Paint_DrawLine(40, 40, 40, 50, WHITE, DOT_PIXEL_1X1, LINE_STYLE_DOTTED);
+        //Paint_DrawCircle(60, 30, 15, WHITE, DOT_PIXEL_1X1, DRAW_FILL_EMPTY);
+        //Paint_DrawCircle(100, 40, 20, WHITE, DOT_PIXEL_1X1, DRAW_FILL_FULL);
+        //Paint_DrawRectangle(50, 30, 60, 40, WHITE, DOT_PIXEL_1X1, DRAW_FILL_EMPTY);
+        //Paint_DrawRectangle(90, 30, 110, 50, BLACK, DOT_PIXEL_1X1, DRAW_FILL_FULL);
+        //// 3.Show image on page1
+        //OLED_2in42_Display(BlackImage);
+        //DEV_Delay_ms(2000);
+        //Paint_Clear(BLACK);
+
+        //// Drawing on the image
+        //Console.Write("Drawing:page 2\r\n");
+        //Paint_DrawString_EN(10, 0, "waveshare", &Font16, WHITE, WHITE);
+        //Paint_DrawString_EN(10, 17, "hello world", &Font8, WHITE, WHITE);
+        //Paint_DrawNum(10, 30, 123.456789, &Font8, 4, WHITE, WHITE);
+        //Paint_DrawNum(10, 43, 987654, &Font12, 5, WHITE, WHITE);
+        //// Show image on page2
+        //OLED_2in42_Display(BlackImage);
+        //DEV_Delay_ms(2000);
+        //Paint_Clear(BLACK);
+
+        //// Drawing on the image
+        //Console.Write("Drawing:page 3\r\n");
+        //Paint_DrawString_CN(10, 0, "���Abc", &Font12CN, WHITE, WHITE);
+        //Paint_DrawString_CN(0, 20, "΢ѩ����", &Font24CN, WHITE, WHITE);
+        //// Show image on page3
+        //OLED_2in42_Display(BlackImage);
+        //DEV_Delay_ms(2000);
+        //Paint_Clear(BLACK);
+
+        //// Drawing on the image
+        //Console.Write("Drawing:page 4\r\n");
+        //GUI_ReadBmp("./pic/waveshare.bmp", 0, 0);
+        //OLED_2in42_Display(BlackImage);
+        //DEV_Delay_ms(2000);
+        //Paint_Clear(BLACK);
+
+        //OLED_2in42_Clear();
+
+        return 0;
+    }
 
 
 

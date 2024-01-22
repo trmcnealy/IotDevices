@@ -16,7 +16,7 @@ public interface ISensor<T> : IDisposable
     //}
 
     //static abstract void M();
-    //static abstract T P { get; set; }
+    //static abstract T P { [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]get; [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]set; }
 
     //static abstract event Action E;
     //static abstract T operator +(T l, T r);
@@ -27,7 +27,7 @@ public interface ISensor<T> : IDisposable
     //static abstract explicit operator string(T t);
 
     //static virtual void M2() {}
-    //static virtual T P2 { get; set; }
+    //static virtual T P2 { [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]get; [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]set; }
 
     //static virtual event Action E2;
     //static virtual T operator -(T l, T r) { throw new NotImplementedException(); }
@@ -36,7 +36,7 @@ public interface ISensor<T> : IDisposable
 
     //static int f = 0;
 
-    //static sealed int P1 { get; set; }
+    //static sealed int P1 { [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]get; [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]set; }
     //static sealed int P23 { get => f; set => f = value; }
 
     //static sealed event Action E13;

@@ -6,7 +6,6 @@ using System.Device.I2c;
 using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
-using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
@@ -27,41 +26,6 @@ using UnitsNet;
 using UnitsNet.Units;
 
 namespace RaspberryPiDevices;
-
-public record struct Range<T> : IEquatable<T>
-    where T : INumber<T>
-{
-    public T Upper;
-    public T Lower;
-
-    public Range(T upper, T lower)
-    {
-        Upper = upper;
-        Lower = lower;
-    }
-
-    public T In(T value)
-    {
-        if (value > Upper)
-        {
-            return Upper;
-        }
-        if (value < Lower)
-        {
-            return Lower;
-        }
-        return value;
-    }
-
-    public readonly bool Equals(T? other)
-    {
-        if ((other is null) || (other > Upper) || (other < Lower))
-        {
-            return false;
-        }
-        return true;
-    }
-}
 
 //https://learn.microsoft.com/en-us/dotnet/csharp/asynchronous-programming/async-scenarios#recognize-cpu-bound-and-io-bound-work
 public class RPiHardware : IDisposable
@@ -248,7 +212,7 @@ public class RPiHardware : IDisposable
     internal readonly Pcf8574 _pcf8574;
     internal readonly I2cDevice _tca9548A_i2cDevice;
     internal readonly Tca9548A _tca9548a;
-    internal readonly Ssd1306 _ssd1306;
+    //internal readonly Ssd1306 _ssd1306;
 
     internal readonly BarometricPressureSensor BarometricPressureSensor;
     internal readonly WaterFlowSensor WaterFlowSensor;
@@ -268,22 +232,10 @@ public class RPiHardware : IDisposable
         }
     }
 
-    public IGraphics Ssd1306Graphics
-    {
-        get
-        {
-            return _ssd1306BitmapImage.GetDrawingApi();
-        }
-    }
+    //private readonly int _ssd1306FontSize = 12;
+    //private readonly string _ssd1306Font = "Cascadia Code";
 
-    private readonly OLEDDisplay Ssd1306OLEDDisplay;
-
-    private readonly BitmapImage _ssd1306BitmapImage;// = BitmapImage.CreateBitmap(Ssd1306Width, Ssd1306Height, PixelFormat.Format32bppArgb);
-
-    private readonly int _ssd1306FontSize = 12;
-    private readonly string _ssd1306Font = "Cascadia Code";
-
-    private RPiSensors _sensors;
+    //private RPiSensors _sensors;
 
     //private RPiDisplayData _displayData;
 
@@ -292,10 +244,9 @@ public class RPiHardware : IDisposable
     //[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     public RPiHardware(in Pcf8574I2CSlaveSwitch slaveSwitch = Pcf8574I2CSlaveSwitch.None)
     {
-        Ssd1306OLEDDisplay = new OLEDDisplay(Ssd1306Width, Ssd1306Height);
-        Ssd1306OLEDDisplay.CreatePages(5);
 
-        _sensors = new RPiSensors();
+
+        //_sensors = new RPiSensors();
         //_displayData = new RPiDisplayData();
 
         //_phSensorValues = new RPiPhSensorValues[2] { new RPiPhSensorValues(), new RPiPhSensorValues() };
@@ -315,17 +266,7 @@ public class RPiHardware : IDisposable
         Disposables = new List<IDisposable>();
         I2cDevices = new Dictionary<Guid, I2cDevice>();
 
-        _ssd1306 = new Ssd1306(_raspberryPiBoard.CreateI2cDevice(new I2cConnectionSettings(I2cBusIndex, Ssd1306Address)), Ssd1306Width, Ssd1306Height);
-
-        _ssd1306BitmapImage = _ssd1306.GetBackBufferCompatibleImage();
-
-
-        if (_ssd1306BitmapImage.Width != Ssd1306Width || _ssd1306BitmapImage.Height != Ssd1306Height)
-        {
-            throw new Exception($"{_ssd1306BitmapImage.Width} != {Ssd1306Width} || {_ssd1306BitmapImage.Height} != {Ssd1306Height}");
-        }
-
-        _ssd1306.ClearScreen();
+        //_ssd1306 = new Ssd1306(_raspberryPiBoard.CreateI2cDevice(new I2cConnectionSettings(I2cBusIndex, Ssd1306Address)), Ssd1306Width, Ssd1306Height);
 
         //DisplayFullBlocks();
 
@@ -372,7 +313,7 @@ public class RPiHardware : IDisposable
         _records.AddDevice(BarometricPressureSensorId1);
 
         //Disposables.Add(_ssd1306BitmapImage);
-        Disposables.Add(_ssd1306);
+        //Disposables.Add(_ssd1306);
         Disposables.Add(_pHProbeSensor1);
         Disposables.Add(_pHProbeSensor2);
         Disposables.Add(WaterFlowSensor);
@@ -468,36 +409,36 @@ public class RPiHardware : IDisposable
     }
     #endregion
 
-    private void DrawBitmap()
-    {
-        _ssd1306.DrawBitmap(_ssd1306BitmapImage);
-    }
+    //private void DrawBitmap()
+    //{
+    //    _ssd1306.DrawBitmap(_ssd1306BitmapImage);
+    //}
 
-    private void DisplayFullBlocks(in int startX = 0, in int startY = 0)
-    {
-        _ssd1306BitmapImage.Clear(Color.Black);
+    //private void DisplayFullBlocks(in int startX = 0, in int startY = 0)
+    //{
+    //    _ssd1306BitmapImage.Clear(Color.Black);
 
-        StringBuilder sb = new StringBuilder();
+    //    StringBuilder sb = new StringBuilder();
 
-        sb.AppendLine(FullBlockLightShadePatternString1);
-        sb.AppendLine(FullBlockLightShadePatternString2);
-        sb.AppendLine(FullBlockLightShadePatternString1);
-        sb.AppendLine(FullBlockLightShadePatternString2);
-        sb.AppendLine(FullBlockLightShadePatternString1);
+    //    sb.AppendLine(FullBlockLightShadePatternString1);
+    //    sb.AppendLine(FullBlockLightShadePatternString2);
+    //    sb.AppendLine(FullBlockLightShadePatternString1);
+    //    sb.AppendLine(FullBlockLightShadePatternString2);
+    //    sb.AppendLine(FullBlockLightShadePatternString1);
 
-        Ssd1306Graphics.DrawText(sb.ToString(), _ssd1306Font, _ssd1306FontSize, Color.White, new Point(startX, startY));
+    //    Ssd1306Graphics.DrawText(sb.ToString(), _ssd1306Font, _ssd1306FontSize, Color.White, new Point(startX, startY));
 
-        DrawBitmap();
-    }
+    //    DrawBitmap();
+    //}
 
-    private void DisplayText(in string text)
-    {
-        _ssd1306BitmapImage.Clear(Color.Black);
+    //private void DisplayText(in string text)
+    //{
+    //    _ssd1306BitmapImage.Clear(Color.Black);
 
-        Ssd1306Graphics.DrawText(text, _ssd1306Font, _ssd1306FontSize, Color.White, Point.Empty);
+    //    Ssd1306Graphics.DrawText(text, _ssd1306Font, _ssd1306FontSize, Color.White, Point.Empty);
 
-        DrawBitmap();
-    }
+    //    DrawBitmap();
+    //}
 
     private void DisplayText(in string text, in int startX = 0, in int startY = 0)
     {
@@ -580,25 +521,21 @@ public class RPiHardware : IDisposable
         return await Task.FromResult(new TemperatureHumiditySensorRecord()).ConfigureAwait(false);
     }
 
-    private Task PhSensor_Event(object? sender, WaterFlowPulseEventArgs args)
+    private void PhSensor_Event(object? sender, WaterFlowPulseEventArgs args)
     {
         WaterFlowSensorRecord record = new WaterFlowSensorRecord(args.FlowRate, args.TotalLitres);
 
         Ssd1306OLEDDisplay[2].Text = $"Flow: {record.FlowRate.LitersPerMinute:N4}\nTotal: {record.TotalLitres.Liters:N6}";
 
         _records.Add(WaterFlowSensorId1, record);
-
-        return Task.CompletedTask;
     }
 
-    private Task WaterFlowSensor_PulseEvent(object? sender, WaterFlowPulseEventArgs args)
+    private void WaterFlowSensor_PulseEvent(object? sender, WaterFlowPulseEventArgs args)
     {
         WaterFlowSensorRecord record = new WaterFlowSensorRecord(args.FlowRate, args.TotalLitres);
 
 
         PHSensor(WaterFlowSensorId1, record);
-
-        return Task.CompletedTask;
     }
 
     //private static async Task<IEnumerable<SensorRecordBase>> GetUsersAsync(IEnumerable<int> userIds)
@@ -671,7 +608,7 @@ public class RPiHardware : IDisposable
 
         Console.WriteLine("Running");
 
-        _sensors = new RPiSensors();
+        //_sensors = new RPiSensors();
 
         Stopwatch sw = new Stopwatch();
         sw.Reset();
@@ -800,16 +737,16 @@ public class RPiHardware : IDisposable
                 //Task.WaitAll(sensorTasks.ToArray(), 1000);
                 //RunTasks(sensorTasks, cancellationToken).Wait(Timeout);
 
-                PhSensor1_AveragePH += PHRange.In(_sensors.Ph1.Ph);
+                PhSensor1_AveragePH += PHRange.Limit(_sensors.Ph1.Ph);
                 displayPhSensor1_PH = Math.Round(PhSensor1_AveragePH / sampleSize, 2);
 
-                PhSensor1_AverageTemperature += TemperatureRange.In(_sensors.Ph1.Temperature.DegreesFahrenheit);
+                PhSensor1_AverageTemperature += TemperatureRange.Limit(_sensors.Ph1.Temperature.DegreesFahrenheit);
                 displayPhSensor1_Temperature = Math.Round(PhSensor1_AverageTemperature / sampleSize, 2);
 
-                PhSensor2_AveragePH += PHRange.In(_sensors.Ph2.Ph);
+                PhSensor2_AveragePH += PHRange.Limit(_sensors.Ph2.Ph);
                 displayPhSensor2_PH = Math.Round(PhSensor2_AveragePH / sampleSize, 2);
 
-                PhSensor2_AverageTemperature += TemperatureRange.In(_sensors.Ph2.Temperature.DegreesFahrenheit);
+                PhSensor2_AverageTemperature += TemperatureRange.Limit(_sensors.Ph2.Temperature.DegreesFahrenheit);
                 displayPhSensor2_Temperature = Math.Round(PhSensor2_AverageTemperature / sampleSize, 2);
 
                 if (WaterFlowRateHasChanged)
@@ -823,10 +760,10 @@ public class RPiHardware : IDisposable
                     WaterFlowRateHasChanged = false;
                 }
 
-                TemperatureHumidity1_AverageHumidity += HumidityRange.In(_sensors.TemperatureHumidity1.Humidity.Percent);
+                TemperatureHumidity1_AverageHumidity += HumidityRange.Limit(_sensors.TemperatureHumidity1.Humidity.Percent);
                 displayTemperatureHumidity1_AverageHumidity = Math.Round(TemperatureHumidity1_AverageHumidity / sampleSize, 2);
 
-                TemperatureHumidity1_AverageTemperature += TemperatureRange.In(_sensors.TemperatureHumidity1.Temperature.DegreesFahrenheit);
+                TemperatureHumidity1_AverageTemperature += TemperatureRange.Limit(_sensors.TemperatureHumidity1.Temperature.DegreesFahrenheit);
                 displayTemperatureHumidity1_AverageTemperature = Math.Round(TemperatureHumidity1_AverageTemperature / sampleSize, 2);
 
                 BarometricPressure1_AveragePressure += _sensors.BarometricPressure1.Pressure.Kilopascals;

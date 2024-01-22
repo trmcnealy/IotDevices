@@ -12,7 +12,7 @@ namespace RaspberryPiDevices;
 internal class VideoCamera
 {
 
-    private readonly ProcessSettings _processSettings;
+    //private readonly ProcessSettings _processSettings;
 
     //public async Task<string> CaptureStill()
     //{
@@ -74,52 +74,52 @@ internal class VideoCamera
     //    return filename;
     //}
 
-    public async Task CaptureTimelapse()
-    {
-        // The false argument avoids the app to output to stdio
-        // Time lapse images will be directly saved on disk without
-        // writing anything on the terminal
-        // Alternatively, we can leave the default (true) and
-        // use the '.Remove' method
-        var builder = new CommandOptionsBuilder(false)
-            // .Remove(CommandOptionsBuilder.Get(Command.Output))
-            .WithOutput("image_%04d.jpg")
-            .WithTimeout(5000)
-            .WithTimelapse(1000)
-            .WithVflip()
-            .WithHflip()
-            .WithResolution(640, 480);
-        var args = builder.GetArguments();
+    //public async Task CaptureTimelapse()
+    //{
+    //    // The false argument avoids the app to output to stdio
+    //    // Time lapse images will be directly saved on disk without
+    //    // writing anything on the terminal
+    //    // Alternatively, we can leave the default (true) and
+    //    // use the '.Remove' method
+    //    var builder = new CommandOptionsBuilder(false)
+    //        // .Remove(CommandOptionsBuilder.Get(Command.Output))
+    //        .WithOutput("image_%04d.jpg")
+    //        .WithTimeout(5000)
+    //        .WithTimelapse(1000)
+    //        .WithVflip()
+    //        .WithHflip()
+    //        .WithResolution(640, 480);
+    //    var args = builder.GetArguments();
 
-        using var proc = new ProcessRunner(_processSettings);
-        Console.WriteLine("Using the following command line:");
-        Console.WriteLine(proc.GetFullCommandLine(args));
-        Console.WriteLine();
+    //    using var proc = new ProcessRunner(_processSettings);
+    //    Console.WriteLine("Using the following command line:");
+    //    Console.WriteLine(proc.GetFullCommandLine(args));
+    //    Console.WriteLine();
 
-        // The ContinuousRunAsync method offload the capture on a separate thread
-        // the first await is tied the thread being run
-        // the second await is tied to the capture
-        var task = await proc.ContinuousRunAsync(args, default(Stream));
-        await task;
-    }
+    //    // The ContinuousRunAsync method offload the capture on a separate thread
+    //    // the first await is tied the thread being run
+    //    // the second await is tied to the capture
+    //    var task = await proc.ContinuousRunAsync(args, default(Stream));
+    //    await task;
+    //}
 
-    public async Task<IEnumerable<CameraInfo>> List()
-    {
-        var builder = new CommandOptionsBuilder()
-            .WithListCameras();
-        var args = builder.GetArguments();
+    //public async Task<IEnumerable<CameraInfo>> List()
+    //{
+    //    var builder = new CommandOptionsBuilder()
+    //        .WithListCameras();
+    //    var args = builder.GetArguments();
 
-        using var proc = new ProcessRunner(_processSettings);
-        Console.WriteLine("Using the following command line:");
-        Console.WriteLine(proc.GetFullCommandLine(args));
-        Console.WriteLine();
+    //    using var proc = new ProcessRunner(_processSettings);
+    //    Console.WriteLine("Using the following command line:");
+    //    Console.WriteLine(proc.GetFullCommandLine(args));
+    //    Console.WriteLine();
 
-        var text = await proc.ExecuteReadOutputAsStringAsync(args);
-        Console.WriteLine($"Output being parsed:");
-        Console.WriteLine(text);
-        Console.WriteLine();
+    //    var text = await proc.ExecuteReadOutputAsStringAsync(args);
+    //    Console.WriteLine($"Output being parsed:");
+    //    Console.WriteLine(text);
+    //    Console.WriteLine();
 
-        var cameras = await CameraInfo.From(text);
-        return cameras;
-    }
+    //    var cameras = await CameraInfo.From(text);
+    //    return cameras;
+    //}
 }

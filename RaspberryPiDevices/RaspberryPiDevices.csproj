@@ -55,6 +55,45 @@
       <NoWarn>1701;1702;CA2255</NoWarn>
     </PropertyGroup>
 
+    <ItemGroup>
+      <Compile Remove="TODO\Ads1263.cs" />
+      <Compile Remove="TODO\DeviceSettings.cs" />
+      <Compile Remove="TODO\Digit.cs" />
+      <Compile Remove="TODO\HighPrecisionADHat.cs" />
+      <Compile Remove="TODO\I2CScanner.cs" />
+      <Compile Remove="TODO\IOController.cs" />
+      <Compile Remove="TODO\IOControllerTests.cs" />
+      <Compile Remove="TODO\LED4DigitDisplay.cs" />
+      <Compile Remove="TODO\LED8DigitDisplay.cs" />
+      <Compile Remove="TODO\LEDCharacter.cs" />
+      <Compile Remove="TODO\Ph4502c.cs" />
+      <Compile Remove="TODO\PlantPhReferences.cs" />
+      <Compile Remove="TODO\RPiHardware.cs" />
+      <Compile Remove="TODO\RPiSettings.cs" />
+      <Compile Remove="TODO\SerialPortController.cs" />
+      <Compile Remove="TODO\SoilMoistureSensor.cs" />
+      <Compile Remove="TODO\SpiMessageType.cs" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Include="TODO\Ads1263.cs" />
+      <None Include="Digit.cs" />
+      <None Include="TODO\HighPrecisionADHat.cs" />
+      <None Include="TODO\I2CScanner.cs" />
+      <None Include="TODO\IOController.cs" />
+      <None Include="TODO\IOControllerTests.cs" />
+      <None Include="TODO\LED4DigitDisplay.cs" />
+      <None Include="TODO\LED8DigitDisplay.cs" />
+      <None Include="TODO\LEDCharacter.cs" />
+      <None Include="TODO\Ph4502c.cs" />
+      <None Include="TODO\PlantPhReferences.cs" />
+      <None Include="TODO\RPiHardware.cs" />
+      <None Include="TODO\RPiSettings.cs" />
+      <None Include="TODO\SerialPortController.cs" />
+      <None Include="TODO\SoilMoistureSensor.cs" />
+      <None Include="TODO\SpiMessageType.cs" />
+    </ItemGroup>
+
     <!--linux-arm64-->
 
     <ItemGroup>

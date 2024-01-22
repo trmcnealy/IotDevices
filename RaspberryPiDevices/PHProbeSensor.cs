@@ -25,20 +25,20 @@ public sealed class PHSensorEventArgs : EventArgs
 {
     public double Ph
     {
-        get; set;
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]get; [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]set;
     }
 
     public Temperature Temperature
     {
-        get; set;
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]get; [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]set;
     }
-
+    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     public PHSensorEventArgs()
     {
         Ph = 0.0;
         Temperature = Temperature.FromDegreesCelsius(0.0);
     }
-
+    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     public PHSensorEventArgs(double ph, Temperature temperature)
     {
         Ph = ph;
@@ -105,7 +105,7 @@ public class PHProbeSensor : IDisposable
     //private readonly GpioController _gpioController;
 
     private readonly Ads1115? _ads1115;
-    private readonly Ph4502c _ph4502c;
+    //private readonly Ph4502c _ph4502c;
 
     private static readonly VoltageRange voltageLimits = new VoltageRange(0.0, 5.0);
 
@@ -370,7 +370,7 @@ public class PHProbeSensor : IDisposable
 
         //_ads1115?.EnableConversionReady();
 
-        _ph4502c = new Ph4502c();
+        //_ph4502c = new Ph4502c();
 
         //Console.WriteLine(_ph4502c);
 
@@ -486,21 +486,21 @@ public class PHProbeSensor : IDisposable
     //private static (ElectricPotential Vcc, double Ph, Temperature Temperature) values;
 
     //[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public RPiPhSensorValues GetValues()
-    {
-        try
-        {
-            voltageValues = GetVoltages();
-            _ph = GetPhValue(voltageValues.Ain0);
-            _temperature = new Temperature(GetTemperatureValue(voltageValues.Ain1), TemperatureUnit.DegreeCelsius);
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine($"Error: {e}");
-        }
+    //public RPiPhSensorValues GetValues()
+    //{
+    //    try
+    //    {
+    //        voltageValues = GetVoltages();
+    //        _ph = GetPhValue(voltageValues.Ain0);
+    //        _temperature = new Temperature(GetTemperatureValue(voltageValues.Ain1), TemperatureUnit.DegreeCelsius);
+    //    }
+    //    catch (Exception e)
+    //    {
+    //        Console.WriteLine($"Error: {e}");
+    //    }
 
-        return new RPiPhSensorValues(voltageValues.Vcc, _ph, _temperature);
-    }
+    //    return new RPiPhSensorValues(voltageValues.Vcc, _ph, _temperature);
+    //}
 
 
     //[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]

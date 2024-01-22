@@ -13,17 +13,17 @@ public sealed class DeviceCalibration
 {
     public string Name
     {
-        get; set;
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]get; [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]set;
     }
 
     public List<Regression.Point> Points
     {
-        get; set;
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]get; [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]set;
     }
 
     public Regression.Line Line
     {
-        get; set;
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]get; [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]set;
     }
 
     public DeviceCalibration(string name, List<Regression.Point> points)
@@ -75,17 +75,17 @@ public sealed class RPiDevice
 {
     public Guid Uid
     {
-        get; set;
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]get; [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]set;
     }
 
     public string Name
     {
-        get; set;
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]get; [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]set;
     }
 
     public List<DeviceCalibration> Calibrations
     {
-        get; set;
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]get; [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]set;
     }
 
     public RPiDevice(Guid uid, string name)
@@ -107,7 +107,7 @@ public sealed class RPiSettings
 {
     public List<RPiDevice> RPiDevices
     {
-        get; set;
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]get; [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]set;
     }
 
     public RPiSettings()
