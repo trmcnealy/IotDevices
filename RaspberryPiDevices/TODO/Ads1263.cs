@@ -217,7 +217,7 @@ public class Ads1263// : IDisposable
     private readonly SpiDevice _spiDevice;
 
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    /*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/
     public Ads1263(RaspberryPiBoard raspberryPiBoard)
     {
         _board = raspberryPiBoard;

@@ -13,7 +13,7 @@ public static class WaterVapour
     private const double E = -0.0000000024780681;
     private const double F = 6.5459673;
     
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    /*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/
     public static Pressure SaturationVaporPressure(Temperature T)
     {
         return Pressure.FromPoundsForcePerSquareInch(Math.Exp((A / T.DegreesRankine)
@@ -24,7 +24,7 @@ public static class WaterVapour
                                                                            + (F * Math.Log(T.DegreesRankine))));
     }
     
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    /*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/
     public static Pressure PressureDeficitAir(Temperature T, RelativeHumidity h)
     {
         Pressure v_psat = SaturationVaporPressure(T);
@@ -36,7 +36,7 @@ public static class WaterVapour
         return vpd;
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    /*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/
     public static Pressure PartialPressureAir(Temperature T, RelativeHumidity h)
     {
         Pressure v_psat = SaturationVaporPressure(T);

@@ -30,11 +30,13 @@ public sealed class WaterFlowPulseEventArgs : EventArgs
 {
     public VolumeFlow FlowRate
     {
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]get; [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]set;
+        /*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/
+        get; /*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/set;
     }
     public Volume TotalLitres
     {
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]get; [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]set;
+        /*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/
+        get; /*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/set;
     }
 
     public WaterFlowPulseEventArgs()
@@ -70,6 +72,19 @@ public class WaterFlowSensor : ISensor<WaterFlowSensor>
     //    get;
     //}
 
+    
+    public const long TicksPerMicrosecond = 10;
+    public const long TicksPerMillisecond = TicksPerMicrosecond * 1000;
+    public const long TicksPerSecond = TicksPerMillisecond * 1000;   // 10,000,000
+    public const long TicksPerMinute = TicksPerSecond * 60;         // 600,000,000
+    public const long TicksPerHour = TicksPerMinute * 60;        // 36,000,000,000
+    public const long TicksPerDay = TicksPerHour * 24;          // 864,000,000,000
+
+
+
+    private static readonly double d_tickFrequency = ((double)TicksPerSecond) / ((double)Stopwatch.Frequency);
+    private static readonly long l_tickFrequency = (TicksPerSecond / Stopwatch.Frequency);
+
     static WaterFlowSensor()
     {
         //Uid = SensorId1;
@@ -82,9 +97,6 @@ public class WaterFlowSensor : ISensor<WaterFlowSensor>
         //Calibration.Points.Add(new CalibrationPoint() { X = 5, Y = 0 });
     }
 
-    private const long TicksPerSecond = TimeSpan.TicksPerSecond;
-    private const long TicksPerMillisecond = TimeSpan.TicksPerMillisecond;
-    private const long TicksPerMicrosecond = TimeSpan.TicksPerMillisecond / 1000;
     #endregion
 
     #region Variables
@@ -102,7 +114,7 @@ public class WaterFlowSensor : ISensor<WaterFlowSensor>
     #region Properties
     public ElectricPotential Voltage
     {
-        //[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        ///*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/
         get
         {
             return _ads1115.ReadVoltage();
@@ -110,7 +122,7 @@ public class WaterFlowSensor : ISensor<WaterFlowSensor>
     }
     public ElectricPotential AIN0
     {
-        //[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        ///*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/
         get
         {
             return _ads1115.ReadVoltage(InputMultiplexer.AIN0);
@@ -118,7 +130,7 @@ public class WaterFlowSensor : ISensor<WaterFlowSensor>
     }
     public double DataFrequency
     {
-        //[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        ///*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/
         get
         {
             return _ads1115.FrequencyFromDataRate(_ads1115.DataRate);
@@ -128,7 +140,7 @@ public class WaterFlowSensor : ISensor<WaterFlowSensor>
     //private VolumeFlow _flowRate;
     //public VolumeFlow FlowRate
     //{
-    //    //[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    //    ///*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/
     //    get
     //    {
     //        return _flowRate;
@@ -137,13 +149,10 @@ public class WaterFlowSensor : ISensor<WaterFlowSensor>
 
     //private Stopwatch _stopwatch = Stopwatch.StartNew();
 
-    private static readonly double d_tickFrequency = ((double)TimeSpan.TicksPerSecond) / ((double)Stopwatch.Frequency);
-    private static readonly long l_tickFrequency = (TimeSpan.TicksPerSecond / Stopwatch.Frequency);
-
     private long _firstTimestamp;
     public long FirstTimestamp
     {
-        //[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        ///*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/
         get
         {
             return _firstTimestamp;
@@ -156,7 +165,7 @@ public class WaterFlowSensor : ISensor<WaterFlowSensor>
 
     public long CurrentTimestamp
     {
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        /*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/
         get
         {
             return Stopwatch.GetTimestamp();
@@ -165,7 +174,7 @@ public class WaterFlowSensor : ISensor<WaterFlowSensor>
 
     public TimeSpan DeltaTimestamp
     {
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        /*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/
         get
         {
             return Stopwatch.GetElapsedTime(_firstTimestamp);
@@ -179,20 +188,20 @@ public class WaterFlowSensor : ISensor<WaterFlowSensor>
 
     //public Volume TotalLitres
     //{
-    //    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]get; [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]set;
+    //    /*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/get; /*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/set;
     //}
     #endregion
 
 
     public event EventHandler<WaterFlowPulseEventArgs>? PulseEvent;
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    /*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/
     private void OnPulseEvent(WaterFlowPulseEventArgs e)
     {
         PulseEvent?.Invoke(this, e);
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    /*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/
     private void Pulse(VolumeFlow flowRate, Volume volume)
     {
         WaterFlowPulseEventArgs args = new WaterFlowPulseEventArgs(flowRate, volume);
@@ -205,7 +214,7 @@ public class WaterFlowSensor : ISensor<WaterFlowSensor>
     private double _calibrationFactor = 23.0;
 
     #region Cctor
-    //[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    ///*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/
     //public WaterFlowSensor() //: base(SensorId1, CalibrationName)
     //{
     //    if (CalibrationPoints.Count == 0)
@@ -215,7 +224,7 @@ public class WaterFlowSensor : ISensor<WaterFlowSensor>
     //}
 
 
-    //[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    ///*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/
     public WaterFlowSensor(I2cDevice i2cDevice, GpioController gpioController) //: base(SensorId1, CalibrationName)
     {
         //_ads1115 = new Ads1115(_raspberryPiBoard.CreateI2cDevice(new I2cConnectionSettings(1, (int)I2cAddress.GND)), InputMultiplexer.AIN0, MeasuringRange.FS6144, DataRate.SPS860, DeviceMode.Continuous);
@@ -228,8 +237,6 @@ public class WaterFlowSensor : ISensor<WaterFlowSensor>
         _ads1115.ComparatorPolarity = ComparatorPolarity.Low;
         _ads1115.ComparatorLatching = ComparatorLatching.Latching;
 
-        _ads1115.AlertReadyAsserted += OnAlertReadyAsserted;
-
         _ads1115.EnableConversionReady();
 
         _ads1115.EnableComparator(_ads1115.VoltageToRaw(ElectricPotential.FromVolts(1.0)),
@@ -238,10 +245,12 @@ public class WaterFlowSensor : ISensor<WaterFlowSensor>
                                   ComparatorQueue.AssertAfterTwo);
 
 
+        _ads1115.AlertReadyAsserted += OnAlertReadyAsserted;
+
         Reset();
     }
 
-    ////[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    /////*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/
     //public WaterFlowSensor(RaspberryPiBoard _raspberryPiBoard) //: base(SensorId1, CalibrationName)
     //{
     //    //_ads1115 = new Ads1115(_raspberryPiBoard.CreateI2cDevice(new I2cConnectionSettings(1, (int)I2cAddress.GND)), InputMultiplexer.AIN0, MeasuringRange.FS6144, DataRate.SPS860, DeviceMode.Continuous);
@@ -310,7 +319,7 @@ public class WaterFlowSensor : ISensor<WaterFlowSensor>
     //private bool _FirstPulse = false;
 
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    /*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/
     public void OnAlertReadyAsserted()
     {
         //if (!_FirstPulse)
@@ -340,7 +349,7 @@ public class WaterFlowSensor : ISensor<WaterFlowSensor>
         //}
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    /*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/
     public void Reset()
     {
         //_FirstPulse = false;
@@ -352,7 +361,7 @@ public class WaterFlowSensor : ISensor<WaterFlowSensor>
         _flowRates.Add(FirstTimestamp, (VolumeFlow.FromLitersPerMinute(0.0), 0));
     }
 
-    ////[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    /////*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/
     //public VolumeFlow GetValues(double pulseCount, double calibrationFactor)
     //{
     //    try
@@ -369,7 +378,7 @@ public class WaterFlowSensor : ISensor<WaterFlowSensor>
     //    return _flowRate;
     //}
 
-    //[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    ///*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/
     //public (ElectricPotential Vcc, ElectricPotential Ain0) GetVoltages()
     //{
     //    double vcc = _ads1115.ReadVoltage().Volts;
@@ -383,7 +392,7 @@ public class WaterFlowSensor : ISensor<WaterFlowSensor>
     /// </summary>
     /// <param name="voltage"></param>
     /// <returns></returns>
-    //[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    ///*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/
     private VolumeFlow GetFlowRateValue(double pulseCount, double calibrationFactor)
     {
         if (Math.Abs(pulseCount - 0.0) <= double.Epsilon)
@@ -396,7 +405,7 @@ public class WaterFlowSensor : ISensor<WaterFlowSensor>
 
     private static TimeSpan deltaTimestampDelay = TimeSpan.FromMilliseconds(100);
 
-    //[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    ///*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/
     private static double GetTimeInSeconds(TimeSpan time)
     {
         double value = 0.0;
@@ -416,7 +425,7 @@ public class WaterFlowSensor : ISensor<WaterFlowSensor>
         return value;
     }
 
-    //[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    ///*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/
     private static double GetTimeInMinutes(TimeSpan time)
     {
         double value = 0.0;
@@ -440,7 +449,7 @@ public class WaterFlowSensor : ISensor<WaterFlowSensor>
         return value;
     }
 
-    //[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    ///*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/
     //public void Run()
     //{
     //    _delta = DeltaTimestamp;
@@ -463,7 +472,7 @@ public class WaterFlowSensor : ISensor<WaterFlowSensor>
     //    }
     //}
 
-    //[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    ///*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/
     //public async Task RunAsync(CancellationToken cancellationToken)
     //{
     //    await Task.Run(() =>
@@ -487,7 +496,7 @@ public class WaterFlowSensor : ISensor<WaterFlowSensor>
     //    }).WaitAsync(cancellationToken);
     //}
 
-    //[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    ///*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/
     //public override string ToString()
     //{
     //    KeyValuePair<long, (VolumeFlow FlowRate, double Time)> record = _flowRates.LastOrDefault();

@@ -87,7 +87,7 @@
       <None Include="TODO\LEDCharacter.cs" />
       <None Include="TODO\Ph4502c.cs" />
       <None Include="TODO\PlantPhReferences.cs" />
-      <None Include="TODO\RPiHardware.cs" />
+      <None Include="RPiHardware.cs" />
       <None Include="TODO\RPiSettings.cs" />
       <None Include="TODO\SerialPortController.cs" />
       <None Include="TODO\SoilMoistureSensor.cs" />

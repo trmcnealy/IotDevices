@@ -86,7 +86,7 @@ public sealed class NumericStringFormatter : IFormatProvider, ICustomFormatter
 
     public static NumericStringFormatter Instance
     {
-        //[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        ///*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/
         [MethodImpl(MethodImplOptions.NoInlining)]
         get
         {

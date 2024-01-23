@@ -15,7 +15,7 @@ public static class I2CScanner
     private const int FirstAddress = 0x08;
     private const int LastAddress = 0x80;
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    /*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/
     public static List<byte> ScanDeviceAddresses(CancellationToken token)
     {
         List<byte> validAddresses = new List<byte>(LastAddress - FirstAddress + 1);
@@ -28,7 +28,7 @@ public static class I2CScanner
         return validAddresses;
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    /*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/
     private static async IAsyncEnumerable<byte> ScanDeviceAddress([EnumeratorCancellation] CancellationToken token)
     {
         for (byte address = FirstAddress; address < LastAddress; ++address)
@@ -40,7 +40,7 @@ public static class I2CScanner
         }
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    /*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/
     private static async Task<bool> ScanDeviceAddress(CancellationToken token, byte address)
     {
         try

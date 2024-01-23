@@ -7,6 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Runtime.CompilerServices;
 using System.Device.I2c;
+using System.Numerics;
 
 namespace RaspberryPiDevices
 {
@@ -37,7 +38,7 @@ namespace RaspberryPiDevices
         /// True to allow yielding the thread. If this is set to false, on single-proc systems
         /// this will prevent all other code from running.
         /// </param>
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        /*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/
         public static void Delay(TimeSpan timeSpan, bool allowThreadToYield = true)
         {
             TimeSpan time = timeSpan;
@@ -65,12 +66,12 @@ namespace RaspberryPiDevices
             }
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        /*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/
         public static void Delay(int seconds, int milliseconds = 0, int microseconds = 0, bool allowThreadYield = true)
         {
             Delay(TimeSpan.FromTicks((seconds * TicksPerSecond) + (milliseconds * TicksPerMillisecond) + (microseconds * TicksPerMicrosecond)), allowThreadYield);
         }
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        /*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/
         public static void Delay(uint seconds, uint milliseconds = 0, uint microseconds = 0, bool allowThreadYield = true)
         {
             Delay(TimeSpan.FromTicks((seconds * TicksPerSecond) + (milliseconds * TicksPerMillisecond) + (microseconds * TicksPerMicrosecond)), allowThreadYield);
@@ -84,13 +85,13 @@ namespace RaspberryPiDevices
         /// True to allow yielding the thread. If this is set to false, on single-proc systems
         /// this will prevent all other code from running.
         /// </param>
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        /*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/
         public static void DelayMicroseconds(int microseconds, bool allowThreadYield = true)
         {
             Delay(TimeSpan.FromTicks(microseconds * TicksPerMicrosecond), allowThreadYield);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        /*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/
         public static void DelayMicroseconds(uint microseconds, bool allowThreadYield = true)
         {
             Delay(TimeSpan.FromTicks(microseconds * TicksPerMicrosecond), allowThreadYield);
@@ -104,7 +105,7 @@ namespace RaspberryPiDevices
         /// True to allow yielding the thread. If this is set to false, on single-proc systems
         /// this will prevent all other code from running.
         /// </param>
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        /*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/
         public static void DelayMilliseconds(int milliseconds, bool allowThreadYield = true)
         {
             /* We have this as a separate method for now to make calling code clearer
@@ -115,7 +116,7 @@ namespace RaspberryPiDevices
 
             Delay(TimeSpan.FromTicks(milliseconds * TicksPerMillisecond), allowThreadYield);
         }
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        /*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/
         public static void DelayMilliseconds(uint milliseconds, bool allowThreadYield = true)
         {
             /* We have this as a separate method for now to make calling code clearer
@@ -129,7 +130,7 @@ namespace RaspberryPiDevices
         #endregion
 
         #region ToDigitArray
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        /*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/
         public static Digit[] ToDigitArray(this in sbyte value, out bool isPositive)
         {
             isPositive = (value >= 0);
@@ -149,7 +150,7 @@ namespace RaspberryPiDevices
             return arr;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        /*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/
         public static Digit[] ToDigitArray(this in byte value, out bool isPositive)
         {
             isPositive = (true);
@@ -169,7 +170,7 @@ namespace RaspberryPiDevices
             return arr;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        /*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/
         public static Digit[] ToDigitArray(this in int value, out bool isPositive)
         {
             isPositive = (value >= 0);
@@ -189,7 +190,7 @@ namespace RaspberryPiDevices
             return arr;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        /*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/
         public static Digit[] ToDigitArray(this in uint value, out bool isPositive)
         {
             isPositive = (true);
@@ -209,7 +210,7 @@ namespace RaspberryPiDevices
             return arr;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        /*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/
         public static Digit[] ToDigitArray(this in long value, out bool isPositive)
         {
             isPositive = (value >= 0);
@@ -229,7 +230,7 @@ namespace RaspberryPiDevices
             return arr;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        /*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/
         public static Digit[] ToDigitArray(this in ulong value, out bool isPositive)
         {
             isPositive = (true);
@@ -251,50 +252,77 @@ namespace RaspberryPiDevices
         #endregion
 
         #region DelayAsync
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        /*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/
         public static async Task DelayAsync(TimeSpan timeSpan)
         {
             await Task.Delay(timeSpan);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        /*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/
         public static async Task DelayAsync(int seconds, int milliseconds = 0, int microseconds = 0)
         {
             await DelayAsync(TimeSpan.FromTicks((seconds * TicksPerSecond) + (milliseconds * TicksPerMillisecond) + (microseconds * TicksPerMicrosecond)));
         }
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        /*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/
         public static async Task DelayAsync(uint seconds, uint milliseconds = 0, uint microseconds = 0)
         {
             await DelayAsync(TimeSpan.FromTicks((seconds * TicksPerSecond) + (milliseconds * TicksPerMillisecond) + (microseconds * TicksPerMicrosecond)));
         }
 
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        /*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/
         public static async Task DelayMicrosecondsAsync(int microseconds)
         {
             await DelayAsync(TimeSpan.FromTicks(microseconds * TicksPerMicrosecond));
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        /*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/
         public static async Task DelayMicrosecondsAsync(uint microseconds)
         {
             await DelayAsync(TimeSpan.FromTicks(microseconds * TicksPerMicrosecond));
         }
 
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        /*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/
         public static async Task DelayMillisecondsAsync(int milliseconds)
         {
             await DelayAsync(TimeSpan.FromTicks(milliseconds * TicksPerMillisecond));
         }
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        /*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/
         public static async Task DelayMillisecondsAsync(uint milliseconds)
         {
             await DelayAsync(TimeSpan.FromTicks(milliseconds * TicksPerMillisecond));
         }
         #endregion
 
+        public static byte BinaryOp_OR(this IEnumerable<byte> source)
+        {
+            byte sum = 0;
 
+            foreach (byte value in source)
+            {
+                sum |= value;
+            }
+
+            return sum;
+        }
+
+        //public static TSource BinaryOp_OR<TSource>(this IEnumerable<TSource> source)
+        //    where TSource : struct, IBinaryInteger<TSource>
+        //{
+        //    TSource sum = TSource.Zero;
+
+        //    foreach (TSource value in source)
+        //    {
+        //        Console.WriteLine(Convert.ToString(value, toBase: 2));
+
+        //        sum |= value;
+                
+        //        Console.WriteLine($"{sum:X2}");
+        //    }
+
+        //    return sum;
+        //}
         public static List<byte> PerformBusScan(this I2cBus bus, in byte lowest = 0x3, in byte highest = 0x77)
         {
             byte result = 0;

@@ -29,8 +29,8 @@ namespace RaspberryPiDevices
     {
         public static readonly Acceleration Gravity = new Acceleration(32.17405, AccelerationUnit.FootPerSecondSquared);
 
-        public const int PinDout = 23;
-        public const int PinPdSck = 24;
+        public const int PinDout = 6;
+        public const int PinPdSck = 5;
 
         private bool disposedValue;
 
@@ -64,7 +64,7 @@ namespace RaspberryPiDevices
         //// returns pressure in kilopascals
         //public double Pascal
         //{
-        //    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        //    /*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/
         //    get
         //    {
         //        return ((ReadAverage(READ_TIMES) - _offset) * RES) * 20 - 50;
@@ -74,7 +74,7 @@ namespace RaspberryPiDevices
         ////returns pressure in atm
         //public double Atm
         //{
-        //    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        //    /*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/
         //    get
         //    {
         //        return Pascal * 9.86923E-3;
@@ -84,7 +84,7 @@ namespace RaspberryPiDevices
         ////returns pressure in mmHg
         //public double MmHg
         //{
-        //    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        //    /*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/
         //    get
         //    {
         //        return Pascal * 7.50062;
@@ -95,7 +95,7 @@ namespace RaspberryPiDevices
         ////returns pressure in psi
         //public double Psi
         //{
-        //    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        //    /*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/
         //    get
         //    {
         //        return Pascal * 0.145038;
@@ -106,12 +106,12 @@ namespace RaspberryPiDevices
         //// set OFFSET, the value that's subtracted from the actual reading (tare weight)
         //public int Offset
         //{
-        //    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        //    /*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/
         //    get
         //    {
         //        return _offset;
         //    }
-        //    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        //    /*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/
         //    set
         //    {
         //        _offset = value;
@@ -121,12 +121,12 @@ namespace RaspberryPiDevices
         //// set the SCALE value; this value is used to convert the raw data to "human readable" data (measure units)
         //public double Scale
         //{
-        //    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        //    /*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/
         //    get
         //    {
         //        return _scale;
         //    }
-        //    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        //    /*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/
         //    set
         //    {
         //        _scale = value;
@@ -135,12 +135,12 @@ namespace RaspberryPiDevices
 
         //public double Gain
         //{
-        //    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        //    /*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/
         //    get
         //    {
         //        return _gain;
         //    }
-        //    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        //    /*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/
         //    set
         //    {
         //        switch (value)
@@ -171,7 +171,7 @@ namespace RaspberryPiDevices
 
         public Mass Tare
         {
-            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+            /*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/
             get
             {
                 _sensor.Tare();
@@ -180,7 +180,7 @@ namespace RaspberryPiDevices
         }
         public Mass Weight
         {
-            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+            /*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/
             get
             {
                 return _sensor.GetWeight();
@@ -201,7 +201,7 @@ namespace RaspberryPiDevices
         private readonly int _pinDout;
         private readonly int _pinPdSck;
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        /*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/
         public BarometricPressureSensor(RaspberryPiBoard raspberryPiBoard, GpioController gpioController, int pinDout = PinDout, int pinPdSck = PinPdSck)
         {
             _board = raspberryPiBoard;
@@ -236,18 +236,18 @@ namespace RaspberryPiDevices
         #endregion
 
         #region Dctor
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        /*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/
         ~BarometricPressureSensor()
         {
             Dispose(disposing: false);
         }
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        /*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/
         public void Dispose()
         {
             Dispose(disposing: true);
             GC.SuppressFinalize(this);
         }
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        /*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/
         protected virtual void Dispose(bool disposing)
         {
             if (!disposedValue)
@@ -275,7 +275,7 @@ namespace RaspberryPiDevices
         //// - With a gain factor of 64 or 128, channel A is selected
         //// - With a gain factor of 32, channel B is selected
         //// The library default is "128" (Channel A).
-        //[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        ///*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/
         //public void Begin(int dout = pinDout, int pd_sck = pinPdSck, int gain = 128)
         //{
         //    PD_SCK = pd_sck;
@@ -478,20 +478,20 @@ namespace RaspberryPiDevices
         private static int _startTime = DateTime.Now.Millisecond;
 
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        /*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/
         private static int millis()
         {
             return _startTime - DateTime.Now.Millisecond;
         }
 
 
-        //[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        ///*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/
         //private int SHIFTIN_WITH_SPEED_SUPPORT(int dataPin, int clockPin, ByteFormat bitOrder)
         //{
         //    return shiftInSlow(dataPin, clockPin, bitOrder);
         //}
 
-        //[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        ///*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/
         //private int shiftInSlow(int dataPin, int clockPin, ByteFormat bitOrder)
         //{
         //    int value = 0;
@@ -518,61 +518,61 @@ namespace RaspberryPiDevices
         //}
 
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        /*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/
         private static TOut static_cast<TOut>(in sbyte value) where TOut : unmanaged
         {
             return Unsafe.BitCast<sbyte, TOut>(value);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        /*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/
         private static TOut static_cast<TOut>(in byte value) where TOut : unmanaged
         {
             return Unsafe.BitCast<int, TOut>(value);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        /*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/
         private static TOut static_cast<TOut>(in short value) where TOut : unmanaged
         {
             return Unsafe.BitCast<short, TOut>(value);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        /*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/
         private static TOut static_cast<TOut>(in ushort value) where TOut : unmanaged
         {
             return Unsafe.BitCast<ushort, TOut>(value);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        /*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/
         private static TOut static_cast<TOut>(in int value) where TOut : unmanaged
         {
             return Unsafe.BitCast<int, TOut>(value);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        /*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/
         private static TOut static_cast<TOut>(in uint value) where TOut : unmanaged
         {
             return Unsafe.BitCast<uint, TOut>(value);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        /*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/
         private static TOut static_cast<TOut>(in long value) where TOut : unmanaged
         {
             return Unsafe.BitCast<long, TOut>(value);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        /*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/
         private static TOut static_cast<TOut>(in ulong value) where TOut : unmanaged
         {
             return Unsafe.BitCast<ulong, TOut>(value);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        /*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/
         private static TOut static_cast<TOut>(in float value) where TOut : unmanaged
         {
             return Unsafe.BitCast<float, TOut>(value);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        /*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/
         private static TOut static_cast<TOut>(in double value) where TOut : unmanaged
         {
             return Unsafe.BitCast<double, TOut>(value);

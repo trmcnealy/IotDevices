@@ -18,7 +18,7 @@ public readonly struct LEDCharacter
 
     public static readonly LEDCharacter[] Characters = new LEDCharacter[]{Digit0, Digit1,Digit2, Digit3, Digit4, Digit5, Digit6, Digit7, Digit8, Digit9};
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    /*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/
     static LEDCharacter()
     {
         Nothing = new LEDCharacter(NothingConst);
@@ -110,13 +110,13 @@ public readonly struct LEDCharacter
 
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    /*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/
     public LEDCharacter()
     {
         _value = default;
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    /*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/
     public LEDCharacter(byte value)
     {
         _value = value;
@@ -126,7 +126,7 @@ public readonly struct LEDCharacter
 
     public byte Value
     {
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        /*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/
         get
         {
             return _value;
@@ -212,31 +212,31 @@ public readonly struct LEDCharacter
     public static readonly LEDCharacter Minus;
     public const byte MinusConst = MiddleConst;
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    /*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/
     public static implicit operator byte(in LEDCharacter ledcharacter)
     {
         return ledcharacter.Value;
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    /*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/
     public static implicit operator LEDCharacter(byte value)
     {
         return new LEDCharacter(value);
     }
 
-    //[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    ///*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/
     //public static string GetName(in LEDCharacter ledcharacter)
     //{
     //    return ValueNames[ledcharacter];
     //}
 
-    //[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    ///*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/
     //public static LEDCharacter GetLEDCharacter(in string name)
     //{
     //    return NameValues[name];
     //}
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    /*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/
     public static LEDCharacter GetLEDCharacter(in byte value)
     {
         return Characters[value];
@@ -267,97 +267,97 @@ public readonly struct LEDCharacter
         //}
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    /*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/
     public static LEDCharacter operator ~(in LEDCharacter left)
     {
         return (LEDCharacter)(~left.Value);
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    /*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/
     public static LEDCharacter operator <<(in LEDCharacter left, int right)
     {
         return (LEDCharacter)(left.Value << right);
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    /*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/
     public static LEDCharacter operator >>(in LEDCharacter left, int right)
     {
         return (LEDCharacter)(left.Value >> right);
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    /*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/
     public static LEDCharacter operator ^(in LEDCharacter left, in LEDCharacter right)
     {
         return (LEDCharacter)(left.Value ^ right.Value);
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    /*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/
     public static LEDCharacter operator &(in LEDCharacter left, in LEDCharacter right)
     {
         return (LEDCharacter)(left.Value & right.Value);
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    /*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/
     public static LEDCharacter operator |(in LEDCharacter left, in LEDCharacter right)
     {
         return (LEDCharacter)(left.Value | right.Value);
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    /*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/
     public bool Equals(LEDCharacter other)
     {
         return Value == other.Value;
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    /*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/
     public override bool Equals(object? obj)
     {
         return obj is LEDCharacter other && Equals(other);
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    /*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/
     public override int GetHashCode()
     {
         return Value.GetHashCode();
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    /*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/
     public static bool operator ==(in LEDCharacter left, in LEDCharacter right)
     {
         return Equals(left, right);
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    /*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/
     public static bool operator ==(in LEDCharacter left, byte right)
     {
         return left.Value == right;
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    /*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/
     public static bool operator ==(byte left, in LEDCharacter right)
     {
         return left == right.Value;
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    /*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/
     public static bool operator !=(in LEDCharacter left, in LEDCharacter right)
     {
         return !Equals(left, right);
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    /*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/
     public static bool operator !=(in LEDCharacter left, byte right)
     {
         return left.Value != right;
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    /*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/
     public static bool operator !=(byte left, in LEDCharacter right)
     {
         return left != right.Value;
     }
 
-    //[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    ///*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/
     //public override string? ToString()
     //{
     //    return ValueNames[this];

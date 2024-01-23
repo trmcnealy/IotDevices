@@ -25,20 +25,20 @@ public sealed class PHSensorEventArgs : EventArgs
 {
     public double Ph
     {
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]get; [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]set;
+        /*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/get; /*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/set;
     }
 
     public Temperature Temperature
     {
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]get; [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]set;
+        /*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/get; /*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/set;
     }
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    /*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/
     public PHSensorEventArgs()
     {
         Ph = 0.0;
         Temperature = Temperature.FromDegreesCelsius(0.0);
     }
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    /*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/
     public PHSensorEventArgs(double ph, Temperature temperature)
     {
         Ph = ph;
@@ -133,7 +133,7 @@ public class PHProbeSensor : IDisposable
     private readonly Calibration PHCalibration;
     private readonly Calibration TemperatureCalibration;
 
-    //[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    ///*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/
     static PHProbeSensor()
     {
     }
@@ -141,7 +141,7 @@ public class PHProbeSensor : IDisposable
     #region Properties
     public ElectricPotential Voltage
     {
-        //[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        ///*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/
         get
         {
             if (_ads1115 is not null)
@@ -153,7 +153,7 @@ public class PHProbeSensor : IDisposable
     }
     public ElectricPotential AIN0
     {
-        //[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        ///*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/
         get
         {
             if (_ads1115 is not null)
@@ -165,7 +165,7 @@ public class PHProbeSensor : IDisposable
     }
     public ElectricPotential AIN1
     {
-        //[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        ///*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/
         get
         {
             if (_ads1115 is not null)
@@ -177,7 +177,7 @@ public class PHProbeSensor : IDisposable
     }
     public ElectricPotential AIN2
     {
-        //[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        ///*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/
         get
         {
             if (_ads1115 is not null)
@@ -189,7 +189,7 @@ public class PHProbeSensor : IDisposable
     }
     public ElectricPotential AIN3
     {
-        //[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        ///*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/
         get
         {
             if (_ads1115 is not null)
@@ -201,7 +201,7 @@ public class PHProbeSensor : IDisposable
     }
     public ElectricPotential AIN0_AIN1
     {
-        //[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        ///*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/
         get
         {
             if (_ads1115 is not null)
@@ -213,7 +213,7 @@ public class PHProbeSensor : IDisposable
     }
     public ElectricPotential AIN0_AIN3
     {
-        //[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        ///*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/
         get
         {
             if (_ads1115 is not null)
@@ -225,7 +225,7 @@ public class PHProbeSensor : IDisposable
     }
     public ElectricPotential AIN1_AIN3
     {
-        //[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        ///*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/
         get
         {
             if (_ads1115 is not null)
@@ -237,7 +237,7 @@ public class PHProbeSensor : IDisposable
     }
     public ElectricPotential AIN2_AIN3
     {
-        //[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        ///*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/
         get
         {
             if (_ads1115 is not null)
@@ -249,7 +249,7 @@ public class PHProbeSensor : IDisposable
     }
     public ElectricPotential MaximumVoltage
     {
-        //[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        ///*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/
         get
         {
             return ElectricPotential.FromVolts(5);//_ads1115?.MaxVoltageFromMeasuringRange(_ads1115?.MeasuringRange);
@@ -257,7 +257,7 @@ public class PHProbeSensor : IDisposable
     }
     public double DataFrequency
     {
-        //[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        ///*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/
         get
         {
             if (_ads1115 is not null)
@@ -271,7 +271,7 @@ public class PHProbeSensor : IDisposable
     private double _ph;
     public double Ph
     {
-        //[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        ///*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/
         get
         {
             return _ph;
@@ -292,7 +292,7 @@ public class PHProbeSensor : IDisposable
 
     public Temperature Temperature
     {
-        //[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        ///*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/
         get
         {
             return _temperature;
@@ -316,7 +316,7 @@ public class PHProbeSensor : IDisposable
     }
     #endregion
 
-    //[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    ///*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/
     //internal PHProbeSensor() : base(GetPHProbeSensorUid(1), GetPHProbeSensorName(1))
     //{
     //    if (CalibrationPoints.Count == 0)
@@ -326,7 +326,7 @@ public class PHProbeSensor : IDisposable
     //    }
     //}
 
-    //[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    ///*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/
     public PHProbeSensor(I2cDevice i2cDevice)//, int selectPhProbe = 1) //: base(GetPHProbeSensorUid(selectPhProbe), GetPHProbeSensorName(selectPhProbe))
     {
         PHCalibration = new Calibration(PHCalibrationName);
@@ -431,20 +431,20 @@ public class PHProbeSensor : IDisposable
 
     public event EventHandler<PHSensorEventArgs>? PHSensorEvent;
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    /*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/
     private void OnPHSensorEvent(PHSensorEventArgs e)
     {
         PHSensorEvent?.Invoke(this, e);
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    /*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/
     private void PHSensor(double ph, Temperature temperature)
     {
         PHSensorEventArgs args = new PHSensorEventArgs(ph, temperature);
         OnPHSensorEvent(args);
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    /*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/
     public Task PostPHSensorEvent()
     {
         voltageValues = GetVoltages();
@@ -453,6 +453,8 @@ public class PHProbeSensor : IDisposable
         _temperature = Temperature.FromDegreesCelsius(GetTemperatureValue(voltageValues.Ain1));
 
         PHSensor(_ph, _temperature);
+
+        //Interlocked.Increment(ref state.Counter);
 
         //Ssd1306OLEDDisplay[2].Text = $"Flow: {record.FlowRate.LitersPerMinute:N4}\nTotal: {record.TotalLitres.Liters:N6}";
 
@@ -485,7 +487,7 @@ public class PHProbeSensor : IDisposable
 
     //private static (ElectricPotential Vcc, double Ph, Temperature Temperature) values;
 
-    //[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    ///*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/
     //public RPiPhSensorValues GetValues()
     //{
     //    try
@@ -503,7 +505,7 @@ public class PHProbeSensor : IDisposable
     //}
 
 
-    //[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    ///*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/
     public (ElectricPotential Vcc, ElectricPotential Ain0, ElectricPotential Ain1) GetVoltages()
     {
         if (_ads1115 is not null)
@@ -517,7 +519,7 @@ public class PHProbeSensor : IDisposable
         return new(ElectricPotential.FromVolts(0), ElectricPotential.FromVolts(0), ElectricPotential.FromVolts(0));
     }
 
-    //[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    ///*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/
     private double GetPhValue(in ElectricPotential voltage)
     {
         //Calibration calibration = PHCalibration.Points.First(o => o.Name == PHCalibrationName);
@@ -532,7 +534,7 @@ public class PHProbeSensor : IDisposable
         //return calibration + ((voltage.Volts - Ph4502c.MID_VOLTAGE) / _voltageSlope);
     }
 
-    //[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    ///*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/
     private double GetTemperatureValue(in ElectricPotential voltage)
     {
         //Calibration calibration = CalibrationPoints.First(o => o.Name == TemperatureCalibrationName);
@@ -563,7 +565,7 @@ public class PHProbeSensor : IDisposable
     //    return new(averageVoltages.vcc, _ph, _temperature);
     //}
 
-    ////[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    /////*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/
     //public (ElectricPotential Vcc, ElectricPotential Ain0, ElectricPotential Ain1) GetAverageVoltages()
     //{
     //    TimeSpan span = new TimeSpan(0, 0, 0, 0, 100);
@@ -599,14 +601,14 @@ public class PHProbeSensor : IDisposable
 
 
 
-    //[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    ///*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/
     public override string ToString()
     {
         return $"{DateTime.Now.ToLongTimeString()}: Voltage:{Voltage:N6} AIN0:{AIN0:N6} AIN1:{AIN1:N6} Ph:{_ph:N4} Temperature:{_temperature.DegreesFahrenheit:N5}°F";
         //return $"{DateTime.Now.ToLongTimeString()}: Voltage:{averageVoltages.vcc:N} AIN0:{AIN0:N} AIN1:{AIN1:N} AIN2:{AIN2:N} AIN3:{AIN3:N} Ph:{averageVoltages.ph:N} Temperature:{averageVoltages.temperature.DegreesFahrenheit:N}°F";
     }
 
-    ////[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    /////*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/
     //public ElectricPotential ReadVoltage(InputMultiplexer inputMultiplexer)
     //{
     //    short raw = _ads1115?.ReadRaw(inputMultiplexer);
@@ -614,7 +616,7 @@ public class PHProbeSensor : IDisposable
     //    return _ads1115?.RawToVoltage(raw);
     //}
 
-    ////[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    /////*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/
     //public static ElectricPotential ReadVoltage(Ph4502c ph4502c, Ads1115 ads1115, InputMultiplexer input)
     //{
     //    short raw = ads1115.ReadRaw(input);
@@ -622,7 +624,7 @@ public class PHProbeSensor : IDisposable
     //    return RawToVoltage(ph4502c, ads1115.MeasuringRange, raw);
     //}
 
-    ////[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    /////*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/
     //private static ElectricPotential RawToVoltage(Ph4502c ph4502c, MeasuringRange measuringRange, short val)
     //{
     //    double maxVoltage = MaximumVoltage(measuringRange);
@@ -631,7 +633,7 @@ public class PHProbeSensor : IDisposable
     //}
 
 
-    //[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    ///*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/
     public static (ElectricPotential lower, ElectricPotential upper) VoltageRange(MeasuringRange measuringRange)
     {
         double voltage = measuringRange switch
@@ -648,7 +650,7 @@ public class PHProbeSensor : IDisposable
         return new(ElectricPotential.FromVolts(-voltage), ElectricPotential.FromVolts(voltage));
     }
 
-    ////[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    /////*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/
     //public static double MaximumVoltage(MeasuringRange measuringRange)
     //{
     //    return measuringRange switch
@@ -665,7 +667,7 @@ public class PHProbeSensor : IDisposable
     //    //return ElectricPotential.FromVolts(voltage);
     //}
 
-    ////[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    /////*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/
     //private static double GetAverageValue(Ads1115 ads1115, InputMultiplexer input, TimeSpan time)
     //{
     //    int length = (time.Seconds * GetSensorDataRate(ads1115));
@@ -683,7 +685,7 @@ public class PHProbeSensor : IDisposable
     //    return (buf / length);
     //}
 
-    //[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    ///*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/
     public static int GetSensorDataRate(Ads1115 ads1115)
     {
         switch (ads1115.DataRate)
@@ -708,7 +710,7 @@ public class PHProbeSensor : IDisposable
         return 860;
     }
 
-    //[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    ///*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/
     public static TimeSpan GetSensorDelay(Ads1115 ads1115)
     {
         switch (ads1115.DataRate)
@@ -734,21 +736,21 @@ public class PHProbeSensor : IDisposable
         };
     }
 
-    //[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    ///*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/
     public static void SensorDelay(Ads1115 ads1115)
     {
         //int dataRate = GetSensorDataRate(ads1115);            
         Utilities.Delay(GetSensorDelay(ads1115), false);
     }
 
-    //[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    ///*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/
     public static void SensorDelay(TimeSpan span)
     {
         //int dataRate = GetSensorDataRate(ads1115);            
         Utilities.Delay(span, false);
     }
 
-    //[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    ///*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/
     private static double CheckVoltage(in double voltage)
     {
         if (voltageLimits != voltage)
@@ -758,20 +760,20 @@ public class PHProbeSensor : IDisposable
         return voltageLimits.MaxMin(voltage);
     }
 
-    ////[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    /////*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/
     //private static double GetPhValue(in double voltage, double max_voltage)
     //{
     //    return (voltage / _phVoltageSlope(max_voltage));
     //    //return (MidValue.ph + ((MidValue.voltage - AIN0.Volts) / _phVoltageSlope));
     //}
 
-    ////[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    /////*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/
     //private static double GetTemperatureValue(in double voltage, double max_voltage)
     //{
     //    return (voltage / _phTemperatureSlope(max_voltage)) - 21.38889;
     //}
 
-    ////[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    /////*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/
     //private static double GetPhVoltage(PHProbeSensor pHProbeSensor)
     //{
     //    using (Ads1115 adc = new Ads1115(pHProbeSensor._i2cDevice, InputMultiplexer.AIN0))
@@ -780,7 +782,7 @@ public class PHProbeSensor : IDisposable
     //    }
     //}
 
-    ////[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    /////*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/
     //private static double GetTemperatureVoltage(PHProbeSensor pHProbeSensor)
     //{
     //    using (Ads1115 adc = new Ads1115(pHProbeSensor._i2cDevice, InputMultiplexer.AIN1))
@@ -789,13 +791,13 @@ public class PHProbeSensor : IDisposable
     //    }
     //}
 
-    //[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    ///*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/
     private static double GetPhVoltageSlope(in double vp0_voltage, double vp0_ph, double vp1_voltage, double vp1_ph)
     {
         return (vp1_voltage - vp0_voltage) / (vp1_ph - vp0_ph);
     }
 
-    //[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    ///*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/
     private static double GetPhVoltageSlope((double voltage, double ph) vp0, (double voltage, double ph) vp1)
     {
         return (vp1.voltage - vp0.voltage) / (vp1.ph - vp0.ph);

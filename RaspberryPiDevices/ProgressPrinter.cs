@@ -7,6 +7,8 @@ public sealed class ProgressPrinter : IProgress<float>
     internal const char Lower8thBlockChar = '▁';
     internal const char FullBlockChar = '█';
 
+    #region Patterns
+
     internal static readonly char[] Pattern0 = new char[10]
     {
         Lower8thBlockChar, Lower8thBlockChar, Lower8thBlockChar, Lower8thBlockChar, Lower8thBlockChar, Lower8thBlockChar, Lower8thBlockChar, Lower8thBlockChar, Lower8thBlockChar, Lower8thBlockChar
@@ -71,13 +73,14 @@ public sealed class ProgressPrinter : IProgress<float>
     {
         PatternString0, PatternString1, PatternString2, PatternString3, PatternString4, PatternString5, PatternString6, PatternString7, PatternString8, PatternString9
     };
+    #endregion
 
     internal int _patternIndex;
 
     //private static object? _lock;
     //private static ProgressPrinter _Instance;
 
-    //[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    ///*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/
     static ProgressPrinter()
     {
         //if (_lock is null)
@@ -96,7 +99,7 @@ public sealed class ProgressPrinter : IProgress<float>
 
     public static ProgressPrinter Instance
     {
-        //[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        ///*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/
         [MethodImpl(MethodImplOptions.NoInlining)]
         get
         {
@@ -109,22 +112,38 @@ public sealed class ProgressPrinter : IProgress<float>
         }
     }
 
-    //[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    ///*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/
     private ProgressPrinter()
     {
         _patternIndex = 0;
     }
 
-    //[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    ///*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/
     public void Report(float value)
     {
         Console.Write($"\rPlease wait. {value:F0}% done.");
     }
 
-    //[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    ///*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/
     public void Report()
     {
-        Console.Write($"\r{Patterns[_patternIndex % 10]}");
-        ++_patternIndex;
+        Console.Write($"\r");
+
+        for (int i = 0; i < 10; i++)
+        {
+            if (i == _patternIndex)
+            {
+                Console.Write(FullBlockChar);
+            }
+            else
+            {
+                Console.Write(Lower8thBlockChar);
+            }
+        }
+
+        //Console.Write("\n");
+
+        Interlocked.Increment(ref _patternIndex);
+        _patternIndex %= 10;
     }
 }

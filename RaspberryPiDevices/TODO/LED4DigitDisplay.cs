@@ -200,13 +200,13 @@ public class LED4DigitDisplay : IDisposable
         }
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    /*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/
     public static double RoundToMultiple(in double x, in double m)
     {
         return Math.Round(x / m) * m;
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    /*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/
     public static int Precision(in double x)
     {
         int precision = 0;
@@ -219,7 +219,7 @@ public class LED4DigitDisplay : IDisposable
         return precision;
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    /*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/
     public static int CountDigitsAfterDecimal(in double value)
     {
         bool start = false;

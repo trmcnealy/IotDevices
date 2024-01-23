@@ -33,7 +33,7 @@ namespace RaspberryPiDevices
 
         public Aht20 Sensor
         {
-            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+            /*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/
             get
             {
                 return _sensor;
@@ -42,7 +42,7 @@ namespace RaspberryPiDevices
 
         public Temperature Temperature
         {
-            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+            /*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/
             get
             {
                 return _sensor.GetTemperature();
@@ -51,14 +51,14 @@ namespace RaspberryPiDevices
 
         public RelativeHumidity Humidity
         {
-            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+            /*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/
             get
             {
                 return _sensor.GetHumidity();
             }
         }
         
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    /*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/
         public TemperatureHumiditySensor(I2cDevice i2cDevice)
         {
             _sensor = new Aht20(i2cDevice);
@@ -97,7 +97,7 @@ namespace RaspberryPiDevices
         #endregion
 
         
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    /*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/
         public override string ToString()
         {
             return $"{Temperature.DegreesFahrenheit:N5}°F, {Humidity.Percent:N4}%";

@@ -330,13 +330,13 @@ public class LED8DigitDisplay : IDisposable
         _devices.Flush();
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    /*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/
     public static double RoundToMultiple(double x, double m)
     {
         return Math.Round(x / m) * m;
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    /*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/
     public static int Precision(double x)
     {
         int precision = 0;
@@ -349,7 +349,7 @@ public class LED8DigitDisplay : IDisposable
         return precision;
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    /*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/
     public static (int before_count, int after_count) CountDigits(double value)
     {
         bool start = false;

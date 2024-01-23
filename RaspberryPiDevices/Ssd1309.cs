@@ -79,7 +79,7 @@ public sealed class Ssd1309 : IDisposable
             Data
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        /*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/
         public static PinValue WriteCommand(Operation op)
         {
             switch (op)
@@ -93,7 +93,7 @@ public sealed class Ssd1309 : IDisposable
                 }
             }
         }
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        /*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/
         public static PinValue ReadStatus(Operation op)
         {
             switch (op)
@@ -110,7 +110,7 @@ public sealed class Ssd1309 : IDisposable
                 }
             }
         }
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        /*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/
         public static PinValue WriteData(Operation op)
         {
             switch (op)
@@ -127,7 +127,7 @@ public sealed class Ssd1309 : IDisposable
                 }
             }
         }
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        /*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/
         public static PinValue ReadData(Operation op)
         {
             switch (op)
@@ -494,8 +494,7 @@ public sealed class Ssd1309 : IDisposable
 
     public Ssd1309(RaspberryPiBoard raspberryPiBoard)
     {
-        _oLEDDisplay = new OLEDDisplay(ScreenWidth, ScreenHeight);
-        _oLEDDisplay.CreatePages(5);
+        _oLEDDisplay = new OLEDDisplay(5, ScreenWidth, ScreenHeight);
 
         _bitmapImage = GetBackBufferCompatibleImage();
 
