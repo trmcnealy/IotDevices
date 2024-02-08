@@ -1,14 +1,14 @@
 {
   "profiles": {
-    "RaspberryPiDevices.Tests": {
-        "commandName": "Project",
-        "use64Bit": true,
-        "useSSL": true,
-        "nativeDebugging": true,
-        "remoteDebugEnabled": true,
-        "remoteDebugMachine": "trmpi:22",
-        "authenticationMode": "Windows",
-        "executablePath": "E:/Github/trmcnealy/IotDevices/RaspberryPiDevices.Tests/bin/ARM64/Debug/net8.0/linux-arm64/RaspberryPiDevices.Tests"
+    "RaspberryPiDevices.Tests2": {
+      "commandName": "Project",
+      "executablePath": "E:/Github/trmcnealy/IotDevices/RaspberryPiDevices.Tests/bin/ARM64/Debug/net8.0/linux-arm64/RaspberryPiDevices.Tests",
+      "use64Bit": true,
+      "useSSL": true,
+      "nativeDebugging": true,
+      "remoteDebugEnabled": false,
+      "remoteDebugMachine": "",
+      "authenticationMode": "Windows"
     }
   }
 }

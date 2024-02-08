@@ -23,9 +23,9 @@ internal class Program
         IConfigurationBuilder configurationBuilder = builder.Configuration.AddJsonFile("RPiSettings.json", optional: false, reloadOnChange: true);
 
 
-        builder.Services.Configure<RPiSettings>(RPiSettings.Personalize, builder.Configuration.GetSection("Features:Personalize"));
+        //builder.Services.Configure<RPiSettings>(RPiSettings.Personalize, builder.Configuration.GetSection("Features:Personalize"));
 
-        builder.Services.Configure<Features>(    Features.WeatherStation,    builder.Configuration.GetSection("Features:WeatherStation"));
+        //builder.Services.Configure<Features>(    Features.WeatherStation,    builder.Configuration.GetSection("Features:WeatherStation"));
 
 
         using IHost host = builder.Build();

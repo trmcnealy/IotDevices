@@ -16,10 +16,10 @@ namespace RPiDevices;
 
 public sealed class RPiServices
 {
-    private readonly RPiSettings _settings;
+    //private readonly RPiSettings _settings;
 
-    public RPiServices(IOptionsSnapshot<RPiSettings> namedOptionsAccessor)
-    {
-        _settings = namedOptionsAccessor.Get("RPiSettings");
-    }
+    //public RPiServices(IOptionsSnapshot<RPiSettings> namedOptionsAccessor)
+    //{
+    //    _settings = namedOptionsAccessor.Get("RPiSettings");
+    //}
 }

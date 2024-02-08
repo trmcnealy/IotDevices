@@ -456,7 +456,7 @@ public class PHProbeSensor : IDisposable
 
         //Interlocked.Increment(ref state.Counter);
 
-        //Ssd1306OLEDDisplay[2].Text = $"Flow: {record.FlowRate.LitersPerMinute:N4}\nTotal: {record.TotalLitres.Liters:N6}";
+        //Ssd1306OLEDDisplay[2].Text = $"Flow: {record.FlowRate.LitersPerMinute:N4}\nTotal: {record.TotalVolume.Liters:N6}";
 
         return Task.CompletedTask;
     }

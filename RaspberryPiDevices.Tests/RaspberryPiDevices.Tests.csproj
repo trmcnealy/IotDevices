@@ -6,8 +6,8 @@
 
         <!--<PlatformTarget>ARM64</PlatformTarget>-->
         
-        <Platforms>ARM64;ARM32;AnyCPU</Platforms>
-        <RuntimeIdentifier>linux-arm64</RuntimeIdentifier>
+        <Platforms>ARM64;ARM32;AnyCPU;x64</Platforms>
+        <!--<RuntimeIdentifier>linux-arm64</RuntimeIdentifier>-->
         
         <!--<RuntimeIdentifier>any</RuntimeIdentifier>-->
         <!--<RuntimeIdentifier Condition="'$(Platform)'=='x64'">win-x64</RuntimeIdentifier>

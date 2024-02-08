@@ -162,7 +162,7 @@
 //        ///*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/
 //        /*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/get; /*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/set;
 //    }
-//    public Volume TotalLitres
+//    public Volume TotalVolume
 //    {
 //        ///*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/
 //        /*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/get; /*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/set;
@@ -171,13 +171,13 @@
 //    public RPiWaterFlowSensorValues()
 //    {
 //        FlowRate = VolumeFlow.FromLitersPerMinute(0.0);
-//        TotalLitres = Volume.FromLiters(0.0);
+//        TotalVolume = Volume.FromLiters(0.0);
 //    }
 
-//    public RPiWaterFlowSensorValues(VolumeFlow flowRate, Volume totalLitres)
+//    public RPiWaterFlowSensorValues(VolumeFlow flowRate, Volume totalVolume)
 //    {
 //        FlowRate = flowRate;
-//        TotalLitres = totalLitres;
+//        TotalVolume = totalVolume;
 //    }
 //}
 

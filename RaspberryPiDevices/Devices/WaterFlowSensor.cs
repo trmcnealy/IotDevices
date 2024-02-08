@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.ComponentModel;
 using System.Device.Gpio;
 using System.Device.I2c;
 using System.Device.Spi;
@@ -13,6 +14,7 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 using System.Xml.Serialization;
@@ -26,6 +28,12 @@ using UnitsNet.Units;
 
 namespace RaspberryPiDevices;
 
+public record struct FlowRateEventData
+{
+    public VolumeFlow FlowRate;
+    public Volume TotalVolume;
+}
+
 public sealed class WaterFlowPulseEventArgs : EventArgs
 {
     public VolumeFlow FlowRate
@@ -33,7 +41,7 @@ public sealed class WaterFlowPulseEventArgs : EventArgs
         /*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/
         get; /*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/set;
     }
-    public Volume TotalLitres
+    public Volume TotalVolume
     {
         /*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/
         get; /*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/set;
@@ -42,13 +50,13 @@ public sealed class WaterFlowPulseEventArgs : EventArgs
     public WaterFlowPulseEventArgs()
     {
         FlowRate = VolumeFlow.FromLitersPerMinute(0.0);
-        TotalLitres = Volume.FromLiters(0.0);
+        TotalVolume = Volume.FromLiters(0.0);
     }
 
-    public WaterFlowPulseEventArgs(VolumeFlow flowRate, Volume totalLitres)
+    public WaterFlowPulseEventArgs(VolumeFlow flowRate, Volume totalVolume)
     {
         FlowRate = flowRate;
-        TotalLitres = totalLitres;
+        TotalVolume = totalVolume;
     }
 }
 
@@ -72,18 +80,8 @@ public class WaterFlowSensor : ISensor<WaterFlowSensor>
     //    get;
     //}
 
-    
-    public const long TicksPerMicrosecond = 10;
-    public const long TicksPerMillisecond = TicksPerMicrosecond * 1000;
-    public const long TicksPerSecond = TicksPerMillisecond * 1000;   // 10,000,000
-    public const long TicksPerMinute = TicksPerSecond * 60;         // 600,000,000
-    public const long TicksPerHour = TicksPerMinute * 60;        // 36,000,000,000
-    public const long TicksPerDay = TicksPerHour * 24;          // 864,000,000,000
 
 
-
-    private static readonly double d_tickFrequency = ((double)TicksPerSecond) / ((double)Stopwatch.Frequency);
-    private static readonly long l_tickFrequency = (TicksPerSecond / Stopwatch.Frequency);
 
     static WaterFlowSensor()
     {
@@ -183,35 +181,44 @@ public class WaterFlowSensor : ISensor<WaterFlowSensor>
 
     public long TimestampFrom(TimeSpan span)
     {
-        return (span.Ticks / l_tickFrequency) + _firstTimestamp;
+        //Console.WriteLine(Utilities.TickFrequency);
+        return (long)(((double)span.Ticks / Utilities.TickFrequency) + (double)_firstTimestamp);
     }
 
-    //public Volume TotalLitres
+    //public Volume TotalVolume
     //{
     //    /*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/get; /*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/set;
     //}
     #endregion
 
 
-    public event EventHandler<WaterFlowPulseEventArgs>? PulseEvent;
+    public event EventHandler<WaterFlowPulseEventArgs>? FlowRateChangedEvent;
 
     /*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/
-    private void OnPulseEvent(WaterFlowPulseEventArgs e)
-    {
-        PulseEvent?.Invoke(this, e);
-    }
+    //private void OnPulseEvent(WaterFlowPulseEventArgs e)
+    //{
+    //    PulseEvent?.Invoke(this, e);
+    //}
 
-    /*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/
-    private void Pulse(VolumeFlow flowRate, Volume volume)
+    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    private void OnFlowRateChanged<T>(T @this, VolumeFlow flowRate, Volume volume) where T : class
     {
-        WaterFlowPulseEventArgs args = new WaterFlowPulseEventArgs(flowRate, volume);
-        OnPulseEvent(args);
+        FlowRateChangedEvent?.Invoke(@this, new WaterFlowPulseEventArgs(flowRate, volume));
     }
 
     private const int gpoiPin = 26;
     private const int i2cAddress = (int)I2cAddress.GND;
 
     private double _calibrationFactor = 23.0;
+
+
+    public EventWaitHandle HandleToSignal
+    {
+        get; private set;
+    }
+    public EventWaitHandle HandleToWaitOn;
+
+
 
     #region Cctor
     ///*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/
@@ -223,10 +230,14 @@ public class WaterFlowSensor : ISensor<WaterFlowSensor>
     //    }
     //}
 
-
     ///*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/
-    public WaterFlowSensor(I2cDevice i2cDevice, GpioController gpioController) //: base(SensorId1, CalibrationName)
+    public WaterFlowSensor(EventWaitHandle handleToSignal, I2cDevice i2cDevice, GpioController gpioController) //: base(SensorId1, CalibrationName)
     {
+        HandleToSignal = handleToSignal;
+        HandleToWaitOn = new EventWaitHandle(false, EventResetMode.AutoReset);
+
+        //_autoResetEvent = new AutoResetEvent(false);
+
         //_ads1115 = new Ads1115(_raspberryPiBoard.CreateI2cDevice(new I2cConnectionSettings(1, (int)I2cAddress.GND)), InputMultiplexer.AIN0, MeasuringRange.FS6144, DataRate.SPS860, DeviceMode.Continuous);
 
         _ads1115 = new Ads1115(i2cDevice, gpioController,
@@ -291,6 +302,8 @@ public class WaterFlowSensor : ISensor<WaterFlowSensor>
             ///managed
             if (disposing)
             {
+                //_autoResetEvent.Set();
+
                 _ads1115.Dispose();
                 //_gpioController.ClosePin(gpoiPin);
             }
@@ -318,7 +331,6 @@ public class WaterFlowSensor : ISensor<WaterFlowSensor>
 
     //private bool _FirstPulse = false;
 
-
     /*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/
     public void OnAlertReadyAsserted()
     {
@@ -334,19 +346,28 @@ public class WaterFlowSensor : ISensor<WaterFlowSensor>
         long timestamp = TimestampFrom(delta);
 
         //_flowRate = GetFlowRateValue(1, _calibrationFactor);
-        //TotalLitres += Volume.FromLiters(_flowRate.LitersPerMinute * GetTimeInMinutes(delta));
+        //TotalVolume += Volume.FromLiters(_flowRate.LitersPerMinute * GetTimeInMinutes(delta));
 
         VolumeFlow flowRate = VolumeFlow.FromLitersPerMinute(1.0 / _calibrationFactor);
-        double minutes = GetTimeInMinutes(delta);
+        double minutes = delta.GetTimeInMinutes();
 
         _flowRates.Add(timestamp, (flowRate, minutes));
 
-        Pulse(flowRate, Volume.FromLiters(flowRate.LitersPerMinute * minutes));
+        OnFlowRateChanged(this, flowRate, Volume.FromLiters(flowRate.LitersPerMinute * minutes));
 
-
+               
 
         //    ++_pulseCount;
         //}
+
+
+        //Interlocked.Increment(ref threadCount);
+
+        HandleToSignal.WaitOne();
+
+        //Interlocked.Decrement(ref threadCount);
+
+        HandleToWaitOn.Set();
     }
 
     /*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/
@@ -355,7 +376,7 @@ public class WaterFlowSensor : ISensor<WaterFlowSensor>
         //_FirstPulse = false;
         //_pulseCount = 0;
         FirstTimestamp = CurrentTimestamp;
-        //TotalLitres = Volume.FromLiters(0.0);
+        //TotalVolume = Volume.FromLiters(0.0);
 
         _flowRates.Clear();
         _flowRates.Add(FirstTimestamp, (VolumeFlow.FromLitersPerMinute(0.0), 0));
@@ -405,49 +426,7 @@ public class WaterFlowSensor : ISensor<WaterFlowSensor>
 
     private static TimeSpan deltaTimestampDelay = TimeSpan.FromMilliseconds(100);
 
-    ///*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/
-    private static double GetTimeInSeconds(TimeSpan time)
-    {
-        double value = 0.0;
 
-        if (time.Seconds > 0)
-        {
-            value += ((double)time.Seconds);
-        }
-        if (time.Milliseconds > 0)
-        {
-            value += (((double)time.Milliseconds) / 1_000.0);
-        }
-        if (time.Microseconds > 0)
-        {
-            value += (((double)time.Microseconds) / 1_000_000.0);
-        }
-        return value;
-    }
-
-    ///*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/
-    private static double GetTimeInMinutes(TimeSpan time)
-    {
-        double value = 0.0;
-
-        if (time.Seconds > 0)
-        {
-            value += ((double)time.Minutes);
-        }
-        if (time.Seconds > 0)
-        {
-            value += (((double)time.Seconds) / 60.0);
-        }
-        if (time.Milliseconds > 0)
-        {
-            value += (((double)time.Milliseconds) / 60_000.0);
-        }
-        if (time.Microseconds > 0)
-        {
-            value += (((double)time.Microseconds) / 60_000_000.0);
-        }
-        return value;
-    }
 
     ///*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/
     //public void Run()
@@ -459,13 +438,13 @@ public class WaterFlowSensor : ISensor<WaterFlowSensor>
     //        double minutes = GetTimeInMinutes(_delta);
 
     //        _flowRate = GetFlowRateValue(_pulseCount, _calibrationFactor);
-    //        TotalLitres += Volume.FromLiters(_flowRate.LitersPerMinute * minutes);
+    //        TotalVolume += Volume.FromLiters(_flowRate.LitersPerMinute * minutes);
 
-    //        Pulse(_flowRate, TotalLitres);
+    //        Pulse(_flowRate, TotalVolume);
 
     //        //Console.Write($"pulseCount: {_pulseCount} ");
 
-    //        //Console.WriteLine($"{DateTime.Now.ToString("mm:ss:fff")}: {_delta} FlowRate:{_flowRate.LitersPerMinute:N4} TotalLitres:{TotalLitres:N4}");
+    //        //Console.WriteLine($"{DateTime.Now.ToString("mm:ss:fff")}: {_delta} FlowRate:{_flowRate.LitersPerMinute:N4} TotalVolume:{TotalVolume:N4}");
 
     //        _pulseCount = 0;
     //        FirstTimestamp = CurrentTimestamp;
@@ -484,11 +463,11 @@ public class WaterFlowSensor : ISensor<WaterFlowSensor>
     //            double minutes = GetTimeInMinutes(_delta);
 
     //            _flowRate = GetFlowRateValue(_pulseCount, _calibrationFactor);
-    //            TotalLitres += Volume.FromLiters(_flowRate.LitersPerMinute * minutes);
+    //            TotalVolume += Volume.FromLiters(_flowRate.LitersPerMinute * minutes);
 
     //            //Console.Write($"pulseCount: {_pulseCount} ");
 
-    //            //Console.WriteLine($"{DateTime.Now.ToString("mm:ss:fff")}: {_delta} FlowRate:{_flowRate.LitersPerMinute:N4} TotalLitres:{TotalLitres:N4}");
+    //            //Console.WriteLine($"{DateTime.Now.ToString("mm:ss:fff")}: {_delta} FlowRate:{_flowRate.LitersPerMinute:N4} TotalVolume:{TotalVolume:N4}");
 
     //            _pulseCount = 0;
     //            FirstTimestamp = CurrentTimestamp;
@@ -501,7 +480,7 @@ public class WaterFlowSensor : ISensor<WaterFlowSensor>
     //{
     //    KeyValuePair<long, (VolumeFlow FlowRate, double Time)> record = _flowRates.LastOrDefault();
 
-    //    return $"Flow: {FlowRate.LitersPerMinute:N4}\nTotal: {TotalLitres.Liters:N6}";
-    //    //return $"{DateTime.Now.ToLongTimeString()}: FlowRate:{_flowRate.LitersPerMinute:N4} TotalLitres:{TotalLitres:N4}";
+    //    return $"Flow: {FlowRate.LitersPerMinute:N4}\nTotal: {TotalVolume.Liters:N6}";
+    //    //return $"{DateTime.Now.ToLongTimeString()}: FlowRate:{_flowRate.LitersPerMinute:N4} TotalVolume:{TotalVolume:N4}";
     //}
 }

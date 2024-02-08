@@ -16,18 +16,62 @@ namespace RaspberryPiDevices
     /// </summary>
     public static partial class Utilities
     {
-        /* GetTimestamp() currently can take ~300ns. We hope to improve this to get better
-         * fidelity for very tight spins.
-         *
-         * SpinWait currently spins to approximately 1μs before it will yield the thread.
-         */
 
-        private const long TicksPerSecond = TimeSpan.TicksPerSecond;
-        private const long TicksPerMillisecond = TimeSpan.TicksPerMillisecond;
-        private const long TicksPerMicrosecond = TimeSpan.TicksPerMillisecond / 1000;
+        public const long TicksPerMicrosecond = 10;
+        public const long TicksPerMillisecond = TicksPerMicrosecond * 1000;
+        public const long TicksPerSecond = TicksPerMillisecond * 1000;   // 10,000,000
+        public const long TicksPerMinute = TicksPerSecond * 60;         // 600,000,000
+        public const long TicksPerHour = TicksPerMinute * 60;        // 36,000,000,000
+        public const long TicksPerDay = TicksPerHour * 24;          // 864,000,000,000
 
-        /// <summary>A scale that normalizes the hardware ticks to <see cref="TimeSpan" /> ticks which are 100ns in length.</summary>
-        private static readonly double s_tickFrequency = (double)TicksPerSecond / Stopwatch.Frequency;
+        public const long RaspberryPi4BFrequency = 10000000;
+
+        public static readonly double TickFrequency = (double)TicksPerSecond / (double)RaspberryPi4BFrequency;
+
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        public static double GetTimeInSeconds(this TimeSpan time)
+        {
+            double value = 0.0;
+
+            if (time.Seconds > 0)
+            {
+                value += ((double)time.Seconds);
+            }
+            if (time.Milliseconds > 0)
+            {
+                value += (((double)time.Milliseconds) / 1_000.0);
+            }
+            if (time.Microseconds > 0)
+            {
+                value += (((double)time.Microseconds) / 1_000_000.0);
+            }
+            return value;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        public static double GetTimeInMinutes(this TimeSpan time)
+        {
+            double value = 0.0;
+
+            if (time.Seconds > 0)
+            {
+                value += ((double)time.Minutes);
+            }
+            if (time.Seconds > 0)
+            {
+                value += (((double)time.Seconds) / 60.0);
+            }
+            if (time.Milliseconds > 0)
+            {
+                value += (((double)time.Milliseconds) / 60_000.0);
+            }
+            if (time.Microseconds > 0)
+            {
+                value += (((double)time.Microseconds) / 60_000_000.0);
+            }
+            return value;
+        }
 
         #region Delay
         /// <summary>
@@ -45,7 +89,7 @@ namespace RaspberryPiDevices
             bool allowThreadYield = allowThreadToYield;
 
             long start = Stopwatch.GetTimestamp();
-            long target = start + (long)(time.Ticks / s_tickFrequency);
+            long target = start + (long)(time.Ticks / TickFrequency);
 
             if (!allowThreadYield)
             {
@@ -255,45 +299,58 @@ namespace RaspberryPiDevices
         /*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/
         public static async Task DelayAsync(TimeSpan timeSpan)
         {
-            await Task.Delay(timeSpan);
+            await Task.Delay(timeSpan).ConfigureAwait(false);
         }
 
         /*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/
         public static async Task DelayAsync(int seconds, int milliseconds = 0, int microseconds = 0)
         {
-            await DelayAsync(TimeSpan.FromTicks((seconds * TicksPerSecond) + (milliseconds * TicksPerMillisecond) + (microseconds * TicksPerMicrosecond)));
+            await DelayAsync(TimeSpan.FromTicks((seconds * TicksPerSecond) + (milliseconds * TicksPerMillisecond) + (microseconds * TicksPerMicrosecond))).ConfigureAwait(false);
         }
         /*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/
         public static async Task DelayAsync(uint seconds, uint milliseconds = 0, uint microseconds = 0)
         {
-            await DelayAsync(TimeSpan.FromTicks((seconds * TicksPerSecond) + (milliseconds * TicksPerMillisecond) + (microseconds * TicksPerMicrosecond)));
+            await DelayAsync(TimeSpan.FromTicks((seconds * TicksPerSecond) + (milliseconds * TicksPerMillisecond) + (microseconds * TicksPerMicrosecond))).ConfigureAwait(false);
         }
 
 
         /*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/
         public static async Task DelayMicrosecondsAsync(int microseconds)
         {
-            await DelayAsync(TimeSpan.FromTicks(microseconds * TicksPerMicrosecond));
+            await DelayAsync(TimeSpan.FromTicks(microseconds * TicksPerMicrosecond)).ConfigureAwait(false);
         }
 
         /*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/
         public static async Task DelayMicrosecondsAsync(uint microseconds)
         {
-            await DelayAsync(TimeSpan.FromTicks(microseconds * TicksPerMicrosecond));
+            await DelayAsync(TimeSpan.FromTicks(microseconds * TicksPerMicrosecond)).ConfigureAwait(false);
         }
 
 
         /*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/
         public static async Task DelayMillisecondsAsync(int milliseconds)
         {
-            await DelayAsync(TimeSpan.FromTicks(milliseconds * TicksPerMillisecond));
+            await DelayAsync(TimeSpan.FromTicks(milliseconds * TicksPerMillisecond)).ConfigureAwait(false);
         }
         /*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/
         public static async Task DelayMillisecondsAsync(uint milliseconds)
         {
-            await DelayAsync(TimeSpan.FromTicks(milliseconds * TicksPerMillisecond));
+            await DelayAsync(TimeSpan.FromTicks(milliseconds * TicksPerMillisecond)).ConfigureAwait(false);
         }
         #endregion
+
+
+        public static void ThrowIfFalse(this bool value,
+                                        [CallerMemberName] string memberName = "",
+                                        [CallerFilePath] string sourceFilePath = "",
+                                        [CallerLineNumber] int sourceLineNumber = 0)
+        {
+            if (!value)
+            {
+                throw new Exception($"{memberName} {sourceFilePath} {sourceLineNumber}");
+            }
+        }
+
 
         public static byte BinaryOp_OR(this IEnumerable<byte> source)
         {
@@ -317,7 +374,7 @@ namespace RaspberryPiDevices
         //        Console.WriteLine(Convert.ToString(value, toBase: 2));
 
         //        sum |= value;
-                
+
         //        Console.WriteLine($"{sum:X2}");
         //    }
 

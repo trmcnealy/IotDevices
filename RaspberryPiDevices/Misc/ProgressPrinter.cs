@@ -124,26 +124,61 @@ public sealed class ProgressPrinter : IProgress<float>
         Console.Write($"\rPlease wait. {value:F0}% done.");
     }
 
-    ///*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/
-    public void Report()
+    private static readonly string[] Rows = new string[]
     {
-        Console.Write($"\r");
+        "▐█▁▁▁▁▁▁▁▁▁▌",
+        "▐▁█▁▁▁▁▁▁▁▁▌",
+        "▐▁▁█▁▁▁▁▁▁▁▌",
+        "▐▁▁▁█▁▁▁▁▁▁▌",
+        "▐▁▁▁▁█▁▁▁▁▁▌",
+        "▐▁▁▁▁▁█▁▁▁▁▌",
+        "▐▁▁▁▁▁▁█▁▁▁▌",
+        "▐▁▁▁▁▁▁▁█▁▁▌",
+        "▐▁▁▁▁▁▁▁▁█▁▌",
+        "▐▁▁▁▁▁▁▁▁▁█▌",
+        "▐▁▁▁▁▁▁▁▁█▁▌",
+        "▐▁▁▁▁▁▁▁█▁▁▌",
+        "▐▁▁▁▁▁▁█▁▁▁▌",
+        "▐▁▁▁▁▁█▁▁▁▁▌",
+        "▐▁▁▁▁█▁▁▁▁▁▌",
+        "▐▁▁▁█▁▁▁▁▁▁▌",
+        "▐▁▁█▁▁▁▁▁▁▁▌",
+        "▐▁█▁▁▁▁▁▁▁▁▌"
+    };
 
-        for (int i = 0; i < 10; i++)
-        {
-            if (i == _patternIndex)
-            {
-                Console.Write(FullBlockChar);
-            }
-            else
-            {
-                Console.Write(Lower8thBlockChar);
-            }
-        }
-
+    ///*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/
+    private void report()
+    {
         //Console.Write("\n");
 
         Interlocked.Increment(ref _patternIndex);
-        _patternIndex %= 10;
+        _patternIndex %= Rows.Length;
+
+        Console.Write($"\r{Rows[_patternIndex]}");
+
+        Task.Delay(1);
+
+        //await Task.CompletedTask;
+    }
+
+    private void reportAt([CallerMemberName] string memberName = "",
+                          [CallerFilePath] string sourceFilePath = "",
+                          [CallerLineNumber] int sourceLineNumber = 0)
+    {
+        Console.Write($"{memberName} {sourceFilePath} {sourceLineNumber}");
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    public static void Report()
+    {
+        Instance.report();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    public static void ReportAt([CallerMemberName] string memberName = "",
+                                [CallerFilePath] string sourceFilePath = "",
+                                [CallerLineNumber] int sourceLineNumber = 0)
+    {
+        Instance.reportAt(memberName, sourceFilePath, sourceLineNumber);
     }
 }

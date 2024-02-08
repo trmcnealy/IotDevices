@@ -40,19 +40,19 @@ public record class PhSensorRecord : SensorRecord
 public record class WaterFlowSensorRecord : SensorRecord
 {
     public VolumeFlow FlowRate;
-    public Volume TotalLitres;
+    public Volume TotalVolume;
     
     /*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/
     public WaterFlowSensorRecord()
     {
         FlowRate = VolumeFlow.FromLitersPerMinute(0.0);
-        TotalLitres = Volume.FromLiters(0.0);
+        TotalVolume = Volume.FromLiters(0.0);
     }
     /*[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]*/
-    public WaterFlowSensorRecord(VolumeFlow flowRate, Volume totalLitres)
+    public WaterFlowSensorRecord(VolumeFlow flowRate, Volume totalVolume)
     {
         FlowRate = flowRate;
-        TotalLitres = totalLitres;
+        TotalVolume = totalVolume;
     }
 }
 

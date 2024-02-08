@@ -6,22 +6,19 @@
         "**/node_modules",
         "**/obj",
         "**/platforms"
-    ]
-
-
-
-    {
-        "version": "0.2.0",
-        "adapter": "c:\\mytools\\plink.exe",
-        "adapterArgs": "-i c:\\users\\greggm\\ssh-key.ppk greggm@mylinuxbox -batch -T ~/vsdbg/vsdbg --interpreter=vscode",
-        "configurations": [
-            {
-                "name": ".NET Core Launch",
-                "type": "coreclr",
-                "cwd": "~/clicon",
-                "program": "bin/Debug/netcoreapp1.0/clicon.dll",
-                "request": "launch"
-            }
-        ]
-    }
+    ],
+    //{
+    //    "version": "0.2.0",
+    //    "adapter": "c:\\mytools\\plink.exe",
+    //    "adapterArgs": "-i c:\\users\\greggm\\ssh-key.ppk greggm@mylinuxbox -batch -T ~/vsdbg/vsdbg --interpreter=vscode",
+    //    "configurations": [
+    //        {
+    //            "name": ".NET Core Launch",
+    //            "type": "coreclr",
+    //            "cwd": "~/clicon",
+    //            "program": "bin/Debug/netcoreapp1.0/clicon.dll",
+    //            "request": "launch"
+    //        }
+    //    ]
+    //}
 }

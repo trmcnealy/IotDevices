@@ -15,11 +15,11 @@ namespace RemoteFolderSync;
 internal class Program
 {
 
-    static string pathToMonitor;
-    static string destinationServer;
-    static string destinationPath;
-    static string username;
-    static SecureString password;
+    static string? pathToMonitor;
+    static string? destinationServer;
+    static string? destinationPath;
+    static string? username;
+    static SecureString? password;
 
 
     //E:/Github/trmcnealy/IotDevices/RaspberryPiDevices.Tests/bin/publish trmpi ~/Projects trmcnealy C@Mero406420
@@ -126,7 +126,7 @@ internal class Program
     private static void SyncFile(string filepath)
     {
         ConnectionInfo connectionInfo = new ConnectionInfo(destinationServer, username,
-                                        new PasswordAuthenticationMethod(username, password.ToString()),
+                                        new PasswordAuthenticationMethod(username, password?.ToString()),
                                         new PrivateKeyAuthenticationMethod("ED25519"));
 
         using (SftpClient client = new SftpClient(connectionInfo))

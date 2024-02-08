@@ -1,9 +1,11 @@
 ﻿using System.Device.Gpio;
 using System.Device.I2c;
 using System.Device.Spi;
+using System.Diagnostics;
 using System.Drawing;
 
 using Iot.Device.Board;
+using Iot.Device.CpuTemperature;
 using Iot.Device.Graphics;
 using Iot.Device.Graphics.SkiaSharpAdapter;
 using Iot.Device.Ssd1351;
@@ -118,8 +120,118 @@ namespace RaspberryPiDevices.Tests
             //spiDevice = raspberryPiBoard.CreateSpiDevice(settings);
         }
 
-        //private static volatile bool keepRunning;
         //private static ConsoleKeyInfo cki;
+
+
+        static void Main(string[] args)
+        {
+
+            Console.Clear();
+            //Console.WriteLine(Stopwatch.Frequency);
+
+            CancellationTokenSource cts = new CancellationTokenSource();
+
+            RPiHardware device = new RPiHardware();
+
+            //RaspberryPiBoard _raspberryPiBoard = new RaspberryPiBoard();
+
+
+
+            //PHProbeSensor pHProbeSensor = new PHProbeSensor(raspberryPiBoard);
+
+            //LED8DigitDisplay lED8DigitDisplay = new LED8DigitDisplay(_raspberryPiBoard);
+
+            //WaterFlowSensor waterFlowSensor = new WaterFlowSensor(_raspberryPiBoard);
+
+            Console.CancelKeyPress += (object? sender, ConsoleCancelEventArgs args) =>
+            {
+                cts.Cancel();
+
+                Utilities.DelayMilliseconds(100);
+                device.Dispose();
+
+                // Utilities.DelayMilliseconds(100);
+
+
+                //waterFlowSensor.Dispose();
+                //_raspberryPiBoard.Dispose();
+                //keepRunning = false;
+                args.Cancel = true;
+            };
+
+
+
+
+            //Thread thread = new Thread(device.Run);
+            //thread.Start();
+
+            Console.Write("while (IsRunning)");
+            while (!cts.Token.IsCancellationRequested)
+            {
+                device.Run(cts.Token).Wait();
+
+                Task.Delay(1, cts.Token);
+            }
+
+
+            //while ((!Console.KeyAvailable) || (device.IsRunning))
+            //{
+            //Console.Write("device.Run().Wait();");
+            //Task.Run(() =>  device.Run());
+            //}
+
+
+            //Task.Run(() => device.Run()).Wait(cts.Token);
+
+
+
+            //Task.Delay(Timeout.Infinite, cts.Token).Wait(cts.Token);
+
+            Console.Write("cts.Dispose();");
+
+            cts.Dispose();
+
+            //if (!device.IsDisposed)
+            //{
+            //    device.Dispose();
+            //}
+
+            //await Task.Delay(Timeout.Infinite, cts.Token).ConfigureAwait(false);
+        }
+
+
+        static void ThreadLoop()
+        {
+            //// Create Thread Specific Child Event
+            //AutoResetEvent threadEvent = EventManager.GenerateChildEvent(_eventPulse);
+
+            //Console.WriteLine("{0} Thread Start {1}", DateTime.Now.ToString("hh:MM:ss"), Thread.CurrentThread.ManagedThreadId);
+
+            //while (true)
+            //{
+            //    // Wait For Events
+            //    if (WaitHandle.WaitAny(new WaitHandle[] { _eventStop, _threadEvent }) == 0)
+            //    {
+            //        // Wait Event 0 (_eventStop)
+            //        // Exit Loop
+            //        Console.WriteLine("{0} Thread Terminating {1}", DateTime.Now.ToString("hh:MM:ss"), Thread.CurrentThread.ManagedThreadId);
+            //        break;
+            //    }
+
+            //    Console.WriteLine("{0} Thread Executing {1}", DateTime.Now.ToString("hh:MM:ss"), Thread.CurrentThread.ManagedThreadId);
+            //}
+
+            //EventManager.ReleaseChildEvent(_threadEvent);
+        }
+
+        static async Task ExecuteAsync(CancellationToken stoppingToken)
+        {
+            while (!stoppingToken.IsCancellationRequested)
+            {
+                Console.WriteLine($"Worker running at: {DateTimeOffset.Now}");
+                await Task.Delay(1000, stoppingToken);
+            }
+        }
 
         static void WriteProgress(int position)
         {
@@ -175,98 +287,64 @@ namespace RaspberryPiDevices.Tests
                 Console.WriteLine($"Found Device @{foundDevice:X4}");
             }
         }
-
-
-        static async Task Main(string[] args)
-        {
-            //keepRunning = true;
-
-            Console.Clear();
-
-            RPiHardware device = new RPiHardware();
-
-            //RaspberryPiBoard _raspberryPiBoard = new RaspberryPiBoard();
-
-
-
-            //PHProbeSensor pHProbeSensor = new PHProbeSensor(raspberryPiBoard);
-
-            //LED8DigitDisplay lED8DigitDisplay = new LED8DigitDisplay(_raspberryPiBoard);
-
-            //WaterFlowSensor waterFlowSensor = new WaterFlowSensor(_raspberryPiBoard);
-
-            CancellationTokenSource cts = new CancellationTokenSource();
-
-            Console.CancelKeyPress += (object? sender, ConsoleCancelEventArgs args) =>
-            {
-                cts.Cancel();
-
-                Utilities.DelayMilliseconds(100);
-
-                device.Dispose();
-
-
-                //waterFlowSensor.Dispose();
-                //_raspberryPiBoard.Dispose();
-                //keepRunning = false;
-                args.Cancel = true;
-            };
-
-
-            
-            //await Task.Delay(2000).WaitAsync(cts.Token);
-
-
-
-            device.Run(cts.Token);
-
-
-
-            //{
-            //    //I2cBus i2cBus = _raspberryPiBoard.CreateOrGetI2cBus(1);
-            //    //ScanI2CBus(i2cBus);
-            //}
-
-            //await device.RunAsync(cts.Token);
-
-            //TimeSpan delay = TimeSpan.FromMilliseconds(0);
-
-            //int counter = 0;
-
-            //while (!Console.KeyAvailable || keepRunning)
-            //{
-            //    //waterFlowSensor.Run();
-            //    //Utilities.DelayMilliseconds(1);
-
-            //    //lED8DigitDisplay.Display(waterFlowSensor.FlowRate.LitersPerMinute);
-
-            //    //lED8DigitDisplay.Display(counter++);
-
-            //    Utilities.Delay(delay);
-
-            //    //Task.Run(waterFlowSensor.Run).WaitAsync(cts.Token);
-            //}
-
-            //while (!Console.KeyAvailable)
-            //{
-            //    await Task.Delay(1000).WaitAsync(cts.Token);
-            //}
-
-            //LED8DigitDisplay _lED8DigitDisplay1 = new LED8DigitDisplay(_raspberryPiBoard);
-
-            //_lED8DigitDisplay1.Display(1);
-
-            //if (!device.IsDisposed)
-            //{
-            //    device.Dispose();
-            //}
-
-            await Task.CompletedTask;
-        }
-
     }
+
 }
 
+
+//await Task.Delay(2000).WaitAsync(cts.Token).ConfigureAwait(false);
+
+
+//await Task.Run(() =>
+//{
+//    device.Run();
+//}).WaitAsync(cts.Token);
+
+//Thread.Sleep(Timeout.Infinite);
+
+
+
+//{
+//    //I2cBus i2cBus = _raspberryPiBoard.CreateOrGetI2cBus(1);
+//    //ScanI2CBus(i2cBus);
+//}
+
+//await device.RunAsync(cts.Token);
+
+//TimeSpan delay = TimeSpan.FromMilliseconds(0);
+
+//int counter = 0;
+
+//while (!Console.KeyAvailable || keepRunning)
+//{
+//    //waterFlowSensor.Run();
+//    //Utilities.DelayMilliseconds(1);
+
+//    //lED8DigitDisplay.Display(waterFlowSensor.FlowRate.LitersPerMinute);
+
+//    //lED8DigitDisplay.Display(counter++);
+
+//    Utilities.Delay(delay);
+
+//    //Task.Run(waterFlowSensor.Run).WaitAsync(cts.Token);
+//}
+
+//while (!Console.KeyAvailable)
+//{
+//    await Task.Delay(1000).WaitAsync(cts.Token);
+//}
+
+//LED8DigitDisplay _lED8DigitDisplay1 = new LED8DigitDisplay(_raspberryPiBoard);
+
+//_lED8DigitDisplay1.Display(1);
+
+//Console.WriteLine($"Press any key to exit.");
+//Console.ReadKey();
+
+//if (!device.IsDisposed)
+//{
+//    device.Dispose();
+//}
 
 
 //ReservePin(Constants.GPIO17, PinUsage.Gpio);

@@ -3,8 +3,8 @@
     <PropertyGroup>
         <TargetFramework>net8.0</TargetFramework>
         
-        <Platforms>ARM64;ARM32;AnyCPU</Platforms>
-        <RuntimeIdentifier>linux-arm64</RuntimeIdentifier>
+        <Platforms>ARM64;ARM32;AnyCPU;x64</Platforms>
+        <!--<RuntimeIdentifier>linux-arm64</RuntimeIdentifier>-->
 
         <!--<RuntimeIdentifier>any</RuntimeIdentifier>-->
         <!--<RuntimeIdentifier Condition="'$(Platform)'=='x64'">win-x64</RuntimeIdentifier>
@@ -40,6 +40,11 @@
       <NoWarn>1701;1702;CA2255</NoWarn>
     </PropertyGroup>
 
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+      <IsAotCompatible>False</IsAotCompatible>
+      <NoWarn>1701;1702;CA2255</NoWarn>
+    </PropertyGroup>
+
     <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">
       <IsAotCompatible>False</IsAotCompatible>
       <NoWarn>1701;1702;CA2255</NoWarn>
@@ -55,48 +60,28 @@
       <NoWarn>1701;1702;CA2255</NoWarn>
     </PropertyGroup>
 
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+      <IsAotCompatible>False</IsAotCompatible>
+      <NoWarn>1701;1702;CA2255</NoWarn>
+    </PropertyGroup>
+
     <ItemGroup>
-      <Compile Remove="TODO\Ads1263.cs" />
-      <Compile Remove="TODO\DeviceSettings.cs" />
-      <Compile Remove="TODO\Digit.cs" />
-      <Compile Remove="TODO\HighPrecisionADHat.cs" />
-      <Compile Remove="TODO\I2CScanner.cs" />
-      <Compile Remove="TODO\IOController.cs" />
-      <Compile Remove="TODO\IOControllerTests.cs" />
-      <Compile Remove="TODO\LED4DigitDisplay.cs" />
-      <Compile Remove="TODO\LED8DigitDisplay.cs" />
-      <Compile Remove="TODO\LEDCharacter.cs" />
-      <Compile Remove="TODO\Ph4502c.cs" />
-      <Compile Remove="TODO\PlantPhReferences.cs" />
-      <Compile Remove="TODO\RPiHardware.cs" />
-      <Compile Remove="TODO\RPiSettings.cs" />
-      <Compile Remove="TODO\SerialPortController.cs" />
-      <Compile Remove="TODO\SoilMoistureSensor.cs" />
-      <Compile Remove="TODO\SpiMessageType.cs" />
+      <Compile Remove="TODO\*.cs" />
     </ItemGroup>
 
     <ItemGroup>
-      <None Include="TODO\Ads1263.cs" />
-      <None Include="Digit.cs" />
-      <None Include="TODO\HighPrecisionADHat.cs" />
-      <None Include="TODO\I2CScanner.cs" />
-      <None Include="TODO\IOController.cs" />
-      <None Include="TODO\IOControllerTests.cs" />
-      <None Include="TODO\LED4DigitDisplay.cs" />
-      <None Include="TODO\LED8DigitDisplay.cs" />
-      <None Include="TODO\LEDCharacter.cs" />
-      <None Include="TODO\Ph4502c.cs" />
-      <None Include="TODO\PlantPhReferences.cs" />
-      <None Include="RPiHardware.cs" />
-      <None Include="TODO\RPiSettings.cs" />
-      <None Include="TODO\SerialPortController.cs" />
-      <None Include="TODO\SoilMoistureSensor.cs" />
-      <None Include="TODO\SpiMessageType.cs" />
+      <None Include="TODO\*.cs" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Include="Devices\ISensor.cs" />
+      <None Include="Devices\WaterFlowSensor.cs" />
     </ItemGroup>
 
     <!--linux-arm64-->
 
     <ItemGroup>
+        <PackageReference Include="CommunityToolkit.HighPerformance" Version="8.2.2" />
         <PackageReference Include="System.Device.Gpio" Version="3.1.0" />
         <PackageReference Include="Iot.Device.Bindings" Version="3.1.0" />
         <PackageReference Include="Iot.Device.Bindings.SkiaSharpAdapter" Version="3.1.0" />
@@ -106,10 +91,10 @@
       <Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}" />
     </ItemGroup>
 
-    <ItemGroup>
+    <!--<ItemGroup>
       <None Update="RpiSeetings.json">
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </None>
-    </ItemGroup>
+    </ItemGroup>-->
 
 </Project>
